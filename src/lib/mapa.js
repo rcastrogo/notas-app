@@ -6,7 +6,13 @@ let __module = {};
   var _module =  module[name] = { apply : function apply(o, c, d){
                                             if (d) apply(o, d);
                                             if (o && c && typeof c == 'object'){
-                                            for (var p in c) o[p] = c[p];
+                                              for (var p in c){                                  
+                                                if (typeof c[p] == 'object'){
+                                                  apply(o[p], c[p] )        
+                                                }else{
+                                                  o[p] = c[p];
+                                                }                                                 
+                                              }
                                             }
                                             return o;
                                           }};      
