@@ -6,3 +6,26 @@
 .w3-bold{
   font-weight: bold;
 }
+
+footer#appFooter {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+
+[btn-add-note] {
+  position: fixed;
+  right: 10px;
+  bottom: 62px;
+}
+[btn-expand]{ position: relative; }
+[btn-expand] i {
+  position: absolute;
+  display: table-cell;
+  top: -4px;
+  right: 0;
+  padding: 0 5px;
+  border-radius: 2px;
+  font-weight: bold;
+  font-size: 19px;
+}

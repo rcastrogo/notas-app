@@ -5,24 +5,25 @@ const NOTAS_DATABASE   = 'notas-app.db';
 const NOTAS_TABLE_NAME = 'notas';
 
 const __template = `
-<div class="w3-bar w3-center">
-  <button btn-add-note class="w3-button w3-dark-grey w3-margin">Crear una nota</button>
+<div notas-container class="" style="padding:0; margin-bottom:70px;">
 </div>
-<div notas-container class="w3-margin-bottom w3-margin-top" style="padding:0">
-</div>`;
+<button btn-add-note class="w3-button w3-black w3-circle">＋</button>
+`;
 
 const __item_template =`
-<div class="w3-panel w3-border w3-round" style="padding:3px" id="note-{key}">
-  <header class="w3-container w3-light-grey" style="padding:0">
-    <h4 btn-expand><span>+</span> {title}</h4>
-  </header>
+<div style="padding:5px 0" id="note-{key}">
 
-  <div class="w3-container" style="display:none">
-    <span>{date}</span>
-    <p>{text}</p>
+  <div class="w3-container w3-light-grey" style="padding:5px">
+    <div btn-expand><b>{title}</b><i>+</i></div>
   </div>
-  <div class="w3-bar w3-center">
-    <button class="w3-button w3-dark-grey w3-margin">Eliminar</button>
+
+  <div class="w3-container" style="display:none; style="padding:5px">
+    <div class="w3-border-bottom" style="text-align:right">{date}</div>
+    <p class="w3-border w3-pale-yellow" style="padding:5px;min-height: 4em;margin:5px 0">{text}</p>
+
+    <div class="w3-center">
+      <button type="button" id="delete-{key}" btn-item-delete class="w3-button w3-xlarge fa fa-trash"></button>
+    </div>
   </div>
 </div>`;
 
@@ -60,13 +61,27 @@ export default function(){
             });
       };
 
+      var __delete = (target) => {
+        console.log(target.id);
+        let __id = target.id.split('-')[1];
+        let __element = document.getElementById('note-{0}'.format(__id));
+        this.rows.remove( this.rows.where( { key : __id })[0]);
+        __element.parentNode.removeChild(__element);       
+      }
+
       var __render = () => {
         let __container = container.querySelector('[notas-container]');
         __container.innerHTML = '';
         this.rows
             .map( note => pol.build('div', { innerHTML : __item_template.format(note) }))
             .map( e => e.firstElementChild  )
-            .forEach( e => __container.appendChild(e) );
+            .forEach( e => {
+              e.querySelector('[btn-item-delete]')
+               .onclick = (event) => {
+                 __delete(event.target)
+               }
+              __container.appendChild(e)
+            });
 
       pol.toArray(container.querySelectorAll('[btn-expand]'))
          .forEach(h4 => {
@@ -74,8 +89,10 @@ export default function(){
              let __style = h4.parentNode.nextElementSibling.style;
              if(__style.display == 'none'){
                 __style.display = '';
+                h4.querySelector('i').textContent = '-';
              } else {
                __style.display = 'none';
+               h4.querySelector('i').textContent = '+';
              }
            }
          })
