@@ -16,6 +16,9 @@ export default function(){
         innerHTML : __template.format(this),
       }
       return pol.build('div', options);
+    },
+    mounted : container => {
+
     }
   };
 }

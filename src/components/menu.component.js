@@ -8,6 +8,7 @@ const __template = `
 
 export default function(){
   return {
+    id     : 'menu.component.ref',
     render : function() {
       let options = { 
         id        : "appMenu",
@@ -15,6 +16,9 @@ export default function(){
         className : 'w3-bar w3-black'
       }
       return pol.build('nav', options);
+    },
+    mounted: function(parent){
+      
     }
   };
 }

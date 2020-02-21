@@ -11,10 +11,13 @@ export default function(){
         innerHTML : __template.format(this),
         className : 'w3-container',
         style     : { 
-          minHeight : '460px'
+          minHeight : '440px'
         }
       }
       return pol.build('section', options);
+    },
+    mounted: function(parent){
+      
     }
   };
 }

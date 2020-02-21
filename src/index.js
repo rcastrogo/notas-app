@@ -13,16 +13,8 @@ import homePage from "./views/home.page";
 import listPage from "./views/list.page";
 import aboutPage from "./views/about.page";
 // ==============================================================================
-// Routes/views
+// Routes
 // ==============================================================================
-const views = { 'home'    : homePage,
-                'list'    : listPage,
-                'about'   : aboutPage };
-// ==============================================================================
-// root html
-// ==============================================================================
-const root      = document.querySelector('#appContent');
-
 const components =  [ 
   headerComponent(),
   menuComponent(),
@@ -30,11 +22,24 @@ const components =  [
   footerComponent()
 ];
 // ==============================================================================
+// Views
+// ==============================================================================
+const views = { 
+  'home'    : homePage,
+  'list'    : listPage,
+  'about'   : aboutPage 
+};
+
+// ==============================================================================
 // Init App
 // ==============================================================================
-(function(element){
+(function(){
 
-  components.forEach( c => element.appendChild(c.render()) );
+  const root = document.querySelector('#appContent');
+  components.forEach( c => {
+    root.appendChild(c.render());
+    if(c.mounted) c.mounted(root); 
+  });
 
   pol.toArray(document.querySelectorAll('[route-link]'))
      .forEach(element => {
@@ -42,12 +47,16 @@ const components =  [
           let pathName = e.target.pathname;
           window.history
                 .pushState({}, pathName, location.origin + pathName);
-          showContent();
+          try {
+            showContent();
+          } catch (error) {
+            console.log(error);
+          }
           return false;
         }  
      });
 
-})(root);
+})();
 // ==============================================================================
 // Sync content
 // ==============================================================================
@@ -72,7 +81,6 @@ function showContent(){
 showContent();
 
 window.onpopstate = showContent;
-
 // ==============================================================================
 // ServiceWorker
 // ==============================================================================

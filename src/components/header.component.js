@@ -14,6 +14,9 @@ export default function(){
         className : 'w3-container w3-teal'
       }
       return pol.build('header', options);
+    },
+    mounted: function(parent){
+      
     }
   };
 }

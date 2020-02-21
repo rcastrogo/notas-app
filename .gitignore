@@ -3,5 +3,6 @@
 
 # misc
 .vscode
+.vs/
 
 *.js.map

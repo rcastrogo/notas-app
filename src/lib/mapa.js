@@ -1,7 +1,7 @@
 
 
 let __module = {};
-;(function(module, name){
+(function(module, name){
 
   var _module =  module[name] = { apply : function apply(o, c, d){
                                             if (d) apply(o, d);

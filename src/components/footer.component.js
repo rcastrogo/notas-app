@@ -1,12 +1,12 @@
 import pol from "../lib/mapa.js";
 
 const __template = `  
-    <p>{title}</p>
+  <p>{text}</p>
 `;
 
 export default function(){
   return {
-    title  : '© Rafael Castro Gómez, 2020',
+    text  : '© Rafael Castro Gómez, 2020',
     render : function() {
       let options = { 
         id        : "appFooter",
@@ -14,6 +14,9 @@ export default function(){
         className : 'w3-container w3-teal w3-center'
       }
       return pol.build('footer', options);
+    },
+    mounted: function(parent){
+      
     }
   };
 }
