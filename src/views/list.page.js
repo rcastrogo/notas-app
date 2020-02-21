@@ -1,6 +1,7 @@
 ﻿import pol from "../lib/mapa";
 import DbWrapperService from "../lib/dbWrapper.service";
 
+const NOTAS_DATABASE   = 'notas-app.db';
 const NOTAS_TABLE_NAME = 'notas';
 
 const __template = `
@@ -80,7 +81,7 @@ export default function(){
          })
       }
 
-      this.db = new DbWrapperService('app.db');
+      this.db = new DbWrapperService(NOTAS_DATABASE);
       this.db
           .openDb()
           .then( db => {
