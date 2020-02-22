@@ -5,7 +5,7 @@ const NOTAS_DATABASE   = 'notas-app.db';
 const NOTAS_TABLE_NAME = 'notas';
 
 const __template = `
-<div notas-container class="" style="padding:0; margin-bottom:70px;">
+<div notas-container class="" style="padding:0; margin-bottom:43px;">
 </div>
 <button btn-add-note class="w3-button w3-black w3-circle">＋</button>
 `;
@@ -62,11 +62,17 @@ export default function(){
       };
 
       var __delete = (target) => {
-        console.log(target.id);
+
         let __id = target.id.split('-')[1];
         let __element = document.getElementById('note-{0}'.format(__id));
-        this.rows.remove( this.rows.where( { key : __id })[0]);
-        __element.parentNode.removeChild(__element);       
+
+        let __payload = this.rows.where( { key : parseInt(__id, 10) })[0];
+        deleteNote.apply(this, [__id])
+                  .then( () => {
+          console.log('Delete ok');
+          this.rows.remove(__payload);
+          __element.parentNode.removeChild(__element);
+        });               
       }
 
       var __render = () => {
@@ -108,22 +114,10 @@ export default function(){
   };
 }
 
-function deleteNote(target) {
-  this.db
-      .delete(NOTAS_TABLE_NAME, __target.key)
-      .then( () => {
-        this.rows.remove(__target);
-        
-      });
+function deleteNote(key) {
+  return this.db.delete(NOTAS_TABLE_NAME, key);
 }
 
 function saveNote(payload) {
-  return this.db
-             .save(NOTAS_TABLE_NAME, payload);
-
-            //.then( data => {
-            //  this.rows.push(data);                                    
-            //}).catch( error => {
-            //  console.log(error);
-            //});
+  return this.db.save(NOTAS_TABLE_NAME, payload);
 }

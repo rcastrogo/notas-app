@@ -90,9 +90,45 @@ window.addEventListener('load', ()=>{
     try {
       navigator.serviceWorker.register('serviceWorker.js');
       console.log("Service Worker Registered");
+      window.initMapaScroll();
     } catch (error) {
       console.log("Service Worker Registration Failed");
     }
   }
 
 });
+
+// ==============================================================================
+// Scroll
+// ==============================================================================
+(function(module){
+    
+  function debounce(func, wait, immediate) {
+	  var timeout;
+	  return function() {
+		  var context = this, args = arguments;
+		  var later = function() {
+			  timeout = null;
+			  if (!immediate) func.apply(context, args);
+		  };
+		  var callNow = immediate && !timeout;
+		  clearTimeout(timeout);
+		  timeout = setTimeout(later, wait);
+		  if (callNow) func.apply(context, args);
+	  };
+  };                     
+      
+  module.initMapaScroll = function(){        
+    var navbar = document.getElementById("appMenu");
+    if(navbar.className.includes('sticky')) return;
+    var sticky = navbar.offsetTop;          
+    window.onscroll = function myFunction() {
+      if (window.pageYOffset >= sticky) {
+        navbar.classList.add("sticky");
+      } else {
+        navbar.classList.remove("sticky");
+      }
+    };  
+  }
+  window.addEventListener("resize", debounce(module.initMapaScroll, 150), false);
+}(window));

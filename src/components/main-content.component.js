@@ -12,7 +12,7 @@ export default function(){
         className : 'w3-container',
         style     : { 
           minHeight : '440px',
-          padding   : '0'
+          padding   : '0 0 60px 0'
         }
       }
       return pol.build('section', options);

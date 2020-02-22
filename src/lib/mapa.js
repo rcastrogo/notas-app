@@ -51,7 +51,12 @@ let __module = {};
       },
       build : function(tagName, o){
         return _module.apply(document.createElement(tagName), o);
-      }
+      },
+      $ : function(e, control){ 
+        return (typeof e === 'string') ? document.getElementById(e) || 
+                                         module.toArray((control || document).querySelectorAll(e) || [])
+                                       : e;
+      } 
     });
   }(_module));
   // ========================================================================================
@@ -210,9 +215,6 @@ let __module = {};
     }
    
     function merge(template, o, key) {
-      if(self.BS.reportDefinition.context.mergeMode){
-        return mergeOptimized(template, o, key);
-      }
       var __result = template.replace(/{([^{]+)?}/g, function (m, key) {
                       if(key.indexOf(':') > 0){
                         var __fn = key.split(':');                       
@@ -232,51 +234,46 @@ let __module = {};
       return __result;
     }
 
-    function mergeOptimized(template, o, key) {
-      
-      if(o[key] && o[key] === 'template') return template; 
-      if(o[key]) return o[key](o);      
-      var __values = [];
-      var __result = template.replace(/{([^{]+)?}/g, function (m, key) {
-                      if(key.indexOf(':') > 0){
-                        var __fn = key.split(':');
-                        var __k = (__fn[1].contains('.') ? '' : 'o.') + __fn[1];
-                        __values.push('{0}({1}) '.format(__fn[0], __k));
-                        __fn[0]  = getValue(__fn[0], o);
-                        __fn[1]  = getValue(__fn[1], o);                        
-                        return __fn[0](__fn[1], o);            
-                      }
-                      var r   = getValue(key, o);
-                      var __k = (key.contains('.') ? '' : 'o.') + key;
-                      if (typeof (r) == 'function'){
-                        __values.push('{0}(o)'.format(__k));
-                        return r(o);
-                      }else{
-                        __values.push('{0}'.format(__k));
-                        return r;
-                      }                    
-                      return typeof (r) == 'function' ? r(o) : r;
-                    });
-      if(key && __values.length === 0){
-        o[key] = 'template';
-        return template;
-      }
-      if(key && __values.length){
-        __values.reverse()
-        var __b = template.split(/{([^{]+)?}/g)
-                          .map(function(t, i){ 
-                            return  i % 2 ? __values.pop() : '\'' + t + '\'' ; 
-                          })                          
-                          .reduce( function(a, token, i, arr){                            
-                            if(token === "''") return a;
-                            return a + token + ((i < arr.length-1) ? ' + ' : '');                               
-                          }, 'return ');
+    //function fillTemplate(e, scope) {
+    //  var _root = $(e);
+    //  var _elements = $('[xbind]', _root); 
+    //  if (_root.attributes.xbind) _elements.push(_root);
+    //  _elements.forEach(function (child) {
+    //    String.trimValues(child.attributes.xbind.value.split(';')).forEach(function (token) {
+    //      if (token === '') return;
+    //      var _tokens = String.trimValues(token.split(':'));            
+    //      var _params = String.trimValues(_tokens[1].split(/\s|\,/));
+    //      var _value = getValue(_params[0], scope);
+    //      if (typeof (_value) == 'function') {
+    //        var _args = _params.slice(1)
+    //                           .reduce(function (a, p) {
+    //                             // xbind="textContent:Data.fnTest @Other,A,5"
+    //                             a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope) : p);
+    //                             return a;
+    //                           }, [scope, child]);
+    //        _value = _value.apply(scope, _args);
+    //      } else if (_params[1]) {
+    //        var _func = getValue(_params[1], scope);
+    //        _value = _func(_value, _params[2], scope, child);
+    //      }
+    //      child[_tokens[0]] = _value;
+    //    });
+    //  });
+    //  return e;
+    //}
 
-        o[key] = new Function('o', __b.replace(/(?:\r\n|\r|\n)/g, ''));
-        return o[key](o);
-      }      
-      return __result;
-    }
+    //function executeTemplate(e, values, dom) {
+    //  var _template = $(e);
+    //  var _result   = values.reduce( function(a, v, i){
+    //    var _node = { index : i,
+    //                  data  : v,
+    //                  node  : fillTemplate(_template.cloneNode(true), v) };
+    //    a.nodes.push(_node);
+    //    if (!dom) a.html.push(_node.node.outerHTML.replace(/xbind="[^"]*"/g, ''));
+    //    return a; 
+    //  }, { nodes : [], html : [] });
+    //  return dom ? _result.nodes : _result.html.join('');
+    //}
     
     module.templates = { getValue  : getValue,
                          merge     : merge };
