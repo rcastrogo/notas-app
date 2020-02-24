@@ -50,7 +50,8 @@ let __module = {};
                    appendLine : function(s){ this.value = this.value + (s || '') + '\n'; return this;}}
       },
       build : function(tagName, o){
-        return _module.apply(document.createElement(tagName), o);
+        let options = module.isString(o) ? { innerHTML : o } : o;
+        return _module.apply(document.createElement(tagName), options);
       },
       $ : function(e, control){ 
         return (typeof e === 'string') ? document.getElementById(e) || 
@@ -234,49 +235,51 @@ let __module = {};
       return __result;
     }
 
-    //function fillTemplate(e, scope) {
-    //  var _root = $(e);
-    //  var _elements = $('[xbind]', _root); 
-    //  if (_root.attributes.xbind) _elements.push(_root);
-    //  _elements.forEach(function (child) {
-    //    String.trimValues(child.attributes.xbind.value.split(';')).forEach(function (token) {
-    //      if (token === '') return;
-    //      var _tokens = String.trimValues(token.split(':'));            
-    //      var _params = String.trimValues(_tokens[1].split(/\s|\,/));
-    //      var _value = getValue(_params[0], scope);
-    //      if (typeof (_value) == 'function') {
-    //        var _args = _params.slice(1)
-    //                           .reduce(function (a, p) {
-    //                             // xbind="textContent:Data.fnTest @Other,A,5"
-    //                             a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope) : p);
-    //                             return a;
-    //                           }, [scope, child]);
-    //        _value = _value.apply(scope, _args);
-    //      } else if (_params[1]) {
-    //        var _func = getValue(_params[1], scope);
-    //        _value = _func(_value, _params[2], scope, child);
-    //      }
-    //      child[_tokens[0]] = _value;
-    //    });
-    //  });
-    //  return e;
-    //}
+    function fillTemplate(e, scope) {
+      var _root = module.$(e);
+      var _elements = module.$('[xbind]', _root); 
+      if (_root.attributes.xbind) _elements.push(_root);
+      _elements.forEach(function (child) {
+        String.trimValues(child.attributes.xbind.value.split(';')).forEach(function (token) {
+          if (token === '') return;
+          var _tokens = String.trimValues(token.split(':'));            
+          var _params = String.trimValues(_tokens[1].split(/\s|\,/));
+          var _value = getValue(_params[0], scope);
+          if (typeof (_value) == 'function') {
+            var _args = _params.slice(1)
+                               .reduce(function (a, p) {
+                                 // xbind="textContent:Data.fnTest @Other,A,5"
+                                 a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope) : p);
+                                 return a;
+                               }, [scope, child]);
+            _value = _value.apply(scope, _args);
+          } else if (_params[1]) {
+            var _func = getValue(_params[1], scope);
+            _value = _func(_value, _params[2], scope, child);
+          }
+          child[_tokens[0]] = _value;
+        });
+      });
+      return e;
+    }
 
-    //function executeTemplate(e, values, dom) {
-    //  var _template = $(e);
-    //  var _result   = values.reduce( function(a, v, i){
-    //    var _node = { index : i,
-    //                  data  : v,
-    //                  node  : fillTemplate(_template.cloneNode(true), v) };
-    //    a.nodes.push(_node);
-    //    if (!dom) a.html.push(_node.node.outerHTML.replace(/xbind="[^"]*"/g, ''));
-    //    return a; 
-    //  }, { nodes : [], html : [] });
-    //  return dom ? _result.nodes : _result.html.join('');
-    //}
+    function executeTemplate(e, values, dom) {
+      var _template = module.$(e);
+      var _result   = values.reduce( function(a, v, i){
+        var _node = { index : i,
+                      data  : v,
+                      node  : fillTemplate(_template.cloneNode(true), v) };
+        a.nodes.push(_node);
+        if (!dom) a.html.push(_node.node.outerHTML.replace(/xbind="[^"]*"/g, ''));
+        return a; 
+      }, { nodes : [], html : [] });
+      return dom ? _result.nodes : _result.html.join('');
+    }
     
     module.templates = { getValue  : getValue,
-                         merge     : merge };
+                         merge     : merge,
+                         execute   : executeTemplate,
+                         fill      : fillTemplate };
 
   }(_module));
 

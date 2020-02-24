@@ -12,6 +12,7 @@ import menuComponent from "./components/menu.component";
 import homePage from "./views/home.page";
 import listPage from "./views/list.page";
 import aboutPage from "./views/about.page";
+import newItemPage from "./views/new-item.page";
 // ==============================================================================
 // Routes
 // ==============================================================================
@@ -27,7 +28,8 @@ const components =  [
 const views = { 
   'home'    : homePage,
   'list'    : listPage,
-  'about'   : aboutPage 
+  'about'   : aboutPage,
+  'add'     : newItemPage 
 };
 
 // ==============================================================================
@@ -35,23 +37,28 @@ const views = {
 // ==============================================================================
 (function(){
 
-  const root = document.querySelector('#appContent');
+  const root = pol.$('appContent');
   components.forEach( c => {
-    root.appendChild(c.render());
+    if(c.init) c.init(root);
+    root.appendChild(c.render(root));
     if(c.mounted) c.mounted(root); 
   });
 
-  pol.toArray(document.querySelectorAll('[route-link]'))
+  pol.$('[route-link]')
      .forEach(element => {
         element.onclick = function(e){
           let pathName = e.target.pathname;
-          window.history
-                .pushState({}, pathName, location.origin + pathName);
-          try {
-            showContent();
-          } catch (error) {
-            console.log(error);
+          if (currentPath != pathName) {
+            currentPath = pathName;
+            window.history
+                  .pushState({}, pathName, location.origin + pathName);
+            try {
+              showContent();
+            } catch (error) {
+              console.log(error);
+            }
           }
+
           return false;
         }  
      });
@@ -60,8 +67,9 @@ const views = {
 // ==============================================================================
 // Sync content
 // ==============================================================================
-const container = document.querySelector('#app-content-container');
+const container = pol.$('app-content-container');
 let currentView;
+let currentPath;
 function showContent(){
   let route = window.location
                     .href
@@ -70,7 +78,7 @@ function showContent(){
   if(!currentView || currentView != view_ref) {
     container.innerHTML = '';    
     currentView = view_ref;
-    let view_instance = currentView();
+    let view_instance = currentView({ currentView : currentView });
     if(view_instance.init) view_instance.init();
     container.appendChild(view_instance.render());
     if(view_instance.mounted) view_instance.mounted(container);
@@ -80,55 +88,23 @@ function showContent(){
 
 showContent();
 
-window.onpopstate = showContent;
+window.onpopstate = function(){ 
+  currentPath = window.location.pathname;
+  showContent();
+}
+
 // ==============================================================================
 // ServiceWorker
 // ==============================================================================
-window.addEventListener('load', ()=>{
+window.addEventListener('load', () => {
 
   if('serviceWorker' in navigator){
     try {
       navigator.serviceWorker.register('serviceWorker.js');
       console.log("Service Worker Registered");
-      window.initMapaScroll();
     } catch (error) {
       console.log("Service Worker Registration Failed");
     }
   }
 
 });
-
-// ==============================================================================
-// Scroll
-// ==============================================================================
-(function(module){
-    
-  function debounce(func, wait, immediate) {
-	  var timeout;
-	  return function() {
-		  var context = this, args = arguments;
-		  var later = function() {
-			  timeout = null;
-			  if (!immediate) func.apply(context, args);
-		  };
-		  var callNow = immediate && !timeout;
-		  clearTimeout(timeout);
-		  timeout = setTimeout(later, wait);
-		  if (callNow) func.apply(context, args);
-	  };
-  };                     
-      
-  module.initMapaScroll = function(){        
-    var navbar = document.getElementById("appMenu");
-    if(navbar.className.includes('sticky')) return;
-    var sticky = navbar.offsetTop;          
-    window.onscroll = function myFunction() {
-      if (window.pageYOffset >= sticky) {
-        navbar.classList.add("sticky");
-      } else {
-        navbar.classList.remove("sticky");
-      }
-    };  
-  }
-  window.addEventListener("resize", debounce(module.initMapaScroll, 150), false);
-}(window));

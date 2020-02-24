@@ -7,7 +7,8 @@ const __template = `
 export default function(){
   return {
     title  : 'Notas App',
-    render : function() {
+    init   : function(container){},
+    render : function(container){
       let options = { 
         id        : 'appHeader',
         innerHTML : __template.format(this),
@@ -15,7 +16,7 @@ export default function(){
       }
       return pol.build('header', options);
     },
-    mounted: function(parent){
+    mounted: function(container){
       
     }
   };

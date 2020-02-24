@@ -57,37 +57,37 @@ export default class DbWrapperService{
 
   save(store, value) {
     return new Promise( (resolve) => {
-      this.db
-          .transaction(store, "readwrite")
-          .objectStore(store)
-          .put(value)
-          .onsuccess = () => {
-            resolve(value);
-          };
+      (function(result){
+        result.onsuccess = event => { resolve(value); };
+        result.onerror   = error => { console.log(error); };
+      })(this.db
+             .transaction(store, "readwrite")
+             .objectStore(store)
+             .put(value));
     });
   }
 
   delete(store, key) {
     return new Promise( (resolve) => {
-      this.db
-          .transaction(store, "readwrite")
-          .objectStore(store)
-          .delete(key)
-          .onsuccess = () => {
-            resolve();
-          };
+      (function(result){
+        result.onsuccess = event => { resolve(); };
+        result.onerror   = error => { console.log(error); };
+      })(this.db
+             .transaction(store, "readwrite")
+             .objectStore(store)
+             .delete(key));
     });
   }
 
   readOne(store, key) {
     return new Promise( (resolve) => {
-      this.db
-          .transaction(store, "readwrite")
-          .objectStore(store)
-          .get(key)
-          .onsuccess = event => {
-            resolve(event.target.result);
-          }         
+      (function(result){
+        result.onsuccess = event => { resolve(event.target.result); };
+        result.onerror   = error => { console.log(error);};
+      })(this.db
+             .transaction(store, "readwrite")
+             .objectStore(store)
+             .get(key));
     });
   }
 

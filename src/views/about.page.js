@@ -25,18 +25,21 @@ const __template = `
 `;
 
 export default function(){
-  return {
-    render : function() {
-      let options = { 
-        innerHTML : __template.format(this), 
-      }
-      return pol.build('div', options);
+
+  let component = {
+    root   : {},
+    init   : function(container){ },
+    render : function(container){
+      this.root = pol.build('div', __template);
+      return this.root;
     },
-    mounted : container => {
+    mounted : function(container){
       container.querySelector('[about-btn-back]')
                .onclick = () => {
                  history.back();
                }
     }
   };
+
+  return component;
 }
