@@ -1,7 +1,7 @@
 import pol from "../lib/mapa.js";
 
 const __TEMPLATE = `  
-  <a href="" route-link class="w3-bar-item w3-button">Inicio</a>
+  <a href="" route-link class="w3-bar-item w3-button selected">Inicio</a>
   <a href="list" route-link class="w3-bar-item w3-button">Notas</a>
   <a href="add" route-link class="w3-bar-item w3-button">+</a>
   <a href="about" route-link class="w3-bar-item w3-button w3-right">?</a>

@@ -34,3 +34,12 @@ footer#appFooter {
 
 #appMenu.sticky  { position: fixed; top: 0; left:0; box-shadow: 0px 1px 10px gray; z-index:200; }
 #appMenu.sticky + #app-content-container { padding-top: 40px !important; }
+
+textarea{ resize: none }
+
+#appMenu.w3-bar .w3-button {
+  border-bottom: solid 3px transparent;
+}
+#appMenu.w3-bar .w3-button.selected {
+  border-bottom: solid 3px #ccc;
+}

@@ -29,7 +29,25 @@ const views = {
   'home'    : homePage,
   'list'    : listPage,
   'about'   : aboutPage,
-  'add'     : newItemPage 
+  'add'     : newItemPage,
+  navigateTo: function (route) {
+    this.current = route;
+    let url = '{origin}{0}{1}'.format('/notas-app/', route, location);
+    window.history.pushState({}, route, url);
+    // window.history.replaceState({}, '', '/notas-app' + path);
+    showContent();
+  },
+  getView : function () {
+    return this[this.current] || this.home;
+  },
+  normalizePath: function (url) {
+    return url.replace(document.baseURI, '');
+  },
+  sync: function(){
+    this.current = this.normalizePath(window.location.href);
+    showContent();
+  },
+  current : ''
 };
 
 // ==============================================================================
@@ -47,18 +65,14 @@ const views = {
   pol.$('[route-link]')
      .forEach(element => {
         element.onclick = function(e){
-          let pathName = e.target.pathname;
-          if (currentPath != pathName) {
-            currentPath = pathName;
-            window.history
-                  .pushState({}, pathName, location.origin + pathName);
+          let route = views.normalizePath(e.target.href);
+          if (views.current != route) {
             try {
-              showContent();
+              views.navigateTo(route);
             } catch (error) {
               console.log(error);
             }
           }
-
           return false;
         }  
      });
@@ -69,16 +83,12 @@ const views = {
 // ==============================================================================
 const container = pol.$('app-content-container');
 let currentView;
-let currentPath;
 function showContent(){
-  let route = window.location
-                    .href
-                    .replace(document.baseURI, '');
-  let view_ref = views[route] || views.home;
+  let view_ref = views.getView();
   if(!currentView || currentView != view_ref) {
     container.innerHTML = '';    
     currentView = view_ref;
-    let view_instance = currentView({ currentView : currentView });
+    let view_instance = currentView({router : views});
     if(view_instance.init) view_instance.init();
     container.appendChild(view_instance.render());
     if(view_instance.mounted) view_instance.mounted(container);
@@ -86,13 +96,11 @@ function showContent(){
 
 }
 
-showContent();
+views.sync();
 
-window.onpopstate = function(){ 
-  currentPath = window.location.pathname;
-  showContent();
+window.onpopstate = function(){
+  views.sync();
 }
-
 // ==============================================================================
 // ServiceWorker
 // ==============================================================================

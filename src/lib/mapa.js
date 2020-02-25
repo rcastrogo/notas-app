@@ -91,12 +91,12 @@ let __module = {};
         return this.replace(/\{(\d+|[^{]+)\}/g, function(m, key){
           if(key.indexOf(':') > 0){
             var __fn = key.split(':');
-            __fn[0]  = getValue(__fn[0], __context);
-            __fn[1]  = getValue(__fn[1], __context);
+            __fn[0]  = module.templates.getValue(__fn[0], __context);
+            __fn[1]  = module.templates.getValue(__fn[1], __context);
             return __fn[0](__fn[1], __context);            
           }
           return /^\d+$/.test(key) ? __arg[key]
-                                   : (typeof __context[key] === "undefined") ? getValue(key, __context)
+                                   : (typeof __context[key] === "undefined") ? module.templates.getValue(key, __context)
                                                                              : __context[key]; 
         });
       }
