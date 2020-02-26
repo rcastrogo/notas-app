@@ -1,4 +1,5 @@
 import pol from "./lib/mapa.js";
+import pubsub from "./lib/pubSub.Service";
 // ==============================================================================
 // Components
 // ==============================================================================
@@ -12,7 +13,8 @@ import menuComponent from "./components/menu.component";
 import homePage from "./views/home.page";
 import listPage from "./views/list.page";
 import aboutPage from "./views/about.page";
-import newItemPage from "./views/new-item.page";
+import notePage from "./views/new-item.page";
+import elTiempoPage from "./views/el-tiempo.page";
 // ==============================================================================
 // Routes
 // ==============================================================================
@@ -23,32 +25,44 @@ const components =  [
   footerComponent()
 ];
 // ==============================================================================
-// Views
+// Router
 // ==============================================================================
-const views = { 
-  'home'    : homePage,
-  'list'    : listPage,
-  'about'   : aboutPage,
-  'add'     : newItemPage,
-  navigateTo: function (route) {
-    this.current = route;
+const router = {
+  routes  : [],
+  addRoute: function (name, pattern, controller) {
+    this.routes.push({ name : name, path : pattern, controler : controller });
+    return this;
+  },
+  getRoute: function (route) {
+    return this.routes.where(function(r){
+      let match = r.path.exec(route);
+      if (match) {
+        r.params = match.map( e => e );
+      }
+      return match;
+    })[0];
+  },
+  navigateTo : function (route) {
+    this.current = this.getRoute(route);
     let url = '{origin}{0}{1}'.format('/notas-app/', route, location);
     window.history.pushState({}, route, url);
-    // window.history.replaceState({}, '', '/notas-app' + path);
     showContent();
   },
-  getView : function () {
-    return this[this.current] || this.home;
-  },
-  normalizePath: function (url) {
+  normalizePath : function (url) {
     return url.replace(document.baseURI, '');
   },
-  sync: function(){
-    this.current = this.normalizePath(window.location.href);
+  sync : function(){
+    this.current = this.getRoute(this.normalizePath(window.location.href));
     showContent();
   },
-  current : ''
+  current : {}
 };
+router.addRoute('list',  /list$/,            listPage)
+      .addRoute('about', /about$/,           aboutPage)
+      .addRoute('note',  /note$/,            notePage)
+      .addRoute('note',  /note\/(\d{13})$/,  notePage)
+      .addRoute('el-tiempo',  /el-tiempo$/,  elTiempoPage)
+      .addRoute('',      /$/,                homePage);
 
 // ==============================================================================
 // Init App
@@ -65,10 +79,10 @@ const views = {
   pol.$('[route-link]')
      .forEach(element => {
         element.onclick = function(e){
-          let route = views.normalizePath(e.target.href);
-          if (views.current != route) {
+          let route = router.normalizePath(e.target.href);
+          if (router.current != route) {
             try {
-              views.navigateTo(route);
+              router.navigateTo(route);
             } catch (error) {
               console.log(error);
             }
@@ -84,22 +98,23 @@ const views = {
 const container = pol.$('app-content-container');
 let currentView;
 function showContent(){
-  let view_ref = views.getView();
+  let view_ref = router.current.controler;
   if(!currentView || currentView != view_ref) {
     container.innerHTML = '';    
     currentView = view_ref;
-    let view_instance = currentView({router : views});
+    let view_instance = currentView({router});
     if(view_instance.init) view_instance.init();
     container.appendChild(view_instance.render());
     if(view_instance.mounted) view_instance.mounted(container);
+    pubsub.publish('view.change', router.current);
   }
 
 }
 
-views.sync();
+router.sync();
 
 window.onpopstate = function(){
-  views.sync();
+  router.sync();
 }
 // ==============================================================================
 // ServiceWorker

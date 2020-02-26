@@ -14,9 +14,11 @@ const __template = `
     <li><h2>Referencias</h2></li>
     <li><a href="https://es.wikipedia.org/wiki/Single-page_application" target="_blank">SPA (Single-page application)</a></li>
     <li><a href="https://es.wikipedia.org/wiki/Progressive_Web_Apps" target="_blank">PWA (Progressive Web Apps)</a></li>
+    <li><h2>Repositorio</h2></li>
+    <li><a href="https://github.com/rcastrogo/notas-app" target="_blank">https://github.com/rcastrogo/notas-app</a></li>
   </ul>
   <p style="text-indent:1em;">
-    Para el desarrollo de esta aplicación no se han utilizado ninguno de los <span class="w3-bold w3-italic">frameworks</span> existentes como pueden ser Angular, React o Vue.js.
+    Para su desarrollo no se han utilizado ninguno de los <span class="w3-bold w3-italic">frameworks</span> existentes como pueden ser Angular, React o Vue.js.
   </p>
 </div>
 <div class="w3-container w3-margin-bottom w3-center">
@@ -37,9 +39,10 @@ export default function(){
       container.querySelector('[about-btn-back]')
                .onclick = () => {
                  history.back();
-               }
+               };
     }
   };
 
   return component;
+
 }

@@ -14,11 +14,11 @@ const __ITEM_TEMPLATE =`
     <div on-click="expandCollapse"><b>{note.title}</b><i class="w3-right w3-large fa fa-caret-down"></i></div>
   </div>
   <div class="w3-container" style="display:none;padding:0 4px">
-    <p class="" style="padding:2px;min-height:4em;margin:2px 0;white-space: pre-wrap">{formatText:note.text}</p>
+    <p id="editp-{note.key}" on-click="editNote" style="padding:2px;min-height:4em;margin:2px 0;white-space: pre-wrap">{formatText:note.text}</p>
     <div class="w3-bar w3-center" style="padding:4px 0;">
       <button type="button" id="delete-{note.key}" on-click="deleteNote" class="w3-button w3-border"><i class="fa fa-trash" aria-hidden="true"></i></button>
-      <button type="button" id="info-{note.key}"  on-click="showInfo" class="w3-button w3-border"><i class="fa fa-info" aria-hidden="true"></i></button>
-      <button type="button" id="edit-{note.key}"  on-click="editNote" class="w3-button w3-border"><i class="fa fa-edit" aria-hidden="true"></i></button>
+      <button type="button" id="fav-{note.key}" on-click="saveFavorites" class="w3-button w3-border"><i class="fa {css:note.key}" aria-hidden="true"></i></button>
+      <button type="button" id="edit-{note.key}" on-click="editNote" class="w3-button w3-border"><i class="fa fa-edit" aria-hidden="true"></i></button>
     </div>
   </div>
 </div>`;
@@ -27,6 +27,7 @@ export default function(ctx){
     
   let db;
   let rows = [];
+  let favorites = [];
   let itemsContainer;
   let component = {
     root   : {},
@@ -43,7 +44,7 @@ export default function(ctx){
       addNote        : addNote,
       deleteNote     : deleteNote,
       expandCollapse : expandCollapse,
-      showInfo       : showNoteInfo,
+      saveFavorites  : saveFavorites,
       editNote       : editNote
     } 
   };
@@ -79,6 +80,7 @@ export default function(ctx){
     db.readAll(NOTAS_TABLE_NAME)
       .then( values => {
         rows = values.reverse();
+        favorites = (window.localStorage.getItem('favorites') || '').split('-');
         render();
       });
   }
@@ -90,6 +92,9 @@ export default function(ctx){
             note,
             formatText: function (text) {
               return text;
+            },
+            css: function (key) {
+              return favorites.includes(key.toString()) ? 'fa-star' : 'fa-star-o';
             }
           };
           return pol.build('div', __ITEM_TEMPLATE.format(__bag))
@@ -113,9 +118,6 @@ export default function(ctx){
       .then( () => {
         rows.remove(__payload);
         __element.parentNode.removeChild(__element);
-      })
-      .catch( e => {
-        console.log(e);
       });               
   }
 
@@ -133,15 +135,26 @@ export default function(ctx){
   }
 
   function addNote(target, mouseEvent) {
-    ctx.router.navigateTo('add');
+    ctx.router.navigateTo('note');
   }  
 
-  function showNoteInfo(target, mouseEvent) {
-    alert(target.id);
+  function saveFavorites(target, mouseEvent) {
+    let star = target.firstElementChild;
+    let key = target.id.split('-')[1];
+    if (favorites.includes(key)){
+      favorites.remove(key);
+      star.classList.add('fa-star-o');
+      star.classList.remove('fa-star');
+    } else {
+      favorites.push(key);
+      star.classList.remove('fa-star-o');
+      star.classList.add('fa-star');
+    }
+    window.localStorage.setItem('favorites', favorites.join('-'));
   }
 
   function editNote(target, mouseEvent) {
-    ctx.router.navigateTo('add:' + target.id.split('-')[1]);
+    ctx.router.navigateTo('note/' + target.id.split('-')[1]);
   }
 
   return component;

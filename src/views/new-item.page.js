@@ -21,6 +21,7 @@ const __template = `
 
 export default function(ctx){
   
+  let current;
   let db;
   let component = {
     root   : {},
@@ -35,6 +36,7 @@ export default function(ctx){
   };
 
   function initAll() {
+
     let __container = component.root.firstElementChild;
     __container.style.display = 'none';
     // =====================================================
@@ -43,8 +45,23 @@ export default function(ctx){
     db = new DbWrapperService(NOTAS_DATABASE);
     db.openDb()
       .then( () => {
-        __container.style.display = '';
-        pol.$('btn-grabar').onclick = addNote;
+        let __enableUI = function(){
+          __container.style.display = '';
+          pol.$('btn-grabar').onclick = addNote;
+        }
+        let __id = ctx.router.current.params[1] || '';
+        if (__id) {
+          db.readOne(NOTAS_TABLE_NAME, parseInt(__id))
+            .then( note => {
+              current = note;
+              pol.$('txt-title').value = current.title;
+              pol.$('txt-text').value  = current.text;
+              pol.$('h2', component.root)[0].innerHTML = 'Edición de nota';
+              __enableUI();
+            });
+          return;
+        }
+        __enableUI();
       });
   }
 
@@ -64,18 +81,16 @@ export default function(ctx){
     let date = new Date();
     db.save(NOTAS_TABLE_NAME,
             { 
-              key   : date.valueOf(), 
-              date  : '{0}/{1}/{2}'.format(date.getDate(), 
-                                           date.getMonth, 
-                                           date.getFullYear()), 
+              key   : current ? current.key  : date.valueOf(), 
+              date  : current ? current.date :
+                                '{0}/{1}/{2}'.format(date.getDate(), 
+                                                     date.getMonth, 
+                                                     date.getFullYear()), 
               title : __title, 
               text  : __text 
             })
             .then( nota => {
               ctx.router.navigateTo('list'); 
-            })
-            .catch( e => {
-              console.log(e);
             });
   }
 
