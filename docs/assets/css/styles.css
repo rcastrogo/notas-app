@@ -1,11 +1,6 @@
 
-.w3-italic {
-  font-style: italic;
-}
-
-.w3-bold{
-  font-weight: bold;
-}
+.w3-italic { font-style: italic; }
+.w3-bold { font-weight: bold;}
 
 footer#appFooter {
   position: fixed;
@@ -43,3 +38,14 @@ textarea{ resize: none }
 #appMenu.w3-bar .w3-button.selected {
   border-bottom: solid 3px #ccc;
 }
+
+tr.w3-center td, tr.w3-center th{ text-align:center; vertical-align: middle; padding:8px;}
+i.pol-C { display:none}
+i.pol-N { transform: rotate(90deg);vertical-align: middle;}
+i.pol-NE { transform: rotate(135deg);vertical-align: middle;}
+i.pol-NO { transform: rotate(45deg);vertical-align: middle;}
+i.pol-S { transform: rotate(-90deg);vertical-align: middle;}
+i.pol-SE { transform: rotate(-135deg);vertical-align: middle;}
+i.pol-SO { transform: rotate(-45deg);vertical-align: middle;}
+i.pol-E { transform: rotate(-180deg);vertical-align: middle;}
+i.pol-O { vertical-align: middle; }

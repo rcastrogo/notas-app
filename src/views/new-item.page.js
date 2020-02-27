@@ -5,7 +5,7 @@ const NOTAS_DATABASE   = 'notas-app.db';
 const NOTAS_TABLE_NAME = 'notas';
 
 const __template = `  
-<div class="w3-container w3-margin-bottom">
+<div class="w3-container w3-margin-bottom w3-animate-left">
   <h2>Nueva nota</h2>
   <form class="w3-margin-bottom">
     <label for="txt-title">Título</label>
@@ -13,9 +13,9 @@ const __template = `
     <label for="txt-text">Texto</label>
     <textarea class="w3-input w3-border" id="txt-text" rows="4" placeholder="Contenido de la nota"></textarea>
   </form>
-</div>
-<div class="w3-container w3-margin-bottom w3-center">
-  <button type="button" id="btn-grabar" class="w3-button w3-black">Grabar</button>
+  <div class="w3-container w3-margin-bottom w3-center w3-animate-zoom">
+    <button type="button" id="btn-grabar" class="w3-button w3-black">Grabar</button>
+  </div>
 </div>
 `;
 

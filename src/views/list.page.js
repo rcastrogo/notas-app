@@ -5,11 +5,11 @@ const NOTAS_DATABASE   = 'notas-app.db';
 const NOTAS_TABLE_NAME = 'notas';
 
 const TEMPLATE = `
-<div notas-container style="padding:0; margin-bottom:43px;"></div>
+<div notas-container style="padding:0; margin-bottom:43px;" class="w3-animate-left"></div>
 <button btn-add-note on-click="addNote" class="w3-button w3-black w3-circle">＋</button>`;
 
 const __ITEM_TEMPLATE =`
-<div class="w3-border-bottom" style="padding:0; font-size:14px;" id="note-{note.key}">
+<div class="w3-border-bottom w3-animate-left" style="padding:0; font-size:14px;" id="note-{note.key}">
   <div class="w3-container" style="padding:5px">
     <div on-click="expandCollapse"><b>{note.title}</b><i class="w3-right w3-large fa fa-caret-down"></i></div>
   </div>

@@ -93,7 +93,7 @@ let __module = {};
             var __fn = key.split(':');
             __fn[0]  = module.templates.getValue(__fn[0], __context);
             __fn[1]  = module.templates.getValue(__fn[1], __context);
-            return __fn[0](__fn[1], __context);            
+            return __fn[0](__fn[1], __context, __fn.slice(2));            
           }
           return /^\d+$/.test(key) ? __arg[key]
                                    : (typeof __context[key] === "undefined") ? module.templates.getValue(key, __context)
@@ -289,11 +289,12 @@ let __module = {};
   (function(module){  
     module.ajax = {};
     module.apply(module.ajax, {
-      get  : function (url) {
+      get  : function (url, interceptor) {
         return new Promise( (resolve, reject) => {
           //url += (url.contains('?') ? '&ms=' : '?ms=') + new Date().getTime();
           var xml = this.createXMLHttpRequest();
           xml.open('GET', url, true);
+          if(interceptor) interceptor(xml);
           xml.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
           xml.setRequestHeader('Cache-Control', 'no-cache');
           xml.onreadystatechange = function () { if (xml.readyState == 4) resolve(xml.responseText) };

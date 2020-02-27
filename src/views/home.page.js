@@ -1,7 +1,7 @@
 import pol from "../lib/mapa.js";
 
 const __template = `  
-  <div class="w3-container w3-center" style="padding-top:60px;">
+  <div class="w3-container w3-center w3-animate-left" style="padding-top:60px;">
     <img src="./assets/img/logo.png" alt="Car" style="width: 300px">
     <p>La app que te permite almacenar todas tus notas en el móvil!!!</p>
   </div>`;

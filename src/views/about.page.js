@@ -1,7 +1,7 @@
 import pol from "../lib/mapa.js";
 
 const __template = `  
-<div class="w3-container w3-margin-bottom">
+<div class="w3-container w3-margin-bottom w3-animate-left">
   <h1>Sobre Notas App</h1>
   <p style="text-indent:1em;">
     Notas App es una prueba de concepto de lo que podría ser un <span class="w3-bold w3-italic">framework</span> 
