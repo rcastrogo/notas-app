@@ -89,6 +89,12 @@ let __module = {};
         var __arg     = arguments;
         var __context = __arg[__arg.length - 1] || self;   
         return this.replace(/\{(\d+|[^{]+)\}/g, function(m, key){
+          if(key.indexOf('#') > 0){
+            let __tokens = key.split('#');
+            let value  = __arg[__tokens[0]];
+            let cmd    = __tokens[1];
+            return (value + '').paddingLeft(cmd);
+          }
           if(key.indexOf(':') > 0){
             var __fn = key.split(':');
             __fn[0]  = module.templates.getValue(__fn[0], __context);

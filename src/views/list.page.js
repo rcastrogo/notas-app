@@ -1,4 +1,5 @@
 ﻿import pol from "../lib/mapa";
+import utils from "../lib/utils";
 import DbWrapperService from "../lib/dbWrapper.service";
 
 const NOTAS_DATABASE   = 'notas-app.db'; 
@@ -50,30 +51,18 @@ export default function(ctx){
   };
 
   function initAll() {
-    // =====================================================
+    // ==============================================================
     // Open database
-    // =====================================================
+    // ==============================================================
     db = new DbWrapperService(NOTAS_DATABASE);
     db.openDb()
       .then( db => {
         loadData();
       });
-    // =====================================================
+    // ==============================================================
     // addEventListener
-    // =====================================================
-    addEventListeners(component.root);
-  }
-
-  function addEventListeners(container) {
-    ['[on-click]'].forEach(event => {
-      pol.toArray(container.querySelectorAll(event))
-          .forEach( e => {
-            e.onclick = (event) => {
-              let name = e.attributes['on-click'].value;
-              component.eventHandlers[name](e, event);
-            };        
-          }); 
-    })
+    // ==============================================================
+    utils.addEventListeners(component.root, component.eventHandlers);
   }
 
   function loadData() {

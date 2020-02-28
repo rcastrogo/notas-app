@@ -6,10 +6,10 @@ const __TEMPLATE = `
   <a href="el-tiempo" route-link class="w3-bar-item w3-button">El tiempo</a>
   <a href="list" route-link class="w3-bar-item w3-button">Notas</a>
   <a href="note" route-link class="w3-bar-item w3-button">+</a>
-  <a href="about" route-link class="w3-bar-item w3-button w3-right">?</a>
-`;
+  <a href="about" route-link class="w3-bar-item w3-button w3-right">?</a>`;
 
 export default function(){
+
   let component =  {
     root   : {},
     id     : 'menu.component.ref',

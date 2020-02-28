@@ -1,9 +1,13 @@
-import pol from "../lib/mapa.js";
+import pol from "../lib/mapa";
+import pubsub from "../lib/pubSub.Service";
+import utils from "../lib/utils";
 
 const __TEMPLATE = `  
 <div class="w3-container w3-margin-bottom w3-animate-bottom">
   <div class="w3-border w3-margin-top">
-    <button on-click="expandCollapse" class="w3-button w3-block w3-left-align"><span>Buenaventura<span><i class="w3-right w3-large fa fa-caret-down"></i></button>
+    <button on-click="expandCollapse" class="w3-button w3-block w3-left-align">
+      <span on-message="municipio.change" id="lbl-municipio">Buenaventura</span><i class="w3-right w3-large fa fa-caret-down"></i>
+    </button>
     <div class="w3-hide">
       <ul class="w3-ul">
         <li on-click="requestData" id="loc-45022">Buenaventura</li>
@@ -19,19 +23,16 @@ const __TEMPLATE = `
       </div>
     <div>
   </div>
-</div>
-`;
+</div>`;
 
 function aemetComponent() {
 
   const __TEMPLATE = `
-  <div class="w3-container w3-border w3-center w3-round w3-margin-bottom">
-    <h3>{nombre} ({provincia})</h3>
-    <div>{fn.formatFecha:elaborado}</div>
-    <br>
+  <div class="w3-container w3-teal w3-center w3-small w3-padding">
+    {fn.formatFecha:elaborado}
   </div>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[0].fecha:date}</h3>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[0].fecha:day}</h3>
     <div>{fn.showDay:rows-0}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[0].orto}</div>
@@ -40,7 +41,7 @@ function aemetComponent() {
   </div>
   <br/>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[1].fecha:date}</h3>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[1].fecha:day}</h3>
     <div>{fn.showDay:rows-1}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[1].orto}</div>
@@ -49,23 +50,25 @@ function aemetComponent() {
   </div>
   <br/>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[2].fecha:date}</h3>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[2].fecha:day}</h3>
     <div>{fn.showDay:rows-2}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[2].orto}</div>
       <div><i class="fa fa-arrow-down"></i> {prediccion.dia[2].ocaso}</div>
     </div>
-  </div>
-  `;
+  </div>`;
+
   let fn = { 
     formatFecha : function(value, ctx, options){
       let tokens = value.split('T');
-      if (options && options[0] === 'date') {
-        return tokens[0];
-      }
-      if (options && options[0] === 'time') {
-        return tokens[1];
-      }
+      if (options && options[0] === 'date') return tokens[0];
+      if (options && options[0] === 'time') return tokens[1];
+      if (options && options[0] === 'day'){
+        tokens = tokens[0].split('-');
+        let nombres = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado'];
+        let day     = new Date(~~tokens[0], ~~tokens[1] - 1, ~~tokens[2]).getDay();
+        return '{0} {1}'.format(nombres[day], ~~tokens[2]);
+      };
       return '{1} - {0}'.format(...tokens)
     },
     showDay: function (data) {
@@ -114,6 +117,15 @@ function aemetComponent() {
           .dia
           .reduce(function (a, dia, i) {
             // =======================================================================================================================
+            // Filtrar datos del día anterior
+            // =======================================================================================================================
+            //let now = new Date();
+            //let targetDate = fn.formatFecha(dia.fecha, null, ['date']);
+            //let today      = '{0#0000}-{1#00}-{2#00}'.format(now.getFullYear(), now.getMonth() + 1, now.getDate());
+            //if (targetDate < today) {
+            //  return a;
+            //}
+            // =======================================================================================================================
             // Agrupar los datos por hora
             // =======================================================================================================================
             let group = [].concat(dia.estadoCielo.map( function(e){ return { t : 'c', periodo : e.periodo, value : e.descripcion }}),
@@ -132,12 +144,18 @@ function aemetComponent() {
             // =======================================================================================================================
             a['rows-{0}'.format(i)] = Object.keys(group)
                                             .reduce( function(rows, key){
+                                              // ===================================================
+                                              // Filtrar los datos de horas anteriores a la actual
+                                              // ===================================================
+                                              //if (i == 0 && key < '{0#00}'.format(now.getHours())) {
+                                              //  return rows;
+                                              //} 
                                               let datosHora = group[key];
                                               rows.push( { periodo     : key, 
-                                                           cielo       : datosHora.where({ t : 'c' })[0].value,
-                                                           temperatura : datosHora.where({ t : 't' })[0].value,
-                                                           lluvia      : datosHora.where({ t : 'p' })[0].value,
-                                                           viento      : datosHora.where({ t : 'v' })[0].value });
+                                                            cielo       : datosHora.where({ t : 'c' })[0].value,
+                                                            temperatura : datosHora.where({ t : 't' })[0].value,
+                                                            lluvia      : datosHora.where({ t : 'p' })[0].value,
+                                                            viento      : datosHora.where({ t : 'v' })[0].value });
                                               return rows;
                                             }, [])
                                             .sortBy('periodo');
@@ -149,30 +167,30 @@ function aemetComponent() {
   };
 
   return component;
-}
 
+}
 
 export default function(ctx){
 
   let aemetContainer;
   let progressBarContainer;
   let progressBar;
+
   let component = {
     root   : {},
+    data   : { 
+      municipios : { 
+        '45022' : 'Buenaventura (TOLEDO)',
+        '28079' : 'Madrid'
+      }
+    },
     init   : function(container){ },
     render : function(container){
       this.root = pol.build('div', __TEMPLATE);
       return this.root;
     },
     mounted : function(container){
-      aemetContainer       = pol.$('aemetApi-container');
-      progressBar          = pol.$('progress-bar');
-      progressBarContainer = pol.$('progress-bar-container');   
-      // =====================================================
-      // addEventListener
-      // =====================================================
-      addEventListeners(component.root);
-      callAemetApi();
+      initAll(container);
     },
     eventHandlers : { 
       expandCollapse : expandCollapse,
@@ -180,25 +198,26 @@ export default function(ctx){
     }
   };
 
-  function addEventListeners(container) {
-    ['[on-click]'].forEach(event => {
-      pol.toArray(container.querySelectorAll(event))
-          .forEach( e => {
-            e.onclick = (event) => {
-              let name = e.attributes['on-click'].value;
-              component.eventHandlers[name](e, event);
-            };        
-          }); 
-    })
+  function initAll(container) {
+    aemetContainer       = pol.$('aemetApi-container');
+    progressBar          = pol.$('progress-bar');
+    progressBarContainer = pol.$('progress-bar-container');   
+    // ==============================================================
+    // addEventListener
+    // ==============================================================
+    utils.addEventListeners(component.root, component.eventHandlers);
+    callAemetApi();
   }
 
   let timerId;
   function initProgressBar() {
     let counter = 0;
+    progressBar.style.width = '{0}%'.format(counter);
+    if(timerId) clearInterval(timerId);
     timerId = setInterval(() => {
       counter = (counter + 9) % 100;
       progressBar.style.width = '{0}%'.format(counter);
-    }, 200);
+    }, 300);
   }
 
   let codigo = 45022;
@@ -225,12 +244,13 @@ export default function(ctx){
          if(result.estado == 200) return pol.ajax.get(result.datos);
          throw new Error(result.descripcion);
        })
-       .then( text => {
-         clearInterval(timerId);                                       
+       .then( text => {                                               
          aemetContainer.innerHTML = '';
-         let __aemet = aemetComponent().withData(text);
-         aemetContainer.appendChild(__aemet.render());
-         __aemet.mounted(ctx);
+         (function(componet) {
+           componet.init(ctx);
+           aemetContainer.appendChild(componet.render());
+           componet.mounted(ctx);
+         }(aemetComponent().withData(text)));         
        })
        .catch( e => {
          console.log(e);
@@ -251,8 +271,13 @@ export default function(ctx){
   }
 
   function requestData(target, mouseEvent) {
-    expandCollapse(target.parentNode.parentNode.previousElementSibling);
+
+    let combo = target.parentNode.parentNode.previousElementSibling;
     codigo = target.id.split('-')[1];
+
+    pubsub.publish('municipio.change', component.data.municipios[codigo] );
+
+    expandCollapse(combo);
     callAemetApi();
   }
 
