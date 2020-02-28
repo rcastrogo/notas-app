@@ -95,7 +95,7 @@ export default function(ctx){
     // =====================================================
     // addEventListener
     // =====================================================
-    addEventListeners(itemsContainer);
+    utils.addEventListeners(itemsContainer, component.eventHandlers);
   }
 
   function deleteNote(target, mouseEvent){
