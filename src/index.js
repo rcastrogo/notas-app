@@ -1,4 +1,5 @@
 import pol from "./lib/mapa.js";
+import pubsub from "./lib/pubSub.Service";
 // ==============================================================================
 // Components
 // ==============================================================================
@@ -12,6 +13,8 @@ import menuComponent from "./components/menu.component";
 import homePage from "./views/home.page";
 import listPage from "./views/list.page";
 import aboutPage from "./views/about.page";
+import notePage from "./views/new-item.page";
+import elTiempoPage from "./views/el-tiempo.page";
 // ==============================================================================
 // Routes
 // ==============================================================================
@@ -22,35 +25,67 @@ const components =  [
   footerComponent()
 ];
 // ==============================================================================
-// Views
+// Router
 // ==============================================================================
-const views = { 
-  'home'    : homePage,
-  'list'    : listPage,
-  'about'   : aboutPage 
+const router = {
+  routes  : [],
+  addRoute: function (name, pattern, controller) {
+    this.routes.push({ name : name, path : pattern, controler : controller });
+    return this;
+  },
+  getRoute: function (route) {
+    return this.routes.where(function(r){
+      let match = r.path.exec(route);
+      if (match) {
+        r.params = match.map( e => e );
+      }
+      return match;
+    })[0];
+  },
+  navigateTo : function (route) {
+    this.current = this.getRoute(route);
+    let url = '{origin}{0}{1}'.format('/notas-app/', route, location);
+    window.history.pushState({}, route, url);
+    showContent();
+  },
+  normalizePath : function (url) {
+    return url.replace(document.baseURI, '');
+  },
+  sync : function(){
+    this.current = this.getRoute(this.normalizePath(window.location.href));
+    showContent();
+  },
+  current : {}
 };
+router.addRoute('list',  /list$/,            listPage)
+      .addRoute('about', /about$/,           aboutPage)
+      .addRoute('note',  /note$/,            notePage)
+      .addRoute('note',  /note\/(\d{13})$/,  notePage)
+      .addRoute('el-tiempo',  /el-tiempo$/,  elTiempoPage)
+      .addRoute('',      /$/,                homePage);
 
 // ==============================================================================
 // Init App
 // ==============================================================================
 (function(){
 
-  const root = document.querySelector('#appContent');
+  const root = pol.$('appContent');
   components.forEach( c => {
-    root.appendChild(c.render());
+    if(c.init) c.init(root);
+    root.appendChild(c.render(root));
     if(c.mounted) c.mounted(root); 
   });
 
-  pol.toArray(document.querySelectorAll('[route-link]'))
+  pol.$('[route-link]')
      .forEach(element => {
         element.onclick = function(e){
-          let pathName = e.target.pathname;
-          window.history
-                .pushState({}, pathName, location.origin + pathName);
-          try {
-            showContent();
-          } catch (error) {
-            console.log(error);
+          let route = router.normalizePath(e.target.href);
+          if (router.current != route) {
+            try {
+              router.navigateTo(route);
+            } catch (error) {
+              console.log(error);
+            }
           }
           return false;
         }  
@@ -60,75 +95,39 @@ const views = {
 // ==============================================================================
 // Sync content
 // ==============================================================================
-const container = document.querySelector('#app-content-container');
+const container = pol.$('app-content-container');
 let currentView;
 function showContent(){
-  let route = window.location
-                    .href
-                    .replace(document.baseURI, '');
-  let view_ref = views[route] || views.home;
+  let view_ref = router.current.controler;
   if(!currentView || currentView != view_ref) {
     container.innerHTML = '';    
     currentView = view_ref;
-    let view_instance = currentView();
+    let view_instance = currentView({router});
     if(view_instance.init) view_instance.init();
     container.appendChild(view_instance.render());
     if(view_instance.mounted) view_instance.mounted(container);
+    pubsub.publish('view.change', router.current);
   }
 
 }
 
-showContent();
+router.sync();
 
-window.onpopstate = showContent;
+window.onpopstate = function(){
+  router.sync();
+}
 // ==============================================================================
 // ServiceWorker
 // ==============================================================================
-window.addEventListener('load', ()=>{
+window.addEventListener('load', () => {
 
   if('serviceWorker' in navigator){
     try {
       navigator.serviceWorker.register('serviceWorker.js');
       console.log("Service Worker Registered");
-      window.initMapaScroll();
     } catch (error) {
       console.log("Service Worker Registration Failed");
     }
   }
 
 });
-
-// ==============================================================================
-// Scroll
-// ==============================================================================
-(function(module){
-    
-  function debounce(func, wait, immediate) {
-	  var timeout;
-	  return function() {
-		  var context = this, args = arguments;
-		  var later = function() {
-			  timeout = null;
-			  if (!immediate) func.apply(context, args);
-		  };
-		  var callNow = immediate && !timeout;
-		  clearTimeout(timeout);
-		  timeout = setTimeout(later, wait);
-		  if (callNow) func.apply(context, args);
-	  };
-  };                     
-      
-  module.initMapaScroll = function(){        
-    var navbar = document.getElementById("appMenu");
-    if(navbar.className.includes('sticky')) return;
-    var sticky = navbar.offsetTop;          
-    window.onscroll = function myFunction() {
-      if (window.pageYOffset >= sticky) {
-        navbar.classList.add("sticky");
-      } else {
-        navbar.classList.remove("sticky");
-      }
-    };  
-  }
-  window.addEventListener("resize", debounce(module.initMapaScroll, 150), false);
-}(window));

@@ -50,7 +50,8 @@ let __module = {};
                    appendLine : function(s){ this.value = this.value + (s || '') + '\n'; return this;}}
       },
       build : function(tagName, o){
-        return _module.apply(document.createElement(tagName), o);
+        let options = module.isString(o) ? { innerHTML : o } : o;
+        return _module.apply(document.createElement(tagName), options);
       },
       $ : function(e, control){ 
         return (typeof e === 'string') ? document.getElementById(e) || 
@@ -88,14 +89,20 @@ let __module = {};
         var __arg     = arguments;
         var __context = __arg[__arg.length - 1] || self;   
         return this.replace(/\{(\d+|[^{]+)\}/g, function(m, key){
+          if(key.indexOf('#') > 0){
+            let __tokens = key.split('#');
+            let value  = __arg[__tokens[0]];
+            let cmd    = __tokens[1];
+            return (value + '').paddingLeft(cmd);
+          }
           if(key.indexOf(':') > 0){
             var __fn = key.split(':');
-            __fn[0]  = getValue(__fn[0], __context);
-            __fn[1]  = getValue(__fn[1], __context);
-            return __fn[0](__fn[1], __context);            
+            __fn[0]  = module.templates.getValue(__fn[0], __context);
+            __fn[1]  = module.templates.getValue(__fn[1], __context);
+            return __fn[0](__fn[1], __context, __fn.slice(2));            
           }
           return /^\d+$/.test(key) ? __arg[key]
-                                   : (typeof __context[key] === "undefined") ? getValue(key, __context)
+                                   : (typeof __context[key] === "undefined") ? module.templates.getValue(key, __context)
                                                                              : __context[key]; 
         });
       }
@@ -234,49 +241,51 @@ let __module = {};
       return __result;
     }
 
-    //function fillTemplate(e, scope) {
-    //  var _root = $(e);
-    //  var _elements = $('[xbind]', _root); 
-    //  if (_root.attributes.xbind) _elements.push(_root);
-    //  _elements.forEach(function (child) {
-    //    String.trimValues(child.attributes.xbind.value.split(';')).forEach(function (token) {
-    //      if (token === '') return;
-    //      var _tokens = String.trimValues(token.split(':'));            
-    //      var _params = String.trimValues(_tokens[1].split(/\s|\,/));
-    //      var _value = getValue(_params[0], scope);
-    //      if (typeof (_value) == 'function') {
-    //        var _args = _params.slice(1)
-    //                           .reduce(function (a, p) {
-    //                             // xbind="textContent:Data.fnTest @Other,A,5"
-    //                             a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope) : p);
-    //                             return a;
-    //                           }, [scope, child]);
-    //        _value = _value.apply(scope, _args);
-    //      } else if (_params[1]) {
-    //        var _func = getValue(_params[1], scope);
-    //        _value = _func(_value, _params[2], scope, child);
-    //      }
-    //      child[_tokens[0]] = _value;
-    //    });
-    //  });
-    //  return e;
-    //}
+    function fillTemplate(e, scope) {
+      var _root = module.$(e);
+      var _elements = module.$('[xbind]', _root); 
+      if (_root.attributes.xbind) _elements.push(_root);
+      _elements.forEach(function (child) {
+        String.trimValues(child.attributes.xbind.value.split(';')).forEach(function (token) {
+          if (token === '') return;
+          var _tokens = String.trimValues(token.split(':'));            
+          var _params = String.trimValues(_tokens[1].split(/\s|\,/));
+          var _value = getValue(_params[0], scope);
+          if (typeof (_value) == 'function') {
+            var _args = _params.slice(1)
+                               .reduce(function (a, p) {
+                                 // xbind="textContent:Data.fnTest @Other,A,5"
+                                 a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope) : p);
+                                 return a;
+                               }, [scope, child]);
+            _value = _value.apply(scope, _args);
+          } else if (_params[1]) {
+            var _func = getValue(_params[1], scope);
+            _value = _func(_value, _params[2], scope, child);
+          }
+          child[_tokens[0]] = _value;
+        });
+      });
+      return e;
+    }
 
-    //function executeTemplate(e, values, dom) {
-    //  var _template = $(e);
-    //  var _result   = values.reduce( function(a, v, i){
-    //    var _node = { index : i,
-    //                  data  : v,
-    //                  node  : fillTemplate(_template.cloneNode(true), v) };
-    //    a.nodes.push(_node);
-    //    if (!dom) a.html.push(_node.node.outerHTML.replace(/xbind="[^"]*"/g, ''));
-    //    return a; 
-    //  }, { nodes : [], html : [] });
-    //  return dom ? _result.nodes : _result.html.join('');
-    //}
+    function executeTemplate(e, values, dom) {
+      var _template = module.$(e);
+      var _result   = values.reduce( function(a, v, i){
+        var _node = { index : i,
+                      data  : v,
+                      node  : fillTemplate(_template.cloneNode(true), v) };
+        a.nodes.push(_node);
+        if (!dom) a.html.push(_node.node.outerHTML.replace(/xbind="[^"]*"/g, ''));
+        return a; 
+      }, { nodes : [], html : [] });
+      return dom ? _result.nodes : _result.html.join('');
+    }
     
     module.templates = { getValue  : getValue,
-                         merge     : merge };
+                         merge     : merge,
+                         execute   : executeTemplate,
+                         fill      : fillTemplate };
 
   }(_module));
 
@@ -286,14 +295,19 @@ let __module = {};
   (function(module){  
     module.ajax = {};
     module.apply(module.ajax, {
-      get  : function (url, callBack) {
-        url += (url.contains('?') ? '&ms=' : '?ms=') + new Date().getTime();
-        var xml = this.createXMLHttpRequest();
-        xml.open('GET', url, true);
-        xml.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
-        xml.setRequestHeader('Cache-Control', 'no-cache');
-        xml.onreadystatechange = function () { if (xml.readyState == 4) callBack(xml.responseText) };
-        xml.send(null);
+      get  : function (url, interceptor) {
+        return new Promise( (resolve, reject) => {
+          //url += (url.contains('?') ? '&ms=' : '?ms=') + new Date().getTime();
+          var xml = this.createXMLHttpRequest();
+          xml.open('GET', url, true);
+          if(interceptor) interceptor(xml);
+          xml.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
+          xml.setRequestHeader('Cache-Control', 'no-cache');
+          xml.onreadystatechange = function () { if (xml.readyState == 4) resolve(xml.responseText) };
+          xml.onerror = function(e) { reject(e); };
+          xml.send(null);
+        });
+
       },
       post : function(url, params, callBack) {                                          
         var xml = this.createXMLHttpRequest();
