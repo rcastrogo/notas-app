@@ -71,41 +71,43 @@ router.addRoute('list',  /list$/,            listPage)
 
   const root = pol.$('appContent');
   components.forEach( c => {
-    if(c.init) c.init(root);
+    if(c.init) c.init(root, router);
     root.appendChild(c.render(root));
     if(c.mounted) c.mounted(root); 
   });
 
-  pol.$('[route-link]')
-     .forEach(element => {
-        element.onclick = function(e){
-          let route = router.normalizePath(e.target.href);
-          if (router.current != route) {
-            try {
-              router.navigateTo(route);
-            } catch (error) {
-              console.log(error);
-            }
-          }
-          return false;
-        }  
-     });
-
 })();
-// ==============================================================================
+// ===================================================
 // Sync content
-// ==============================================================================
+// ===================================================
 const container = pol.$('app-content-container');
-let currentView;
+let currentBuilder;
+let current;
 function showContent(){
-  let view_ref = router.current.controler;
-  if(!currentView || currentView != view_ref) {
-    container.innerHTML = '';    
-    currentView = view_ref;
-    let view_instance = currentView({router});
-    if(view_instance.init) view_instance.init();
-    container.appendChild(view_instance.render());
-    if(view_instance.mounted) view_instance.mounted(container);
+  let viewBuilder = router.current.controler;
+  if(!current || currentBuilder != viewBuilder) {
+    // ===============================================
+    // Dispose
+    // ===============================================
+    if (current && current.dispose) current.dispose();
+    // ===============================================
+    // Clear
+    // ===============================================
+    container.innerHTML = '';  
+    // ===============================================
+    // Init
+    // ===============================================  
+    current = viewBuilder({router});
+    currentBuilder = viewBuilder;
+    if(current.init) current.init();
+    // ===============================================
+    // Render
+    // ===============================================
+    container.appendChild(current.render());
+    // ===============================================
+    // Mounted
+    // ===============================================
+    if(current.mounted) current.mounted(container);
     pubsub.publish('view.change', router.current);
   }
 

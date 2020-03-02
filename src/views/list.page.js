@@ -92,10 +92,10 @@ export default function(ctx){
         .forEach( e => {
           itemsContainer.appendChild(e);
         });
-    // =====================================================
+    // ==============================================================
     // addEventListener
-    // =====================================================
-    addEventListeners(itemsContainer);
+    // ==============================================================
+    utils.addEventListeners(itemsContainer, component.eventHandlers);
   }
 
   function deleteNote(target, mouseEvent){

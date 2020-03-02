@@ -6,7 +6,7 @@ const __TEMPLATE = `
 <div class="w3-container w3-margin-bottom w3-animate-bottom">
   <div class="w3-border w3-margin-top">
     <button on-click="expandCollapse" class="w3-button w3-block w3-left-align">
-      <span on-message="municipio.change" id="lbl-municipio">Buenaventura</span><i class="w3-right w3-large fa fa-caret-down"></i>
+      <span on-publish="municipio.change:css">Buenaventura</span><i class="w3-right w3-large fa fa-caret-down"></i>
     </button>
     <div class="w3-hide">
       <ul class="w3-ul">
@@ -90,7 +90,7 @@ function aemetComponent() {
                                                  '<th>Hora</th>' + 
                                                  '<th>Cielo</th>' + 
                                                  '<th>Temp<br>ºC</th>' + 
-                                                 '<th>Lluvia<br>ml</th>' + 
+                                                 '<th>Lluvia<br>mmm</th>' + 
                                                  '<th>Viento<br>km/h</th>' + 
                                                '</tr>'))
                  .append('</table>')
@@ -192,6 +192,9 @@ export default function(ctx){
     mounted : function(container){
       initAll(container);
     },
+    dispose : function(){
+      clearInterval(timerId);
+    },
     eventHandlers : { 
       expandCollapse : expandCollapse,
       requestData    : requestData
@@ -205,7 +208,13 @@ export default function(ctx){
     // ==============================================================
     // addEventListener
     // ==============================================================
-    utils.addEventListeners(component.root, component.eventHandlers);
+    utils.addEventListeners(component.root, 
+                            component.eventHandlers,
+                            { 
+                              css : (target, data) => {
+                                console.log(target);
+                              }
+                            });
     callAemetApi();
   }
 

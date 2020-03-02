@@ -49,3 +49,5 @@ i.pol-SE { transform: rotate(-135deg);vertical-align: middle;}
 i.pol-SO { transform: rotate(-45deg);vertical-align: middle;}
 i.pol-E { transform: rotate(-180deg);vertical-align: middle;}
 i.pol-O { vertical-align: middle; }
+
+canvas{ width: 100%; background-color:black;}

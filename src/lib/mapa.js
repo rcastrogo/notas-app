@@ -230,13 +230,11 @@ let __module = {};
                         return __fn[0](__fn[1], o);            
                       }
                       var r   = getValue(key, o);
-                      var __k = (key.contains('.') ? '' : 'o.') + key;
                       if (typeof (r) == 'function'){                        
                         return r(o);
                       }else{                        
                         return r;
                       }                    
-                      return typeof (r) == 'function' ? r(o) : r;
                     });     
       return __result;
     }
