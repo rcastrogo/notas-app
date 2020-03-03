@@ -1,7 +1,7 @@
 import pol from "./mapa";
 import pubsub from "./pubSub.Service";
 
-const EVENTS = ['[on-click]', '[on-publish]', '[route-link]'];
+const EVENTS = ['[on-click]', '[on-publish]', '[route-link]', '[on-change]'];
 
 function addEventListeners(container, handlers, context) {
 
@@ -26,7 +26,8 @@ function addEventListeners(container, handlers, context) {
          // on-publish
          // =======================================================
          if (index === 1) {
-           pubsub.subscribe(tokens[0], (message, data) => {
+           let topic = pol.templates.getValue(tokens[0], pubsub);
+           pubsub.subscribe(topic, (message, data) => {
              if (tokens[1]) {
                let fn = handlers[tokens[1]] || 
                         pol.templates.getValue(tokens[1], context);
@@ -53,6 +54,26 @@ function addEventListeners(container, handlers, context) {
              }
              return false;
            }
+         }
+         // ====================================================================
+         // on-change
+         // ====================================================================
+         if (index === 3) {
+           let select = e.tagName === 'SELECT';
+           if (value === 'publish') {
+             if (select) 
+               e.onchange = () => pubsub.publish(pubsub.TOPICS.VALUE_CHANGE, e); 
+             else 
+               e.oninput = () => pubsub.publish(pubsub.TOPICS.VALUE_CHANGE, e);
+             return;
+           }
+
+           let fn = handlers[value] ||
+                    pol.templates.getValue(value, context);
+           if (select) 
+             e.onchange = () => fn(e);
+           else 
+             e.oninput = () => fn(e);
          }
        }); 
   });

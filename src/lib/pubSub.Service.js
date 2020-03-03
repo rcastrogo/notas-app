@@ -48,5 +48,10 @@ let unsubscribe = function(token) {
 export default {
   subscribe,
   publish,
-  unsubscribe
+  unsubscribe,
+  TOPICS : { 
+    VIEW_CHANGE      : 'view:change',
+    VALUE_CHANGE     : 'value:change',
+    MUNICIPIO_CHANGE : 'municipio:change'
+  }
 }

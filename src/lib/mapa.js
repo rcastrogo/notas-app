@@ -1,3 +1,4 @@
+import utils from "./utils";
 
 
 let __module = {};
@@ -80,8 +81,8 @@ let __module = {};
       contains    : String.prototype.includes   || function(t, start) { return this.indexOf(t) >= (start || 0); },
       startsWith  : String.prototype.startsWith || function(t){ return this.indexOf(t) == 0; },                             
       toFloat     : function(){ return this.trim().replaceAll('.', '').replaceAll(',', '.') },
-      fixDate     : function(){ return this.split(' ')[0]; },
-      fixTime     : function(){ return this.split(' ')[1]; },
+      fixDate     : function(separator){ return this.split(separator || ' ')[0]; },
+      fixTime     : function(separator){ return this.split(separator || ' ')[1]; },
       fixYear     : function(){ return this.fixDate().split('/')[2];},
       trimSeconds : function(){ return this.split(':')[0] + ':' + this.split(':')[1] ; },
       paddingLeft : function(paddingValue){ return (paddingValue + this).slice(-paddingValue.length); },
@@ -241,6 +242,51 @@ let __module = {};
 
     function fillTemplate(e, scope) {
       var _root = module.$(e);
+      var _repeaters = module.$('[xfor]', _root);
+      var _elements = module.$('[xbind]', _root)
+                            .filter(x => !_repeaters.includes(x))
+      if (_root.attributes.xbind) _elements.push(_root);
+      _elements.forEach(function (child) {
+        String.trimValues(child.attributes.xbind.value.split(';')).forEach(function (token) {
+          if (token === '') return;
+          var _tokens = String.trimValues(token.split(':'));            
+          var _params = String.trimValues(_tokens[1].split(/\s|\,/));
+          var _value = getValue(_params[0], scope);
+          if (typeof (_value) == 'function') {
+            var _args = _params.slice(1)
+                               .reduce(function (a, p) {
+                                 // xbind="textContent:Data.fnTest @Other,A,5"
+                                 a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope) : p);
+                                 return a;
+                               }, [scope, child]);
+            _value = _value.apply(scope, _args);
+          } else if (_params[1]) {
+            // xbind="innerHTML:Data.id Data.transformfn string
+            var _func = getValue(_params[1], scope);
+            _value = _func(_value, _params[2], scope, child);
+          }
+          child[_tokens[0]] = _value;
+        });
+      });
+
+      _repeaters.forEach( repeater => {
+        let parent   = repeater.parentNode;
+        let propname = repeater.attributes.xfor.value;
+        let data  = getValue(propname, scope);
+        data.map(d => {
+          let data = _module.clone(d);
+          data.parentScope = scope;
+          let node = fillTemplate(repeater.cloneNode(true), data);
+          parent.insertBefore(node, repeater);
+        })
+        parent.removeChild(repeater);
+      });
+
+      return e;
+    }
+
+    function fillTemplate_bak(e, scope) {
+      var _root = module.$(e);
       var _elements = module.$('[xbind]', _root); 
       if (_root.attributes.xbind) _elements.push(_root);
       _elements.forEach(function (child) {
@@ -258,6 +304,7 @@ let __module = {};
                                }, [scope, child]);
             _value = _value.apply(scope, _args);
           } else if (_params[1]) {
+            // xbind="innerHTML:Data.id Data.transformfn string
             var _func = getValue(_params[1], scope);
             _value = _func(_value, _params[2], scope, child);
           }
@@ -742,5 +789,7 @@ let __module = {};
   })(_module);
 
 }(__module, 'Pol'));
+
+__module.Pol.APP_PATH = '/notas-app/';
 
 export default __module.Pol;

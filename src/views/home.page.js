@@ -1,4 +1,5 @@
 ﻿import pol from "../lib/mapa.js";
+import utils from "../lib/utils.js";
 
 const __template = `  
   <div class="w3-container w3-center w3-animate-left" style="padding-top:60px;">
@@ -15,7 +16,9 @@ export default function(){
       this.root = pol.build('div', __template).firstElementChild ;
       return this.root;
     },
-    mounted : function(container){ },
+    mounted : function(container){ 
+     //onTestButtonClick_fill();
+    },
     dispose : function(){ }
   };
 
@@ -23,19 +26,38 @@ export default function(){
   // FillTemplate
   // ==========================================================================================
   function onTestButtonClick_fill(mouseEvent){
-    let template = pol.build('div', '<h3 xbind="id:id;innerHTML:nombre;onclick:__click"></h3>')
-                      .firstElementChild;
+    let html = `
+      <h3 xbind="id:id;innerHTML:nombre;" on-click="__click"></h3>
+      <ul>
+        <li xfor="enlaces" xbind="id:id;innerHTML:nombre"></li>
+      </ul>
+      <ul>
+        <li xfor="otros" xbind="id:id;innerHTML:parentScope.nombre"></li>
+      </ul>
+    `;
+    let template = pol.build('div', html);
     let r = pol.templates.fill(
               template, 
-              { id : 555, 
-                nombre : 'rafa',
-                __click : () => {
-                  return function (event) {
-                    console.log(event);
-                  }                        
-                }});
+              { id      : 555, 
+                nombre  : 'fer',
+                enlaces : [
+                  { id : 555, nombre : 'Enlace 1'},
+                  { id : 444, nombre : 'Enlace 444'},
+                  { id : 333, nombre : 'Enlace 333'}
+                ],
+                otros : [
+                  { id : 555, nombre : 'Otros 1'},
+                  { id : 444, nombre : 'Otros 2'},
+                  { id : 333, nombre : 'Otros 3'}
+                ]
+              });
 
     component.root.appendChild(r);
+    utils.addEventListeners(template, {}, 
+                            { __click : (event) => {
+                                  console.log(event);
+                              }
+                            });
   }
 
   // ==========================================================================================

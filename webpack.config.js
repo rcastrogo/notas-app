@@ -7,6 +7,11 @@ module.exports = {
   entry: './src/index.js',
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'docs'),
+    path: path.resolve(__dirname, 'docs')
+  },
+  devServer: {
+    port: 8080,
+    contentBase: path.join(__dirname, 'docs'),
+    historyApiFallback: true
   }
 };

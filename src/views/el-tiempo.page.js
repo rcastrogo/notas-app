@@ -2,6 +2,9 @@ import pol from "../lib/mapa";
 import pubsub from "../lib/pubSub.Service";
 import utils from "../lib/utils";
 
+
+const TOPICS           = pubsub.TOPICS;
+
 const __TEMPLATE = `  
 <div class="w3-container w3-margin-bottom w3-animate-bottom">
   <div class="w3-border w3-margin-top">
@@ -90,7 +93,7 @@ function aemetComponent() {
                                                  '<th>Hora</th>' + 
                                                  '<th>Cielo</th>' + 
                                                  '<th>Temp<br>ºC</th>' + 
-                                                 '<th>Lluvia<br>mmm</th>' + 
+                                                 '<th>Lluvia<br>mm</th>' + 
                                                  '<th>Viento<br>km/h</th>' + 
                                                '</tr>'))
                  .append('</table>')
@@ -110,6 +113,13 @@ function aemetComponent() {
     },
     mounted : function(container){ },
     withData : function(data){
+      let ref_date = (function(now) { 
+        return '{0#0000}-{1#00}-{2#00}-{3#00}'.format(
+                  now.getFullYear(), 
+                  now.getMonth() + 1, 
+                  now.getDate(),
+                  now.getHours());
+      }(new Date()));
       this.data = JSON.parse(data)[0];
       this.data.fn = fn;
       this.data
@@ -117,14 +127,9 @@ function aemetComponent() {
           .dia
           .reduce(function (a, dia, i) {
             // =======================================================================================================================
-            // Filtrar datos del día anterior
+            // Filtrado de datos
             // =======================================================================================================================
-            //let now = new Date();
-            //let targetDate = fn.formatFecha(dia.fecha, null, ['date']);
-            //let today      = '{0#0000}-{1#00}-{2#00}'.format(now.getFullYear(), now.getMonth() + 1, now.getDate());
-            //if (targetDate < today) {
-            //  return a;
-            //}
+            let currentDate = dia.fecha.fixDate('T');
             // =======================================================================================================================
             // Agrupar los datos por hora
             // =======================================================================================================================
@@ -138,18 +143,15 @@ function aemetComponent() {
                                                 periodo : e.periodo, 
                                                 value   : [e.direccion[0], e.velocidad[0]]
                                      }}))
+                          .where( (e) => {
+                            return '{0}-{1}'.format(currentDate, e.periodo) >= ref_date;
+                          })
                           .groupBy('periodo');
             // =======================================================================================================================
             // convertir en datos tabulados
             // =======================================================================================================================
             a['rows-{0}'.format(i)] = Object.keys(group)
                                             .reduce( function(rows, key){
-                                              // ===================================================
-                                              // Filtrar los datos de horas anteriores a la actual
-                                              // ===================================================
-                                              //if (i == 0 && key < '{0#00}'.format(now.getHours())) {
-                                              //  return rows;
-                                              //} 
                                               let datosHora = group[key];
                                               rows.push( { periodo     : key, 
                                                             cielo       : datosHora.where({ t : 'c' })[0].value,
@@ -284,7 +286,7 @@ export default function(ctx){
     let combo = target.parentNode.parentNode.previousElementSibling;
     codigo = target.id.split('-')[1];
 
-    pubsub.publish('municipio.change', component.data.municipios[codigo] );
+    pubsub.publish(TOPICS.MUNICIPIO_CHANGE, component.data.municipios[codigo] );
 
     expandCollapse(combo);
     callAemetApi();

@@ -15,6 +15,9 @@ import listPage from "./views/list.page";
 import aboutPage from "./views/about.page";
 import notePage from "./views/new-item.page";
 import elTiempoPage from "./views/el-tiempo.page";
+
+const TOPICS = pubsub.TOPICS;
+
 // ==============================================================================
 // Routes
 // ==============================================================================
@@ -44,7 +47,7 @@ const router = {
   },
   navigateTo : function (route) {
     this.current = this.getRoute(route);
-    let url = '{origin}{0}{1}'.format('/notas-app/', route, location);
+    let url = '{origin}{0}{1}'.format(pol.APP_PATH, route, location);
     window.history.pushState({}, route, url);
     showContent();
   },
@@ -91,7 +94,7 @@ function showContent(){
     // ===============================================
     if (current && current.dispose) current.dispose();
     // ===============================================
-    // Clear
+    // Clear 
     // ===============================================
     container.innerHTML = '';  
     // ===============================================
@@ -99,7 +102,7 @@ function showContent(){
     // ===============================================  
     current = viewBuilder({router});
     currentBuilder = viewBuilder;
-    if(current.init) current.init();
+    if(current.init) current.init(); 
     // ===============================================
     // Render
     // ===============================================
@@ -108,7 +111,7 @@ function showContent(){
     // Mounted
     // ===============================================
     if(current.mounted) current.mounted(container);
-    pubsub.publish('view.change', router.current);
+    pubsub.publish(TOPICS.VIEW_CHANGE, router.current);
   }
 
 }

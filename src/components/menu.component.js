@@ -1,13 +1,12 @@
 import pol from "../lib/mapa.js";
-import pubsub from "../lib/pubSub.Service";
 import utils from "../lib/utils.js";
 
 const __TEMPLATE = `  
-  <a href=""          route-link on-publish="view.change:sync" class="w3-bar-item w3-button selected">Inicio</a>
-  <a href="el-tiempo" route-link on-publish="view.change:sync" class="w3-bar-item w3-button">El tiempo</a>
-  <a href="list"      route-link on-publish="view.change:sync" class="w3-bar-item w3-button">Notas</a>
-  <a href="note"      route-link on-publish="view.change:sync" class="w3-bar-item w3-button">+</a>
-  <a href="about"     route-link on-publish="view.change:sync" class="w3-bar-item w3-button w3-right">?</a>`;
+  <a href=""          route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button selected">Inicio</a>
+  <a href="el-tiempo" route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button">El tiempo</a>
+  <a href="list"      route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button">Notas</a>
+  <a href="note"      route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button">+</a>
+  <a href="about"     route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button w3-right">?</a>`;
 
 export default function(){
 
