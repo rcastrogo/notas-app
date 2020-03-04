@@ -17,7 +17,7 @@ export default function(){
       return this.root;
     },
     mounted : function(container){ 
-     //onTestButtonClick_fill();
+     onTestButtonClick_fill();
     },
     dispose : function(){ }
   };
@@ -27,13 +27,25 @@ export default function(){
   // ==========================================================================================
   function onTestButtonClick_fill(mouseEvent){
     let html = `
-      <h3 xbind="id:id;innerHTML:nombre;" on-click="__click"></h3>
+      <h3 xbind="id:id;innerHTML:nombre fn.toUpperCase" on-click="__click"></h3>
       <ul>
-        <li xfor="enlaces" xbind="id:id;innerHTML:nombre"></li>
+        <li xfor="enlace in enlaces" xbind="id:enlace.id;innerHTML:enlace.nombre parentScope.fn.toUpperCase"></li>
       </ul>
-      <ul>
-        <li xfor="otros" xbind="id:id;innerHTML:parentScope.nombre"></li>
-      </ul>
+      <div>
+        <div xfor="otro in otros" xbind="id:otro.id;className:otro.nombre parentScope.fn.toUpperCase">
+          <div xbind="innerHTML:parentScope.nombre parentScope.fn.toUpperCase"></div>
+          <table>
+            <caption xbind="innerHTML:otro.nombre parentScope.fn.toUpperCase"></caption>
+            <tbody>
+              <tr xfor="valor in otro.valores">
+                <td xbind="innerHTML:index"></td><td xbind="innerHTML:valor parentScope.parentScope.fn.toUpperCase"></td>
+              </tr>
+            </tbody>
+          </table>
+          <h2 xfor="entrada in otro.data" xbind="innerHTML:entrada.descripcion parentScope.parentScope.fn.toUpperCase"></h2>
+          <h3 xbind="">{id}</h3>
+        </div>
+      </div>
     `;
     let template = pol.build('div', html);
     let r = pol.templates.fill(
@@ -46,10 +58,18 @@ export default function(){
                   { id : 333, nombre : 'Enlace 333'}
                 ],
                 otros : [
-                  { id : 555, nombre : 'Otros 1'},
-                  { id : 444, nombre : 'Otros 2'},
-                  { id : 333, nombre : 'Otros 3'}
-                ]
+                  { id : 555, 
+                    nombre  : 'Otros 1', 
+                    data    : [ { numero : 5, descripcion : 'La descripción' }, 
+                                { numero : 15, descripcion : 'La descripción 15' }], 
+                    valores : ['v1', 'v2', 56]
+                  },
+                  { id : 444, nombre : 'Otros 2', valores : ['v3', 'v4']},
+                  { id : 333, nombre : 'Otros 3', valores : ['v5', 'v6']}
+                ],
+                fn: {
+                  toUpperCase : v => (v) ? v.toString().toUpperCase(v) : ''
+                }
               });
 
     component.root.appendChild(r);

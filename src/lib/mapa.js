@@ -239,14 +239,24 @@ let __module = {};
     }
 
     function fillTemplate(e, scope) {
-      var _root = module.$(e);
+      var _root      = module.$(e);
+      // =====================================================================================
+      // Determinar los elementos que enlazar
+      // =====================================================================================
       var _repeaters = module.$('[xfor]', _root);
+      var _repeatersElements = _repeaters.reduce((a, r) => {
+        return a.concat(module.$('[xbind]', r));
+      }, [..._repeaters]);
       var _elements = module.$('[xbind]', _root)
-                            .filter(x => !_repeaters.includes(x))
+                            .filter(x => !_repeatersElements.includes(x));
       if (_root.attributes.xbind) _elements.push(_root);
       _elements.forEach(function (child) {
-        String.trimValues(child.attributes.xbind.value.split(';')).forEach(function (token) {
-          if (token === '') return;
+        String.trimValues(child.attributes.xbind.value.split(';'))
+              .forEach(function (token) {
+          if (token === ''){
+            //child.childNodes[0].textContent
+            return;
+          }
           var _tokens = String.trimValues(token.split(':'));            
           var _params = String.trimValues(_tokens[1].split(/\s|\,/));
           var _value = getValue(_params[0], scope);
@@ -261,24 +271,34 @@ let __module = {};
           } else if (_params[1]) {
             // xbind="innerHTML:Data.id Data.transformfn string
             var _func = getValue(_params[1], scope);
-            _value = _func(_value, _params[2], scope, child);
+            try {
+              _value = _func(_value, _params[2], scope, child);
+            } catch (error) {
+              console.log(error);
+              _value = error.message;
+            }
           }
           child[_tokens[0]] = _value;
         });
       });
 
-      _repeaters.forEach( repeater => {
+      _repeaters.map( repeater => {
         let parent   = repeater.parentNode;
-        let propname = repeater.attributes.xfor.value;
-        let data  = getValue(propname, scope);
-        data.map(d => {
-          let data = _module.clone(d);
-          data.parentScope = scope;
-          let node = fillTemplate(repeater.cloneNode(true), data);
-          parent.insertBefore(node, repeater);
-        })
-        parent.removeChild(repeater);
-      });
+        let tokens   = repeater.attributes.xfor.value.split(' in ');
+        let itemName = tokens[0];
+        let propname = tokens[1];
+        let data     = getValue(propname, scope);
+        if (data && data != window) {
+          data.map( (d, i) => {
+            let __scope = { index       : i,
+                            parentScope : scope };
+            __scope[itemName] = _module.clone(d);
+            let node = fillTemplate(repeater.cloneNode(true), __scope);
+            parent.insertBefore(node, repeater);
+          }) 
+        }
+        return repeater;
+      }).forEach( repeater => repeater.parentNode.removeChild(repeater) );
 
       return e;
     }
