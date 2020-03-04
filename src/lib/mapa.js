@@ -1,5 +1,3 @@
-import utils from "./utils";
-
 
 let __module = {};
 (function(module, name){
@@ -789,7 +787,5 @@ let __module = {};
   })(_module);
 
 }(__module, 'Pol'));
-
-__module.Pol.APP_PATH = '/notas-app/';
 
 export default __module.Pol;

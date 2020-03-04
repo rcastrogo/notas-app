@@ -1,11 +1,10 @@
 
-const cacheName = 'notas-v5';
+const cacheName = 'notas-v5.1';
 
 const staticAssets = [
   './',
   './index.html',
   './404.html',
-  './main.js',
   './assets/css/styles.css',
   './assets/css/font-awesome.min.css',
   './assets/css/w3.css',

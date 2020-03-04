@@ -3,13 +3,13 @@ import pubsub from "../lib/pubSub.Service";
 import utils from "../lib/utils";
 
 
-const TOPICS           = pubsub.TOPICS;
+const TOPICS     = pubsub.TOPICS;
 
 const __TEMPLATE = `  
 <div class="w3-container w3-margin-bottom w3-animate-bottom">
   <div class="w3-border w3-margin-top">
     <button on-click="expandCollapse" class="w3-button w3-block w3-left-align">
-      <span on-publish="municipio.change:css">Buenaventura</span><i class="w3-right w3-large fa fa-caret-down"></i>
+      <span on-publish="TOPICS.MUNICIPIO_CHANGE:innerHTML">Buenaventura</span><i class="w3-right w3-large fa fa-caret-down"></i>
     </button>
     <div class="w3-hide">
       <ul class="w3-ul">

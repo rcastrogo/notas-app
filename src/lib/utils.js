@@ -5,7 +5,11 @@ const EVENTS = ['[on-click]', '[on-publish]', '[route-link]', '[on-change]'];
 
 function addEventListeners(container, handlers, context) {
 
-  function innerHTML(e, value) { e.innerHTML = value; }
+  let fn = {
+    innerHTML : (e, value) => e.innerHTML = value,
+    className : (e, value) => e.className = value
+  }
+  
 
   EVENTS.forEach((selector, index) => {
     pol.toArray(pol.$(selector, container))
@@ -28,13 +32,15 @@ function addEventListeners(container, handlers, context) {
          if (index === 1) {
            let topic = pol.templates.getValue(tokens[0], pubsub);
            pubsub.subscribe(topic, (message, data) => {
-             if (tokens[1]) {
-               let fn = handlers[tokens[1]] || 
-                        pol.templates.getValue(tokens[1], context);
-               if (fn) fn(e, data);
+             let fnName = tokens[1];
+             if (fnName) {
+               let f = fn[fnName]       ||
+                       handlers[fnName] || 
+                       pol.templates.getValue(fnName, context);
+               if (f) f(e, data);
                return;
              } else {
-               innerHTML(e, data);
+               fn.innerHTML(e, data);
              }
            })
          }

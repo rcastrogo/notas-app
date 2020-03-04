@@ -47,7 +47,7 @@ const router = {
   },
   navigateTo : function (route) {
     this.current = this.getRoute(route);
-    let url = '{origin}{0}{1}'.format(pol.APP_PATH, route, location);
+    let url = '{origin}{0}{1}'.format(APP_PATH, route, location);
     window.history.pushState({}, route, url);
     showContent();
   },
