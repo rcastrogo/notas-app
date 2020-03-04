@@ -3,6 +3,10 @@ const cacheName = 'notas-v5.1';
 
 const staticAssets = [
   './',
+  './el-tiempo',
+  './list',
+  './note',
+  './about',
   './index.html',
   './404.html',
   './assets/css/styles.css',
