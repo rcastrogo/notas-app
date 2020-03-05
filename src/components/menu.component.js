@@ -2,11 +2,20 @@ import pol from "../lib/mapa.js";
 import utils from "../lib/utils.js";
 
 const __TEMPLATE = `  
+  <div class="w3-dropdown-click">
+    <button on-click="toggleMenu" class="w3-button w3-black"><i class="fa fa-bars"></i></button>
+    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+      <a href=""          route-link on-click="hideMenu" class="w3-bar-item w3-button">Inicio</a>
+      <hr style="margin:0"/>
+      <a href="templates" route-link on-click="hideMenu" class="w3-bar-item w3-button">Templates</a>
+    </div>
+  </div>
   <a href=""          route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button selected">Inicio</a>
   <a href="el-tiempo" route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button">El tiempo</a>
   <a href="list"      route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button">Notas</a>
   <a href="note"      route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button">+</a>
-  <a href="about"     route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button w3-right">?</a>`;
+  <a href="about"     route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button w3-right">?</a>
+  `;
 
 export default function(){
 
@@ -18,7 +27,7 @@ export default function(){
     },
     render : function(container) {
       let options = { 
-        id        : "appMenu",
+        id        : "appMenu", 
         innerHTML : __TEMPLATE.format(this),
         className : 'w3-bar w3-black'
       }
@@ -37,18 +46,31 @@ export default function(){
 
     utils.addEventListeners(component.root, 
                             component.eventHandlers, { 
-                              router : component.router,
-                              syncr   : syncMenuItem
+                              router      : component.router,
+                              toggleMenu  : toggleMenu,
+                              hideMenu    : hideMenu
                             });
 
 
   }
 
   function syncMenuItem(e, data) {
+    hideMenu();
     if (data.name === e.href.split('/').lastItem())
-      e.classList.add('selected')
+      e.classList.add('selected');
     else
-      e.classList.remove('selected')
+      e.classList.remove('selected');
+  }
+
+  let dropdownContent;
+  function toggleMenu(e) {
+    dropdownContent = e.nextElementSibling;
+    dropdownContent.classList.toggle('w3-show');
+  }
+  function hideMenu(e) {
+    if (dropdownContent){
+      dropdownContent.classList.remove('w3-show');
+    }
   }
 
   return component;

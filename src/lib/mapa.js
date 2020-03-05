@@ -207,42 +207,43 @@ let __module = {};
     });       
   }(_module));
 
-  // =================================================================================================
+  // =====================================================================================
   // Templates
-  // =================================================================================================
+  // =====================================================================================
   (function(module){
 
-    function getValue(key, scope) {        
+    function getValue(key, scope) { 
       return key.split(/\.|\[|\]/)
                 .reduce( function(a, b){
                   if (b === '') return a;
-                  return a[b] === undefined ? (a === self ? '' : self) : a[b];
+                  if (b === 'this') return a;
+                  let value = a[b];
+                  if (value === undefined && a.outerScope) {
+                    value = getValue(b, a.outerScope);
+                  } 
+                  return value === undefined ? (a === self ? '' : self) : value;
                 }, scope || self );    
     }
    
-    function merge(template, o, key) {
+    function merge(template, o) {
       var __result = template.replace(/{([^{]+)?}/g, function (m, key) {
                       if(key.indexOf(':') > 0){
                         var __fn = key.split(':');                       
                         __fn[0]  = getValue(__fn[0], o);
                         __fn[1]  = getValue(__fn[1], o);                        
-                        return __fn[0](__fn[1], o);            
+                        return __fn[1](__fn[0], o);            
                       }
-                      var r   = getValue(key, o);
-                      if (typeof (r) == 'function'){                        
-                        return r(o);
-                      }else{                        
-                        return r;
-                      }                    
+                      var r = getValue(key, o);
+                      return typeof (r) == 'function' ? r(o) : r;                   
                     });     
       return __result;
     }
 
     function fillTemplate(e, scope) {
-      var _root      = module.$(e);
-      // =====================================================================================
-      // Determinar los elementos que enlazar
-      // =====================================================================================
+      var _root = module.$(e);
+      // =================================================================
+      // Elementos que hay que procesar en este nivel
+      // =================================================================
       var _repeaters = module.$('[xfor]', _root);
       var _repeatersElements = _repeaters.reduce((a, r) => {
         return a.concat(module.$('[xbind]', r));
@@ -250,29 +251,57 @@ let __module = {};
       var _elements = module.$('[xbind]', _root)
                             .filter(x => !_repeatersElements.includes(x));
       if (_root.attributes.xbind) _elements.push(_root);
+      // =================================================================
+      // Procesado de los elementos
+      // =================================================================
       _elements.forEach(function (child) {
-        String.trimValues(child.attributes.xbind.value.split(';'))
+        String.trimValues(child.attributes
+                               .xbind
+                               .value
+                               .split(';'))
               .forEach(function (token) {
-          if (token === ''){
-            //child.childNodes[0].textContent
-            return;
-          }
+          // =============================================================
+          // Nodos texto hijos de este elemento
+          // =============================================================
+          module.toArray(child.childNodes)
+                .where({ nodeType    : 3 })
+                .where({ textContent : /{[^{]+?}/g})
+                .forEach( text => {
+                  text.textContent = merge(text.textContent, scope);  
+                });
+          if (token === '') return;
           var _tokens = String.trimValues(token.split(':'));            
           var _params = String.trimValues(_tokens[1].split(/\s|\,/));
-          var _value = getValue(_params[0], scope);
+          var _value =  getValue(_params[0], scope);
+          // =============================================================================
+          // _value es una función de transformación:
+          //     xbind="textContent:Data.toUpper @Other,A,5"
+          // Que recibirá: Data.toUpper(scope, child, scope.Other, 'A', '5')
+          // =============================================================================
           if (typeof (_value) == 'function') {
             var _args = _params.slice(1)
-                               .reduce(function (a, p) {
-                                 // xbind="textContent:Data.fnTest @Other,A,5"
-                                 a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope) : p);
+                               .reduce(function (a, p) {                                
+                                 a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope)
+                                                           : p);
                                  return a;
                                }, [scope, child]);
             _value = _value.apply(scope, _args);
-          } else if (_params[1]) {
-            // xbind="innerHTML:Data.id Data.transformfn string
+          } 
+          // =============================================================================
+          // El segundo parámetro es una función
+          //     xbind="innerHTML:Data.id Data.toUpper @Other,A,5
+          // Que recibirá: Data.toUpper(_value, child, scope, scope.Other, 'A', '5')
+          // =============================================================================
+          else if (_params[1]) {
             var _func = getValue(_params[1], scope);
             try {
-              _value = _func(_value, _params[2], scope, child);
+              var _args = _params.slice(2)
+                                 .reduce(function (a, p) {                                
+                                   a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope)
+                                                             : p);
+                                   return a;
+                                 }, [_value, scope, child]);
+              _value = _func.apply(scope, _args);
             } catch (error) {
               console.log(error);
               _value = error.message;
@@ -281,54 +310,27 @@ let __module = {};
           child[_tokens[0]] = _value;
         });
       });
-
+      // ====================================================================
+      // Procesado de los repeaters
+      // ====================================================================
       _repeaters.map( repeater => {
-        let parent   = repeater.parentNode;
-        let tokens   = repeater.attributes.xfor.value.split(' in ');
-        let itemName = tokens[0];
-        let propname = tokens[1];
-        let data     = getValue(propname, scope);
+        let [itemName, propname] = String.trimValues(repeater.attributes
+                                                             .xfor
+                                                             .value
+                                                             .split(' in '));
+        let data = getValue(propname, scope);
         if (data && data != window) {
           data.map( (d, i) => {
-            let __scope = { index       : i,
-                            parentScope : scope };
+            let __scope = { index      : i,
+                            outerScope : scope };
             __scope[itemName] = _module.clone(d);
             let node = fillTemplate(repeater.cloneNode(true), __scope);
-            parent.insertBefore(node, repeater);
+            repeater.parentNode.insertBefore(node, repeater);
           }) 
         }
         return repeater;
       }).forEach( repeater => repeater.parentNode.removeChild(repeater) );
 
-      return e;
-    }
-
-    function fillTemplate_bak(e, scope) {
-      var _root = module.$(e);
-      var _elements = module.$('[xbind]', _root); 
-      if (_root.attributes.xbind) _elements.push(_root);
-      _elements.forEach(function (child) {
-        String.trimValues(child.attributes.xbind.value.split(';')).forEach(function (token) {
-          if (token === '') return;
-          var _tokens = String.trimValues(token.split(':'));            
-          var _params = String.trimValues(_tokens[1].split(/\s|\,/));
-          var _value = getValue(_params[0], scope);
-          if (typeof (_value) == 'function') {
-            var _args = _params.slice(1)
-                               .reduce(function (a, p) {
-                                 // xbind="textContent:Data.fnTest @Other,A,5"
-                                 a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope) : p);
-                                 return a;
-                               }, [scope, child]);
-            _value = _value.apply(scope, _args);
-          } else if (_params[1]) {
-            // xbind="innerHTML:Data.id Data.transformfn string
-            var _func = getValue(_params[1], scope);
-            _value = _func(_value, _params[2], scope, child);
-          }
-          child[_tokens[0]] = _value;
-        });
-      });
       return e;
     }
 
