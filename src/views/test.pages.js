@@ -37,7 +37,7 @@ let templatePage = function(ctx){
 
   function callOpenLibraApi(filter) {
     
-    const ENDPOINT = ('http://www.etnassoft.com/api/v1/get/?' +
+    const ENDPOINT = ('https://www.etnassoft.com/api/v1/get/?' +
                       'num_items=25&' +
                       '{0}' + 
                       '{1}' +

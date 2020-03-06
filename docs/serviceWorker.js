@@ -1,5 +1,5 @@
 
-const cacheName = 'notas-v5.3';
+const cacheName = 'notas-v5.4';
 
 const staticAssets = [
   './',
