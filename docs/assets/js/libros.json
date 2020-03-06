@@ -1,0 +1,1397 @@
+[
+  {
+    "ID": "17003",
+    "title": "Book of Scratch Vol. 1",
+    "author": "Varios",
+    "content": "The first ever Code Club book is here! With it, you&rsquo;ll learn how to code using Scratch, the block-based programming language. In each chapter you&rsquo;ll find instructions to build cool games, animations, and interactive stories. Your friendly robot guide will aid you step-by-step through each project and give you handy tips along the way.\r\n\r\n&lt;ul&gt;\r\n&lt;li&gt;Learn to code using Scratch, the block-based language&lt;\/li&gt;\r\n&lt;li&gt;Follow step-by-step guides to create games and animations&lt;\/li&gt;\r\n&lt;li&gt;Use the magic glasses* to reveal secret hints&lt;\/li&gt;\r\n&lt;li&gt;The spiral binding* allows the book to lay flat&lt;\/li&gt;\r\n&lt;\/ul&gt;",
+    "content_short": "The first ever Code Club book is here! With it, you&rsquo;ll learn how to code using Scratch, the block-based programming language. In each chapter you&rsquo;ll find instructions to build cool ...",
+    "publisher": "Raspberry Pi Press",
+    "publisher_date": "2018",
+    "pages": "111",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/book-of-scratch-vol-1\/",
+    "url_download": "https:\/\/openlibra.com\/book\/book-of-scratch-vol-1",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/12\/CC_Book_of_Scratch_v1-OpenLibra-339x461.gif",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/12\/CC_Book_of_Scratch_v1-OpenLibra-110x153.gif",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 3344,
+        "name": "DIY",
+        "nicename": "diy"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 240,
+        "name": "python",
+        "nicename": "python"
+      },
+      {
+        "tag_id": 1390,
+        "name": "Raspberry Pi",
+        "nicename": "raspberry-pi"
+      },
+      {
+        "tag_id": 608,
+        "name": "Scratch",
+        "nicename": "scratch"
+      },
+      {
+        "tag_id": 1325,
+        "name": "sensores",
+        "nicename": "sensores"
+      },
+      {
+        "tag_id": 803,
+        "name": "tecnolog\u00eda",
+        "nicename": "tecnologia"
+      }
+    ]
+  },
+  {
+    "ID": "17001",
+    "title": "The Official Raspberry Pi Beginner's Guide",
+    "author": "Varios",
+    "content": "The Raspberry Pi is a small, clever, British-built computer that&rsquo;s packed with potential. Made using the same technology you find in a smartphone, the Raspberry Pi is designed to help you learn coding, discover how computers work, and build your own amazing things. This book was written to show you just how easy it is to get started.\r\n\r\nLearn how to:\r\n&lt;ul&gt;\r\n&lt;li&gt;Set up your Raspberry Pi, install its operating system, and start using this tiny, fully functional computer.&lt;\/li&gt;\r\n&lt;li&gt;Start coding projects, with step-by-step guides using the Scratch and Python programming languages.&lt;\/li&gt;\r\n&lt;li&gt;Experiment with connecting electronic components and have fun creating amazing projects.&lt;\/li&gt;\r\n&lt;\/ul&gt;",
+    "content_short": "The Raspberry Pi is a small, clever, British-built computer that&rsquo;s packed with potential. Made using the same technology you find in a smartphone, the Raspberry Pi is designed to help ...",
+    "publisher": "Raspberry Pi Press",
+    "publisher_date": "2018",
+    "pages": "244",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/the-official-raspberry-pi-beginners-guide\/",
+    "url_download": "https:\/\/openlibra.com\/book\/the-official-raspberry-pi-beginners-guide",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/12\/Beginners_Guide_v1-OpenLibra-304x461.jpg",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/12\/Beginners_Guide_v1-OpenLibra-110x153.jpg",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 3344,
+        "name": "DIY",
+        "nicename": "diy"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 240,
+        "name": "python",
+        "nicename": "python"
+      },
+      {
+        "tag_id": 1390,
+        "name": "Raspberry Pi",
+        "nicename": "raspberry-pi"
+      },
+      {
+        "tag_id": 608,
+        "name": "Scratch",
+        "nicename": "scratch"
+      },
+      {
+        "tag_id": 1325,
+        "name": "sensores",
+        "nicename": "sensores"
+      },
+      {
+        "tag_id": 803,
+        "name": "tecnolog\u00eda",
+        "nicename": "tecnologia"
+      }
+    ]
+  },
+  {
+    "ID": "16976",
+    "title": "The official Raspberry Pi Projects Book Vol4",
+    "author": "Varios",
+    "content": "The Raspberry Pi is loved the world over by educators and makers thanks to it&rsquo;s tiny size and endless possibilities. We&rsquo;ve managed to stuff the fourth edition of the official Raspberry Pi Projects book with another 200 pages of inspiring projects, practical tutorials, and definitive reviews so you can find out why people like it so much.\r\n\r\n&lt;ul&gt;\r\n&lt;li&gt;Get involved with the amazing and very active Raspberry Pi community&lt;\/li&gt;\r\n&lt;li&gt;Be inspired by incredible projects made by other people&lt;\/li&gt;\r\n&lt;li&gt;Learn how to make with your Raspberry Pi with our tutorials&lt;\/li&gt;\r\n&lt;li&gt;Find out about the top kits and accessories for your Pi projects&lt;\/li&gt;\r\n&lt;li&gt;And much, much more!&lt;\/li&gt;\r\n&lt;\/ul&gt;\r\n",
+    "content_short": "The Raspberry Pi is loved the world over by educators and makers thanks to it&rsquo;s tiny size and endless possibilities. We&rsquo;ve managed to stuff the fourth edition of the official ...",
+    "publisher": "MagPi",
+    "publisher_date": "2018",
+    "pages": "204",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/the-official-raspberry-pi-projects-book-vol4\/",
+    "url_download": "https:\/\/openlibra.com\/book\/the-official-raspberry-pi-projects-book-vol4",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/11\/MagPi_Projects_Book_v4-OpenLibra-325x461.jpg",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/11\/MagPi_Projects_Book_v4-OpenLibra-110x153.jpg",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 1157,
+        "name": "Hardware",
+        "nicename": "hardware-libros_programacion"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 2999,
+        "name": "C",
+        "nicename": "c"
+      },
+      {
+        "tag_id": 3344,
+        "name": "DIY",
+        "nicename": "diy"
+      },
+      {
+        "tag_id": 567,
+        "name": "educaci\u00f3n",
+        "nicename": "educacion"
+      },
+      {
+        "tag_id": 3041,
+        "name": "MagPi",
+        "nicename": "magpi"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 1390,
+        "name": "Raspberry Pi",
+        "nicename": "raspberry-pi"
+      },
+      {
+        "tag_id": 803,
+        "name": "tecnolog\u00eda",
+        "nicename": "tecnologia"
+      }
+    ]
+  },
+  {
+    "ID": "16960",
+    "title": "Learn Programming",
+    "author": "Antti Salonen",
+    "content": "This book is aimed at readers who are interested in software development but have very little to no prior experience.\r\n\r\nThe book doesn&rsquo;t have any new information compared to what you can find online or in other books; it has two purposes:\r\n\r\n&lt;ol&gt;\r\n&lt;li&gt;It includes what I think is important for software development from a large variety of topics, saving the reader from the dilemma &ldquo;what should I learn&rdquo;&lt;\/li&gt;\r\n&lt;li&gt;It collates relevant information from lots of sources in one book, saving the reader from going through several separate web sites and books&lt;\/li&gt;\r\n&lt;\/ol&gt;\r\n\r\nIt aims to contain an overview of almost everything that I think is important for software developers. It doesn&rsquo;t contain everything; but it should contain enough for the reader to understand software development, and to be able to read about and understand any topic in further detail as needed.\r\n\r\nThe book focuses on teaching the core principles around software development. It uses several technologies to this goal (e.g. C, Python, JavaScript, HTML, etc.) but is not a book about the technologies themselves. The reader will learn the basics (or in some cases more) of various technologies along the way, but the focus is on building a foundation for software development.",
+    "content_short": "This book is aimed at readers who are interested in software development but have very little to no prior experience.\r\n\r\nThe book doesn&rsquo;t have any new information compared to what you ...",
+    "publisher": "Autoedici\u00f3n",
+    "publisher_date": "2018",
+    "pages": "465",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/learn-programming\/",
+    "url_download": "https:\/\/openlibra.com\/book\/learn-programming",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/10\/Learn-Programming-Antti-Salonen-OpenLibra-323x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/10\/Learn-Programming-Antti-Salonen-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 277,
+        "name": "bases de datos",
+        "nicename": "bases-de-datos"
+      },
+      {
+        "tag_id": 2999,
+        "name": "C",
+        "nicename": "c"
+      },
+      {
+        "tag_id": 1076,
+        "name": "Cplusplus",
+        "nicename": "cplusplus"
+      },
+      {
+        "tag_id": 2996,
+        "name": "HTML",
+        "nicename": "html"
+      },
+      {
+        "tag_id": 2986,
+        "name": "Javascript",
+        "nicename": "javascript"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 760,
+        "name": "programaci\u00f3n web",
+        "nicename": "programacion-web"
+      },
+      {
+        "tag_id": 240,
+        "name": "python",
+        "nicename": "python"
+      },
+      {
+        "tag_id": 71,
+        "name": "software",
+        "nicename": "software"
+      },
+      {
+        "tag_id": 374,
+        "name": "sql",
+        "nicename": "sql"
+      },
+      {
+        "tag_id": 381,
+        "name": "UNIX",
+        "nicename": "unix"
+      }
+    ]
+  },
+  {
+    "ID": "16935",
+    "title": "Paradigms of Artificial Intelligence Programming: Case studies in Common Lisp",
+    "author": "Peter Norvig",
+    "content": "This book is concerned with three related topics: the field of artificial intelligence, or AI; the skill of computer programming; and the programming language Common Lisp. Careful readers of this book can expect to come away with an appreciation of the major questions and techniques of AI, an understanding of some important AI programs, and an ability to read, modify, and create programs using Common Lisp. The examples in this book are designed to be clear examples of good programming style&mdash;paradigms of programming. They are also paradigms of AI research&mdash;historically significant programs that use widely applicable techniques to solve important problems.\r\n\r\nJust as a liberal arts education includes a course in &quot;the great books&quot; of a culture, so this book is, at one level, a course in &quot;the great programs&quot; that define the AI culture.",
+    "content_short": "This book is concerned with three related topics: the field of artificial intelligence, or AI; the skill of computer programming; and the programming language Common Lisp. Careful readers of this ...",
+    "publisher": "Morgan Kaufmann Publishers",
+    "publisher_date": "1992",
+    "pages": "948",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/paradigms-of-artificial-intelligence-programming-case-studies-in-common-lisp\/",
+    "url_download": "https:\/\/openlibra.com\/book\/paradigms-of-artificial-intelligence-programming-case-studies-in-common-lisp",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/09\/Paradigms-of-Artificial-Intelligence-OpenLibra-350x461.jpg",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/09\/Paradigms-of-Artificial-Intelligence-OpenLibra-110x153.jpg",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 264,
+        "name": "Algoritmos",
+        "nicename": "algoritmos"
+      },
+      {
+        "category_id": 759,
+        "name": "Lisp",
+        "nicename": "lisp"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 692,
+        "name": "AI",
+        "nicename": "ai"
+      },
+      {
+        "tag_id": 828,
+        "name": "algoritmia",
+        "nicename": "algoritmia"
+      },
+      {
+        "tag_id": 2993,
+        "name": "Ciencia",
+        "nicename": "ciencia"
+      },
+      {
+        "tag_id": 1771,
+        "name": "Common LISP",
+        "nicename": "common-lisp"
+      },
+      {
+        "tag_id": 267,
+        "name": "IA",
+        "nicename": "ia"
+      },
+      {
+        "tag_id": 266,
+        "name": "inteligencia artificial",
+        "nicename": "inteligencia_artificial"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      }
+    ]
+  },
+  {
+    "ID": "16852",
+    "title": "Swift Notes for Professionals",
+    "author": "Varios",
+    "content": "This Swift Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Swift Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "291",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/swift-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/swift-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/SwiftNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/SwiftNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 423,
+        "name": "Apple",
+        "nicename": "apple"
+      },
+      {
+        "tag_id": 962,
+        "name": "iOS",
+        "nicename": "ios"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 3358,
+        "name": "Swift",
+        "nicename": "swift"
+      }
+    ]
+  },
+  {
+    "ID": "16868",
+    "title": "Excel VBA Notes for Professionals",
+    "author": "Varios",
+    "content": "This Excel VBA Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Excel VBA Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "128",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/excel-vba-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/excel-vba-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/ExcelVBANotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/ExcelVBANotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 2048,
+        "name": "Excel",
+        "nicename": "excel"
+      },
+      {
+        "tag_id": 262,
+        "name": "Microsoft",
+        "nicename": "microsoft"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 342,
+        "name": "Visual Basic",
+        "nicename": "visual_basic"
+      }
+    ]
+  },
+  {
+    "ID": "16870",
+    "title": "Entity Framework Notes for Professionals",
+    "author": "Varios",
+    "content": "This Entity Framework Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Entity Framework Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "94",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/entity-framework-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/entity-framework-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/EntityFrameworkNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/EntityFrameworkNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 1413,
+        "name": "ADO",
+        "nicename": "ado"
+      },
+      {
+        "tag_id": 710,
+        "name": "datos",
+        "nicename": "datos"
+      },
+      {
+        "tag_id": 3360,
+        "name": "Entity Framework",
+        "nicename": "entity-framework"
+      },
+      {
+        "tag_id": 448,
+        "name": "framework",
+        "nicename": "framework"
+      },
+      {
+        "tag_id": 262,
+        "name": "Microsoft",
+        "nicename": "microsoft"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      }
+    ]
+  },
+  {
+    "ID": "16872",
+    "title": "Kotlin Notes for Professionals",
+    "author": "Varios",
+    "content": "This Kotlin Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Kotlin Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "94",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/kotlin-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/kotlin-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/KotlinNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/KotlinNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 448,
+        "name": "framework",
+        "nicename": "framework"
+      },
+      {
+        "tag_id": 97,
+        "name": "java",
+        "nicename": "java"
+      },
+      {
+        "tag_id": 2986,
+        "name": "Javascript",
+        "nicename": "javascript"
+      },
+      {
+        "tag_id": 3361,
+        "name": "Kotlin",
+        "nicename": "kotlin"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      }
+    ]
+  },
+  {
+    "ID": "16850",
+    "title": "Spring Framework Notes for Professionals",
+    "author": "Varios",
+    "content": "This Spring Framework Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Spring Framework Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "68",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/spring-framework-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/spring-framework-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/SpringFrameworkNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/SpringFrameworkNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 222,
+        "name": "Java",
+        "nicename": "programacion_java"
+      },
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 2758,
+        "name": "frameworks",
+        "nicename": "frameworks"
+      },
+      {
+        "tag_id": 97,
+        "name": "java",
+        "nicename": "java"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 455,
+        "name": "Spring",
+        "nicename": "spring"
+      },
+      {
+        "tag_id": 54,
+        "name": "xml",
+        "nicename": "xml-2"
+      }
+    ]
+  },
+  {
+    "ID": "16854",
+    "title": "VBA Notes for Professionals",
+    "author": "Varios",
+    "content": "This VBA Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This VBA Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "202",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/vba-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/vba-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/VBANotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/VBANotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 262,
+        "name": "Microsoft",
+        "nicename": "microsoft"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 3359,
+        "name": "VBA",
+        "nicename": "vba"
+      },
+      {
+        "tag_id": 342,
+        "name": "Visual Basic",
+        "nicename": "visual_basic"
+      }
+    ]
+  },
+  {
+    "ID": "16874",
+    "title": "Xamarin.Forms Notes for Professionals",
+    "author": "Varios",
+    "content": "This Xamarin.Forms Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Xamarin.Forms Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "181",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/xamarin-forms-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/xamarin-forms-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/XamarinFormsNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/XamarinFormsNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 221,
+        "name": "Dispositivos M\u00f3viles",
+        "nicename": "dispositivos_moviles"
+      },
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 3000,
+        "name": ".NET",
+        "nicename": "net"
+      },
+      {
+        "tag_id": 132,
+        "name": "android",
+        "nicename": "android"
+      },
+      {
+        "tag_id": 467,
+        "name": "dispositivos moviles",
+        "nicename": "dispositivos-moviles"
+      },
+      {
+        "tag_id": 962,
+        "name": "iOS",
+        "nicename": "ios"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 3362,
+        "name": "Xamarin",
+        "nicename": "xamarin"
+      }
+    ]
+  },
+  {
+    "ID": "16858",
+    "title": "DotNET Framework Notes for Professionals",
+    "author": "Varios",
+    "content": "This .NET Framework Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This .NET Framework Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "192",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/dotnet-framework-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/dotnet-framework-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/DotNETFrameworkNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/DotNETFrameworkNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 305,
+        "name": ".NET",
+        "nicename": "net"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 3000,
+        "name": ".NET",
+        "nicename": "net"
+      },
+      {
+        "tag_id": 262,
+        "name": "Microsoft",
+        "nicename": "microsoft"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      }
+    ]
+  },
+  {
+    "ID": "16834",
+    "title": "MATLAB Notes for Professionals",
+    "author": "Varios",
+    "content": "This MATLAB Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This MATLAB Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "182",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/matlab-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/matlab-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/MATLABNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/MATLABNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 368,
+        "name": "Herramientas",
+        "nicename": "software_libre_herramientas"
+      },
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      },
+      {
+        "category_id": 232,
+        "name": "Software Libre",
+        "nicename": "libros_software_libre"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 259,
+        "name": "herramientas",
+        "nicename": "herramientas-2"
+      },
+      {
+        "tag_id": 296,
+        "name": "matem\u00e1ticas",
+        "nicename": "matematicas"
+      },
+      {
+        "tag_id": 1083,
+        "name": "Matlab",
+        "nicename": "matlab"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 70,
+        "name": "software libre",
+        "nicename": "software_libre"
+      }
+    ]
+  },
+  {
+    "ID": "16790",
+    "title": "Ruby Notes for Professionals",
+    "author": "Varios",
+    "content": "This Ruby Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Ruby Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "235",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/ruby-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/ruby-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/RubyNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/RubyNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      },
+      {
+        "category_id": 228,
+        "name": "Ruby",
+        "nicename": "programacion_ruby"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 2997,
+        "name": "Ruby",
+        "nicename": "programacion_ruby"
+      }
+    ]
+  },
+  {
+    "ID": "16806",
+    "title": "JavaScript Notes for Professional",
+    "author": "Varios",
+    "content": "This JavaScript Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This JavaScript Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "490",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/javascript-notes-for-professional\/",
+    "url_download": "https:\/\/openlibra.com\/book\/javascript-notes-for-professional",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/JavaScriptNotesForProfessionals-Openlibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/JavaScriptNotesForProfessionals-Openlibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 223,
+        "name": "Javascript \/ AJAX",
+        "nicename": "programacion_javascript_ajax"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 287,
+        "name": "desarrollo web",
+        "nicename": "desarrollo-web"
+      },
+      {
+        "tag_id": 2986,
+        "name": "Javascript",
+        "nicename": "javascript"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 760,
+        "name": "programaci\u00f3n web",
+        "nicename": "programacion-web"
+      }
+    ]
+  },
+  {
+    "ID": "16838",
+    "title": "Objective-C Notes for Professionals",
+    "author": "Varios",
+    "content": "This Objective-C Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Objective-C Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "129",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/objective-c-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/objective-c-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/ObjectiveCNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/ObjectiveCNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 221,
+        "name": "Dispositivos M\u00f3viles",
+        "nicename": "dispositivos_moviles"
+      },
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 467,
+        "name": "dispositivos moviles",
+        "nicename": "dispositivos-moviles"
+      },
+      {
+        "tag_id": 962,
+        "name": "iOS",
+        "nicename": "ios"
+      },
+      {
+        "tag_id": 301,
+        "name": "Objective C",
+        "nicename": "objective_c"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      }
+    ]
+  },
+  {
+    "ID": "16784",
+    "title": "PowerShell Notes for Professionals",
+    "author": "Varios",
+    "content": "This PowerShell Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This PowerShell Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "184",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/powershell-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/powershell-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/PowerShellNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/PowerShellNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 413,
+        "name": "Bash",
+        "nicename": "bash"
+      },
+      {
+        "tag_id": 2223,
+        "name": "CLI",
+        "nicename": "cli"
+      },
+      {
+        "tag_id": 259,
+        "name": "herramientas",
+        "nicename": "herramientas-2"
+      },
+      {
+        "tag_id": 1788,
+        "name": "PowerShell",
+        "nicename": "powershell"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      }
+    ]
+  },
+  {
+    "ID": "16786",
+    "title": "Python Notes for Professionals",
+    "author": "Varios",
+    "content": "This Python Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Python Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "816",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/python-notes-for-professionals-2\/",
+    "url_download": "https:\/\/openlibra.com\/book\/python-notes-for-professionals-2",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/PythonNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/PythonNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      },
+      {
+        "category_id": 227,
+        "name": "Python",
+        "nicename": "programacion_python"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 240,
+        "name": "python",
+        "nicename": "python"
+      }
+    ]
+  },
+  {
+    "ID": "16788",
+    "title": "React Native Notes for Professionals",
+    "author": "Varios",
+    "content": "This React Native Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This React Native Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "91",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/react-native-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/react-native-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/ReactNativeNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/ReactNativeNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 223,
+        "name": "Javascript \/ AJAX",
+        "nicename": "programacion_javascript_ajax"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 2986,
+        "name": "Javascript",
+        "nicename": "javascript"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 760,
+        "name": "programaci\u00f3n web",
+        "nicename": "programacion-web"
+      },
+      {
+        "tag_id": 3355,
+        "name": "React",
+        "nicename": "react"
+      },
+      {
+        "tag_id": 3356,
+        "name": "React Native",
+        "nicename": "react-native"
+      }
+    ]
+  },
+  {
+    "ID": "16804",
+    "title": "Java Notes for Professionals",
+    "author": "Varios",
+    "content": "This Java Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Java Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "982",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/java-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/java-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/JavaNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/JavaNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 222,
+        "name": "Java",
+        "nicename": "programacion_java"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 97,
+        "name": "java",
+        "nicename": "java"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      }
+    ]
+  },
+  {
+    "ID": "16792",
+    "title": "Ruby on Rails Notes for Professionals",
+    "author": "Varios",
+    "content": "This Ruby on Rails Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Ruby on Rails Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "231",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/ruby-on-rails-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/ruby-on-rails-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/RubyOnRailsNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/RubyOnRailsNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      },
+      {
+        "category_id": 228,
+        "name": "Ruby",
+        "nicename": "programacion_ruby"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 2758,
+        "name": "frameworks",
+        "nicename": "frameworks"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 760,
+        "name": "programaci\u00f3n web",
+        "nicename": "programacion-web"
+      },
+      {
+        "tag_id": 2997,
+        "name": "Ruby",
+        "nicename": "programacion_ruby"
+      },
+      {
+        "tag_id": 541,
+        "name": "Ruby on Rails",
+        "nicename": "ruby-on-rails"
+      }
+    ]
+  },
+  {
+    "ID": "16796",
+    "title": "TypeScript Notes for Professionals",
+    "author": "Varios",
+    "content": "This TypeScript Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This TypeScript Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "97",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/typescript-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/typescript-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/TypeScriptNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/TypeScriptNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 223,
+        "name": "Javascript \/ AJAX",
+        "nicename": "programacion_javascript_ajax"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 2986,
+        "name": "Javascript",
+        "nicename": "javascript"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 760,
+        "name": "programaci\u00f3n web",
+        "nicename": "programacion-web"
+      },
+      {
+        "tag_id": 2247,
+        "name": "TypeScript",
+        "nicename": "typescript"
+      }
+    ]
+  },
+  {
+    "ID": "16866",
+    "title": "Hibernate Notes for Professionals",
+    "author": "Varios",
+    "content": "This Hibernate Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This Hibernate Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow.\r\n\r\nText content is released under Creative Commons BY-SA, ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "39",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/hibernate-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/hibernate-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/HibernateNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/HibernateNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 222,
+        "name": "Java",
+        "nicename": "programacion_java"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 448,
+        "name": "framework",
+        "nicename": "framework"
+      },
+      {
+        "tag_id": 1341,
+        "name": "Hibernate",
+        "nicename": "hibernate"
+      },
+      {
+        "tag_id": 97,
+        "name": "java",
+        "nicename": "java"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      }
+    ]
+  },
+  {
+    "ID": "16808",
+    "title": "jQuery Notes for Professionals",
+    "author": "Varios",
+    "content": "This jQuery Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons BY-SA, see credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified.",
+    "content_short": "This jQuery Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. \r\n\r\nText content is released under Creative Commons ...",
+    "publisher": "GoalKicker.com",
+    "publisher_date": "2018",
+    "pages": "67",
+    "language": "english",
+    "url_details": "http:\/\/www.etnassoft.com\/biblioteca\/jquery-notes-for-professionals\/",
+    "url_download": "https:\/\/openlibra.com\/book\/jquery-notes-for-professionals",
+    "cover": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/jQueryNotesForProfessionals-OpenLibra-326x461.png",
+    "thumbnail": "https:\/\/olcovers2.blob.core.windows.net\/coverswp\/2018\/05\/jQueryNotesForProfessionals-OpenLibra-110x153.png",
+    "num_comments": "0",
+    "categories": [
+      {
+        "category_id": 223,
+        "name": "Javascript \/ AJAX",
+        "nicename": "programacion_javascript_ajax"
+      },
+      {
+        "category_id": 329,
+        "name": "jQuery",
+        "nicename": "jquery_libros_programacion"
+      },
+      {
+        "category_id": 220,
+        "name": "Programaci\u00f3n",
+        "nicename": "libros_programacion"
+      }
+    ],
+    "tags": [
+      {
+        "tag_id": 287,
+        "name": "desarrollo web",
+        "nicename": "desarrollo-web"
+      },
+      {
+        "tag_id": 2758,
+        "name": "frameworks",
+        "nicename": "frameworks"
+      },
+      {
+        "tag_id": 2986,
+        "name": "Javascript",
+        "nicename": "javascript"
+      },
+      {
+        "tag_id": 2987,
+        "name": "jQuery",
+        "nicename": "jquery"
+      },
+      {
+        "tag_id": 32,
+        "name": "programaci\u00f3n",
+        "nicename": "programacion"
+      },
+      {
+        "tag_id": 760,
+        "name": "programaci\u00f3n web",
+        "nicename": "programacion-web"
+      }
+    ]
+  }
+]

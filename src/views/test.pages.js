@@ -36,22 +36,36 @@ let templatePage = function(ctx){
   }
 
   function callOpenLibraApi(filter) {
-    
-    const ENDPOINT = ('https://www.etnassoft.com/api/v1/get/?' +
-                      'num_items=25&' +
-                      '{0}' + 
-                      '{1}' +
-                      'decode=true').format((filter.tipo === 'cat' ? 'category={0}&'.format(filter.id) : ''),
-                                            (filter.tipo === 'tag' ? 'any_tags=[{0}]&'.format(filter.id) : ''));
+
     itemsContainer.innerHTML = '';
-    jsonpRaquest(ENDPOINT)
-       .then( JSON.parse)
-       .then( result => {                                               
-         mergeData(result.sortBy('title'));    
+     pol.ajax
+       .get('./assets/js/libros.json', req => {
+         req.setRequestHeader('Accept', 'application/javascript');
+       })
+       .then(text => JSON.parse(text))
+       .then(result => {
+          mergeData(result.sortBy('title')); 
        })
        .catch( e => {
          console.log(e);
        });
+
+
+    //const ENDPOINT = ('http://www.etnassoft.com/api/v1/get/?' +
+    //                  'num_items=25&' +
+    //                  '{0}' + 
+    //                  '{1}' +
+    //                  'decode=true').format((filter.tipo === 'cat' ? 'category={0}&'.format(filter.id) : ''),
+    //                                        (filter.tipo === 'tag' ? 'any_tags=[{0}]&'.format(filter.id) : ''));
+    //itemsContainer.innerHTML = '';
+    //jsonpRaquest(ENDPOINT)
+    //   .then( JSON.parse)
+    //   .then( result => {                                               
+    //     mergeData(result.sortBy('title'));    
+    //   })
+    //   .catch( e => {
+    //     console.log(e);
+    //   });
     
   }
   
