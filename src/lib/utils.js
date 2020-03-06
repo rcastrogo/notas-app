@@ -17,18 +17,27 @@ function addEventListeners(container, handlers, context) {
          let name   = selector.replace('[', '').replace(']', '');
          let value  = e.attributes[name].value
          let tokens = value.split(':');
-         // =======================================================
+         // =============================================================
          // on-click
-         // =======================================================
+         // =============================================================
          if (index === 0) {
-           let fn = handlers[value] || 
-                    pol.templates.getValue(value, context);
-           e.onclick = (event) => fn(e, event);
+           let fn = handlers[tokens[0]] || 
+                    pol.templates.getValue(tokens[0], context);
+           e.onclick = (event) =>{
+            let _args = tokens.slice(1)
+                              .reduce(function (a, p) {                                
+                                a.push(p.charAt(0) == '@' 
+                                       ? getValue(p.slice(1), context)
+                                       : p);
+                                return a;
+                              }, [e, event]);
+             return fn.apply(context, _args);
+           }
            return;
          }
-         // =======================================================
+         // =============================================================
          // on-publish
-         // =======================================================
+         // =============================================================
          if (index === 1) {
            let topic = pol.templates.getValue(tokens[0], pubsub);
            pubsub.subscribe(topic, (message, data) => {
@@ -44,9 +53,9 @@ function addEventListeners(container, handlers, context) {
              }
            })
          }
-         // =======================================================
+         // =============================================================
          // route-link
-         // =======================================================
+         // =============================================================
          if (index === 2) {
            e.onclick = function(e){
              let router = context.router;
