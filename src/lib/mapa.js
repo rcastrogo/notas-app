@@ -104,6 +104,11 @@ let __module = {};
                                    : (typeof __context[key] === "undefined") ? module.templates.getValue(key, __context)
                                                                              : __context[key]; 
         });
+      },
+      htmlDecode  : function () {
+        return new DOMParser().parseFromString(this, "text/html")
+                              .documentElement
+                              .textContent;
       }
     });      
   }(_module));      
@@ -191,9 +196,11 @@ let __module = {};
         });
         return r;
       },
-      groupBy : function(prop){
+      groupBy : function(sentence){
+        var __sentence = sentence;    
+        if(module.isString(sentence)) __sentence = function(a){ return a[sentence]; }
         return this.reduce(function(groups, item) {
-          var val = item[prop];
+          var val = __sentence(item);
           (groups[val] = groups[val] || []).push(item);
           return groups
         }, {})
@@ -217,6 +224,14 @@ let __module = {};
                 .reduce( function(a, b){
                   if (b === '') return a;
                   if (b === 'this') return a;
+                  // =============================================
+                  // Prototype
+                  // =============================================
+                  if(b.indexOf('%') > -1){
+                    let tokens = b.split('%');
+                    let value = a[tokens[0]];
+                    return value.__proto__[tokens[1]].apply(value);
+                  }
                   let value = a[b];
                   if (value === undefined && a.outerScope) {
                     value = getValue(b, a.outerScope);

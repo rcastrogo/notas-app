@@ -27,7 +27,7 @@ function addEventListeners(container, handlers, context) {
             let _args = tokens.slice(1)
                               .reduce(function (a, p) {                                
                                 a.push(p.charAt(0) == '@' 
-                                       ? getValue(p.slice(1), context)
+                                       ? pol.templates.getValue(p.slice(1), context)
                                        : p);
                                 return a;
                               }, [e, event]);

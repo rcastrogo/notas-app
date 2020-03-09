@@ -102,7 +102,7 @@ function showContent(){
     // ===============================================
     // Init
     // ===============================================  
-    current = viewBuilder({router});
+    current = viewBuilder({router, components});
     currentBuilder = viewBuilder;
     if(current.init) current.init(); 
     // ===============================================

@@ -3,7 +3,7 @@ import pubsub from "../lib/pubSub.Service";
 import utils from "../lib/utils";
 
 
-const TOPICS     = pubsub.TOPICS;
+const TOPICS = pubsub.TOPICS;
 
 const __TEMPLATE = `  
 <div class="w3-container w3-margin-bottom w3-animate-bottom">

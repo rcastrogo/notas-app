@@ -52,6 +52,7 @@ export default {
   TOPICS : { 
     VIEW_CHANGE      : 'view:change',
     VALUE_CHANGE     : 'value:change',
-    MUNICIPIO_CHANGE : 'municipio:change'
+    MUNICIPIO_CHANGE : 'municipio:change',
+    WINDOW_SCROLL    : 'window.scroll'
   }
 }

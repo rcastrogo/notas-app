@@ -1,5 +1,7 @@
 import pol from "../lib/mapa.js";
+import pubsub from "../lib/pubSub.Service";
 
+const TOPICS     = pubsub.TOPICS;
 const __template = ``;
 
 export default function(){
@@ -58,6 +60,7 @@ function initScroll(){
       } else {
         navbar.classList.remove("sticky");
       }
+      pubsub.publish(TOPICS.WINDOW_SCROLL, window);
     };  
   }
   window.addEventListener("resize", debounce(initScroll, 150), false);

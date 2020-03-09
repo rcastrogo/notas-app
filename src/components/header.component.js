@@ -6,6 +6,7 @@ const __template = `
 
 export default function(){
   return {
+    root   : {},
     title  : 'Notas App',
     init   : function(container){},
     render : function(container){
@@ -14,7 +15,8 @@ export default function(){
         innerHTML : __template.format(this),
         className : 'w3-container w3-teal'
       }
-      return pol.build('header', options);
+      this.root = pol.build('header', options);
+      return this.root;
     },
     mounted: function(container){
       
