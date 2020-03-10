@@ -1,5 +1,3 @@
-import pol from "./mapa.js";
-
 
 let topics = {};
 let subUid = -1;

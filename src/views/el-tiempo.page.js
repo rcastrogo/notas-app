@@ -32,10 +32,10 @@ function aemetComponent() {
 
   const __TEMPLATE = `
   <div class="w3-container w3-teal w3-center w3-small w3-padding">
-    {fn.formatFecha:elaborado}
+    {elaborado:fn.formatFecha}
   </div>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[0].fecha:day}</h3>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[0].fecha}</h3>
     <div>{fn.showDay:rows-0}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[0].orto}</div>
@@ -44,7 +44,7 @@ function aemetComponent() {
   </div>
   <br/>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[1].fecha:day}</h3>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[1].fecha}</h3>
     <div>{fn.showDay:rows-1}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[1].orto}</div>
@@ -53,7 +53,7 @@ function aemetComponent() {
   </div>
   <br/>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[2].fecha:day}</h3>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[2].fecha}</h3>
     <div>{fn.showDay:rows-2}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[2].orto}</div>
@@ -114,11 +114,11 @@ function aemetComponent() {
     mounted : function(container){ },
     withData : function(data){
       let ref_date = (function(now) { 
-        return '{0#0000}-{1#00}-{2#00}-{3#00}'.format(
-                  now.getFullYear(), 
-                  now.getMonth() + 1, 
-                  now.getDate(),
-                  now.getHours());
+        return '{0|paddingLeft,0000}-{1|paddingLeft,00}-{2|paddingLeft,00}-{3|paddingLeft,00}'.format(
+                  '' + now.getFullYear(), 
+                  '' + (now.getMonth() + 1), 
+                  '' + now.getDate(),
+                  '' + now.getHours());
       }(new Date()));
       this.data = JSON.parse(data)[0];
       this.data.fn = fn;

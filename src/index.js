@@ -15,7 +15,7 @@ import listPage from "./views/list.page";
 import aboutPage from "./views/about.page";
 import notePage from "./views/new-item.page";
 import elTiempoPage from "./views/el-tiempo.page";
-import {templatePage} from "./views/test.pages";
+import {templatePage, getValueInfoPage} from "./views/test.pages";
 
 const TOPICS = pubsub.TOPICS;
 
@@ -67,6 +67,7 @@ router.addRoute('list',  /list$/,            listPage)
       .addRoute('note',  /note\/(\d{13})$/,  notePage)
       .addRoute('el-tiempo',  /el-tiempo$/,  elTiempoPage)
       .addRoute('templates', /templates$/,   templatePage)
+      .addRoute('get-value', /templates\/get-value$/,  getValueInfoPage)
       .addRoute('',      /$/,                homePage);
 
 // ==============================================================================

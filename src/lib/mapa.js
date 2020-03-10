@@ -87,22 +87,28 @@ let __module = {};
       format      : function(){
         var __arg     = arguments;
         var __context = __arg[__arg.length - 1] || self;   
-        return this.replace(/\{(\d+|[^{]+)\}/g, function(m, key){
-          if(key.indexOf('#') > 0){
-            let __tokens = key.split('#');
-            let value  = __arg[__tokens[0]];
-            let cmd    = __tokens[1];
-            return (value + '').paddingLeft(cmd);
+        return this.replace(/\{(\d+|[^{]+)\}/g, function(m, k){
+          let [key, fnName] = String.trimValues(k.split(':'));
+          let value;
+          if(/^\d+/.test(key)){
+            let tokens = String.trimValues(key.split('|'));
+            let index  = tokens[0];
+            let name   = tokens.length == 0 ? 'data'
+                                            : ['data'].concat(tokens.slice(1))
+                                                      .join('|');
+            let scope  = { data : __arg[index], outerScope : __context };
+            value = module.templates.getValue(name, scope);
+          }else{
+            value = module.templates.getValue(key, __context);
           }
-          if(key.indexOf(':') > 0){
-            var __fn = key.split(':');
-            __fn[0]  = module.templates.getValue(__fn[0], __context);
-            __fn[1]  = module.templates.getValue(__fn[1], __context);
-            return __fn[0](__fn[1], __context, __fn.slice(2));            
+          if (module.isFunction(value)) {
+            return value(module.templates.getValue(fnName, __context), __context, fnName);
           }
-          return /^\d+$/.test(key) ? __arg[key]
-                                   : (typeof __context[key] === "undefined") ? module.templates.getValue(key, __context)
-                                                                             : __context[key]; 
+          if(fnName){
+            var __fn = module.templates.getValue(fnName, __context);                                
+            return __fn(value, __context, __arg);            
+          }
+          return value;
         });
       },
       htmlDecode  : function () {
@@ -224,19 +230,36 @@ let __module = {};
                 .reduce( function(a, b){
                   if (b === '') return a;
                   if (b === 'this') return a;
-                  // =============================================
-                  // Prototype
-                  // =============================================
-                  if(b.indexOf('%') > -1){
-                    let tokens = b.split('%');
-                    let value = a[tokens[0]];
-                    return value.__proto__[tokens[1]].apply(value);
+                  let name = b;
+                  // =====================================================
+                  // Prototype libro.name|htmlDecode,p1,p2,...
+                  // =====================================================
+                  let apply_proto = b.indexOf('|') > -1;
+                  let arg  = [];
+                  if(apply_proto){
+                    let tokens = String.trimValues(b.split('|'));
+                    name = tokens[0];
+                    arg  = String.trimValues(tokens[1].split(','));
                   }
-                  let value = a[b];
+                  let value = a[name];
+                  // =====================================================
+                  // Buscar la propiedad en un ambito superior si existe
+                  // =====================================================
                   if (value === undefined && a.outerScope) {
-                    value = getValue(b, a.outerScope);
-                  } 
-                  return value === undefined ? (a === self ? '' : self) : value;
+                    value = getValue(name, a.outerScope);
+                  }
+                  // =====================================================
+                  // Existe el valor. Se le aplica el prototipo si procede
+                  // =====================================================
+                  if (value != undefined) {
+                    return apply_proto ? value.__proto__[arg[0]]
+                                              .apply(value, arg.slice(1))
+                                       : value;
+                  }
+                  // =====================================================
+                  // window/self o cadena vacía
+                  // =====================================================
+                  return a === self ? '' : self;
                 }, scope || self );    
     }
    

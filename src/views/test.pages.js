@@ -154,7 +154,7 @@ let templatePage = function(ctx){
             <b>Año</b> {libro.publisher_date}<br/>
             <b>Editorial</b> {libro.publisher}<br/>
             <b>Idioma</b> {libro.language}
-            <div xbind="id:fn.formatId @libro.ID,book;innerHTML:libro.content_short%htmlDecode" 
+            <div xbind="id:fn.formatId @libro.ID,book;innerHTML:libro.content_short|htmlDecode" 
                  on-click="showAllContent" 
                  style="clear:both;margin-block-start: 0; font-style: oblique;font-family: monospace;">
             </div>
@@ -378,6 +378,131 @@ let templatePage = function(ctx){
 
 }
 
+let getValueInfoPage = function (ctx) {
+
+  const __TEMPLATE = `
+  <div class="w3-container w3-margin-bottom w3-animate-left">
+    <h1>Templates</h1>
+    <p style="text-indent:1em;">
+      Documentación sobre los métodos y los parámetros utilizados en la plantillas.
+    </p>
+    <h3>getValue</h3>
+    <p style="text-indent:1em;">
+      El método <span class="w3-bold w3-italic">getValue</span> permite obtener el valor de un objeto por medio de una cadena de texto.
+      El valor recuperado puede ser a su vez un objeto o una función.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      getValue('window.location');
+    </div>
+    <p style="text-indent:1em;">
+      Se pueden obtener valores de elementos específicos de un array.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      getValue('window.location.hostname[0]');
+    </div>
+    <p style="text-indent:1em;">
+      Al valor se le puede aplicar cualquier función de su prototipo así como especificar los parámetros si es que son requeridos.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      getValue('location.host|toUpperCase');
+      <br/>
+      getValue('location.host.length|toFixed,3');
+    </div>
+    <p style="text-indent:1em;">
+      Se puede especificar el ambito o contexto en el que se relizará la búsqueda.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      getValue('id|toFixed,3', { id : 5 })');
+    </div>
+    <p style="text-indent:1em;">
+      Se puede utlizar la palabra <i>this</i> para acceder al ambito o contexto asociado.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      getValue('this', { id : 5 })');
+    </div>
+    <p style="text-indent:1em;">
+      En el caso de no existir el valor en el ambito actual se intentará encontrar en un ambito asociado si es que existe.
+      Para ello se comprueba que existe la propiedad <i>outerScope</i> que sera el ambito de búsqueda.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      getValue('id', { items : [1,2,3] , outerScope : { id : 5 }})');
+    </div>
+    <h3>merge</h3>
+    <p style="text-indent:1em;">
+      El método <span class="w3-bold w3-italic">merge</span> permite aplicar los valores de un objeto a una plantilla de texto.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      merge('Url: {window.location.href}');<br>
+      merge('Id: {id}', { id : 5 });
+    </div>
+    <p style="text-indent:1em;">
+      Para determinar los valores de reemplazo se utiliza el método <span class="w3-bold w3-italic">getValue</span>.
+      Es por tanto válido el uso de la sintaxis:
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      merge('Nombre: {nombre|toUpperCase}', { nombre : 'Nombre' });<br>
+      merge('Id: {id|toFixed,2}', { id : 5 });
+    </div>
+    <p style="text-indent:1em;">
+      Si el valor indicado es una función, esta será invocada con el ámbito o contexto actual y 
+      el valor devuelto será el utilizado a la hora de realizar la transformación.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      merge('Id: {format}', { id : 5 , format : function(o){ return o.id; } });
+    </div>
+    <p style="text-indent:1em;">
+      Es posible especificar una función de transformación. Se utiliza el caracter ":" como separador.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      merge('{tag:format}', { tag : 'DIV', format : function(s){ return 'Tag: ' + s.toLowerCase(); } });<br>
+      merge('{tag|trim:format}', { tag : 'DIV   ', format : function(s){ return 'Tag: ' + s; } });<br>
+      merge('{tag|startsWith,D:format}', { tag : 'DIV', format : function(s){ return 'Tag: ' + s; } });<br>
+    </div>
+    <h3>execute</h3>
+    <p style="text-indent:1em;">
+      El método <span class="w3-bold w3-italic">execute</span> permite aplicar una plantilla a todos y cada uno de los elementos de un array.
+      El valor devuelto puede ser una cadena de texto que será asignada a la propiedad <span class="w3-bold w3-italic">innerHTML</span> de un elementos contenedor o 
+      un array de elementos DOM para añadirlos utilizando el método <span class="w3-bold w3-italic">appendChild</span>.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      execute(domElement|id, values, dom[true|false]);
+    </div>
+  </div>`;
+
+
+  let component = {
+    root   : {},
+    data   : {},
+    init   : function(container){
+
+    },
+    render : function(container){
+      this.root = pol.build('div', __TEMPLATE);
+      return this.root;
+    },
+    mounted : function(container){
+      initAll(container);   
+    },
+    dispose : function(){
+
+    },
+    eventHandlers : { 
+
+    }
+  };
+
+  function initAll(container) {
+    let scope = { id : 9, nombre : 'rafa' };
+    let POL = pol;
+    let r = '{id|toFixed,2}-{nombre|toUpperCase}-{0|toUpperCase}'.format('bbbb', { id :4, nombre : 'aaaaa' });
+    return r;
+    //resultContainer.innerHTML = POL.templates.getValue('location.host|toUpperCase'); 
+  }
+
+  return component;
+
+}
 export {
-  templatePage
+  templatePage,
+  getValueInfoPage
 }
