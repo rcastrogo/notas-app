@@ -32,11 +32,11 @@ function aemetComponent() {
 
   const __TEMPLATE = `
   <div class="w3-container w3-teal w3-center w3-small w3-padding">
-    {elaborado:fn.formatFecha}
+    {elaborado:fn.formatFecha=>day}
   </div>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[0].fecha}</h3>
-    <div>{fn.showDay:rows-0}</div>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:@prediccion.dia[0].fecha date}</h3>
+    <div>{fn.showDay:@rows-0}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[0].orto}</div>
       <div><i class="fa fa-arrow-down"></i> {prediccion.dia[0].ocaso}</div>
@@ -44,8 +44,8 @@ function aemetComponent() {
   </div>
   <br/>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[1].fecha}</h3>
-    <div>{fn.showDay:rows-1}</div>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:@prediccion.dia[1].fecha  date}</h3>
+    <div>{fn.showDay:@rows-1}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[1].orto}</div>
       <div><i class="fa fa-arrow-down"></i> {prediccion.dia[1].ocaso}</div> 
@@ -53,8 +53,8 @@ function aemetComponent() {
   </div>
   <br/>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:prediccion.dia[2].fecha}</h3>
-    <div>{fn.showDay:rows-2}</div>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha@prediccion.dia[2].fecha  date}</h3>
+    <div>{fn.showDay:@rows-2}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[2].orto}</div>
       <div><i class="fa fa-arrow-down"></i> {prediccion.dia[2].ocaso}</div>
@@ -62,11 +62,11 @@ function aemetComponent() {
   </div>`;
 
   let fn = { 
-    formatFecha : function(value, ctx, options){
+    formatFecha : function(value, format){
       let tokens = value.split('T');
-      if (options && options[0] === 'date') return tokens[0];
-      if (options && options[0] === 'time') return tokens[1];
-      if (options && options[0] === 'day'){
+      if (format && format === 'date') return tokens[0];
+      if (format && format === 'time') return tokens[1];
+      if (format && format === 'day'){
         tokens = tokens[0].split('-');
         let nombres = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado'];
         let day     = new Date(~~tokens[0], ~~tokens[1] - 1, ~~tokens[2]).getDay();
@@ -81,7 +81,7 @@ function aemetComponent() {
             <td>{row.periodo}:00</td>
             <td>{row.cielo}</td>
             <td>{row.temperatura}</td>
-            <td>{fn.formatZero:row.lluvia}</td>
+            <td>{fn.formatZero:@row.lluvia}</td>
             <td><i class="fa fa-2x fa-long-arrow-right pol-{row.viento[0]}"></i> {row.viento[1]}</td>
           </tr>`;
         let row_wrapper = {row, fn};

@@ -86,7 +86,18 @@ let __module = {};
       paddingLeft : function(paddingValue){ return (paddingValue + this).slice(-paddingValue.length); },
       format      : function(){
         var __arg     = arguments;
-        var __context = __arg[__arg.length - 1] || self;   
+        var __context = __arg[__arg.length - 1] || self; 
+        var __call_fn = function (fn, params, base) {
+          var _args = String.trimValues(params)
+                            .reduce(function (a, p) {                          
+                              a.push(p.charAt(0) == '@' ? module.templates
+                                                                .getValue(p.slice(1), __context)
+                                                        : p);
+                              return a;
+                            }, base);
+          return fn.apply(__context, _args);
+        }
+
         return this.replace(/\{(\d+|[^{]+)\}/g, function(m, k){
           let [key, fnName] = String.trimValues(k.split(':'));
           let value;
@@ -101,12 +112,22 @@ let __module = {};
           }else{
             value = module.templates.getValue(key, __context);
           }
-          if (module.isFunction(value)) {
-            return value(module.templates.getValue(fnName, __context), __context, fnName);
+          // fn(scope.Other, 'A', '5')
+          // @window.location.href;A;5
+          if(module.isFunction(value)){
+            return __call_fn(value, 
+                             (fnName || '').split(/\s|\;/), 
+                             []);
           }
-          if(fnName){
-            var __fn = module.templates.getValue(fnName, __context);                                
-            return __fn(value, __context, __arg);            
+          // Data.toUpper(value, scope.Other, 'A', '5')
+          // name:Data.toUpper=>@Other;A;5
+          if(fnName){          
+            let [name, params] = String.trimValues(fnName.split(/=>/));
+            params = (params || '').split(/\s|\;/);
+            return __call_fn(module.templates
+                                   .getValue(name, __context), 
+                             params,
+                             [value]);          
           }
           return value;
         });
@@ -263,25 +284,42 @@ let __module = {};
                 }, scope || self );    
     }
    
-    function merge(template, o) {
+    function merge(template, o, HTMLElemnt) {
+
+      var __call_fn = function (fn, params, base) {
+        var _args = String.trimValues(params)
+                          .reduce(function (a, p) {                          
+                            a.push(p.charAt(0) == '@' ? getValue(p.slice(1), o)
+                                                      : p);
+                            return a;
+                          }, base);
+        if(HTMLElemnt) _args.push(HTMLElemnt);
+        return fn.apply(o, _args);
+      }
+
       var __result = template.replace(/{([^{]+)?}/g, function (m, key) {
-                      if(key.indexOf(':') > 0){
-                        var __fn = key.split(':');                       
-                        __fn[0]  = getValue(__fn[0], o);
-                        __fn[1]  = getValue(__fn[1], o);                        
-                        return __fn[1](__fn[0], o);            
-                      }
-                      var r = getValue(key, o);
-                      return typeof (r) == 'function' ? r(o) : r;                   
-                    });     
+                       if(key.indexOf(':') > 0){
+                         var __tokens = String.trimValues(key.split(':'));                       
+                         let value = getValue(__tokens[0], o);                      
+                         let [name, params] = String.trimValues(__tokens[1].split(/=>/));
+                         let _params = String.trimValues(params.split(/\s|\;/));
+                         return __call_fn(getValue(name, o), _params, [value]);
+                       }
+                       let [name, params] = String.trimValues(key.split(/=>/));
+                       var value = getValue(name, o);
+                       if(module.isFunction(value))
+                         return __call_fn(value, params.split(/\s|\;/), []);
+                       else
+                         return value;                   
+                     });     
       return __result;
     }
 
     function fillTemplate(e, scope) {
       var _root = module.$(e);
-      // =================================================================
-      // Elementos que hay que procesar en este nivel
-      // =================================================================
+      // ==============================================================================
+      // Elementos en este nivel
+      // ==============================================================================
       var _repeaters = module.$('[xfor]', _root);
       var _repeatersElements = _repeaters.reduce((a, r) => {
         return a.concat(module.$('[xbind]', r));
@@ -289,63 +327,43 @@ let __module = {};
       var _elements = module.$('[xbind]', _root)
                             .filter(x => !_repeatersElements.includes(x));
       if (_root.attributes.xbind) _elements.push(_root);
-      // =================================================================
+      // ==============================================================================
       // Procesado de los elementos
-      // =================================================================
+      // ==============================================================================
       _elements.forEach(function (child) {
-        String.trimValues(child.attributes
-                               .xbind
-                               .value
-                               .split(';'))
+        // ============================================================================
+        // Nodos texto hijos de este elemento
+        // ============================================================================
+        module.toArray(child.childNodes)
+              .where({ nodeType    : 3 })
+              .where({ textContent : /{[^{]+?}/g})
+              .forEach( text => {
+                text.textContent = merge(text.textContent, scope, text);  
+              });
+        // ============================================================================
+        // Propiedades que establecer
+        // ============================================================================
+        String.trimValues(child.attributes.xbind.value.split(';'))
               .forEach(function (token) {
-          // =============================================================
-          // Nodos texto hijos de este elemento
-          // =============================================================
-          module.toArray(child.childNodes)
-                .where({ nodeType    : 3 })
-                .where({ textContent : /{[^{]+?}/g})
-                .forEach( text => {
-                  text.textContent = merge(text.textContent, scope);  
-                });
           if (token === '') return;
-          var _tokens = String.trimValues(token.split(':'));            
-          var _params = String.trimValues(_tokens[1].split(/\s|\,/));
-          var _value =  getValue(_params[0], scope);
-          // =============================================================================
+          let [name, params] = String.trimValues(token.split(':'));
+          let [prop_name, _params] = String.trimValues(params.split(/=>/));
+          var _value =  getValue(prop_name, scope);
+          // ==========================================================================
           // _value es una función de transformación:
-          //     xbind="textContent:Data.toUpper @Other,A,5"
+          // xbind="textContent:Data.toUpper => @Other A 5"
           // Que recibirá: Data.toUpper(scope, child, scope.Other, 'A', '5')
-          // =============================================================================
-          if (typeof (_value) == 'function') {
-            var _args = _params.slice(1)
-                               .reduce(function (a, p) {                                
-                                 a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope)
-                                                           : p);
-                                 return a;
-                               }, [scope, child]);
+          // ==========================================================================
+          if (module.isFunction(_value)) {
+            var _args = String.trimValues(_params.split(/\s|#/))
+                              .reduce(function (a, p) {                                
+                                a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope)
+                                                          : p);
+                                return a;
+                              }, [scope, child]);
             _value = _value.apply(scope, _args);
           } 
-          // =============================================================================
-          // El segundo parámetro es una función
-          //     xbind="innerHTML:Data.id Data.toUpper @Other,A,5
-          // Que recibirá: Data.toUpper(_value, child, scope, scope.Other, 'A', '5')
-          // =============================================================================
-          else if (_params[1]) {
-            var _func = getValue(_params[1], scope);
-            try {
-              var _args = _params.slice(2)
-                                 .reduce(function (a, p) {                                
-                                   a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope)
-                                                             : p);
-                                   return a;
-                                 }, [_value, scope, child]);
-              _value = _func.apply(scope, _args);
-            } catch (error) {
-              console.log(error);
-              _value = error.message;
-            }
-          }
-          child[_tokens[0]] = _value;
+          child[name] = _value;
         });
       });
       // ====================================================================
@@ -592,7 +610,7 @@ let __module = {};
       // ===================================================================================================
       // Generación de las secciones de cabecera de las agrupaciones
       // ===================================================================================================
-      var __MERGE_AND_SEND = function(t, p, fnkey){ mediator.send(module.templates.merge(t, p, fnkey)); };
+      var __MERGE_AND_SEND = function(t, p, fnkey){ mediator.send(module.templates.merge(t, p)); };
       function __groupsHeaders(){
         __groups.forEach(function(g, ii){
           if(ii < __breakIndex) return; 

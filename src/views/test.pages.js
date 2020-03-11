@@ -79,7 +79,10 @@ let templatePage = function(ctx){
        .get('./assets/js/libros.json', req => {
          req.setRequestHeader('Accept', 'application/javascript');
        })
-       .then(JSON.parse)
+       .then(result => {
+         clearInterval(timerId);
+         return JSON.parse(result); 
+       })
        .then(result => { 
          // =============================================================
          // Filtrar elementos
@@ -134,14 +137,14 @@ let templatePage = function(ctx){
         <header class="w3-container w3-light-grey" id="rafa">
           <h1>Libros</h1>
         </header>
-        <span xbind="" class="w3-small">{this.length} Elementos</span>
+        <span xbind="" class="w3-small">{length:fn.formatId2 => a} Elementos</span>
         <div class="w3-light-grey w3-tiny" style="overflow:auto;width:100%">    
           <div book-cat xfor="bookmark in bookmarks" class="w3-cell" >
             <p xbind="id:bookmark.id" on-click="goToBookmark" class="w3-border w3-round w3-white" style="padding:2px 6px;margin:2px 4px;white-space:nowrap;">{bookmark.letra}</p>
           </div>
         </div>
       </div>
-      <div xfor="libro in this" class="w3-card-4 w3-margin-bottom" xbind="id:fn.formatId @libro.ID,mark">
+      <div xfor="libro in this" class="w3-card-4 w3-margin-bottom" xbind="id:fn.formatId => @libro.ID mark">
         <header class="w3-container w3-light-grey" on-click="expandCollapse">
           <h4 xbind="">{libro.title}</h4>
         </header>
@@ -154,7 +157,7 @@ let templatePage = function(ctx){
             <b>Año</b> {libro.publisher_date}<br/>
             <b>Editorial</b> {libro.publisher}<br/>
             <b>Idioma</b> {libro.language}
-            <div xbind="id:fn.formatId @libro.ID,book;innerHTML:libro.content_short|htmlDecode" 
+            <div xbind="id:fn.formatId => @libro.ID book;innerHTML:libro.content_short|htmlDecode" 
                  on-click="showAllContent" 
                  style="clear:both;margin-block-start: 0; font-style: oblique;font-family: monospace;">
             </div>
@@ -184,6 +187,9 @@ let templatePage = function(ctx){
       },
       htmlDecode: function (encodedHtml) {
         return encodedHtml.htmlDecode();
+      },
+      formatId2: function (count,a,b,c,d) {
+        return count;
       }
     }
     let booksMap = data.toDictionary('ID');
@@ -287,93 +293,6 @@ let templatePage = function(ctx){
   //  });
   //}
   
-
-  // ==========================================================================================
-  // FillTemplate
-  // ==========================================================================================
-  function onTestButtonClick_fill(mouseEvent){
-    let html = `
-      <h3 xbind="id:id;innerHTML:this.nombre fn.toUpperCase" on-click="__click"></h3>
-      <h3 xbind=""><b>All:</b> {id} <b>-</b> {nombre:fn.toUpperCase} {fn.counter}</h3>
-      <ul>
-        <li xfor="enlace in enlaces" xbind="id:enlace.id;innerHTML:enlace.nombre fn.toUpperCase a b c d"></li>
-      </ul>
-      <div>
-        <div xfor="otro in otros" xbind="id:otro.id;className:otro.nombre fn.toUpperCase">
-          <div xbind="innerHTML:outerScope.nombre fn.toUpperCase"></div>
-          <table>
-            <caption xbind="innerHTML:otro.nombre fn.toUpperCase"></caption>
-            <tbody>
-              <tr xfor="valor in otro.valores">
-                <td xbind="innerHTML:index"></td><td xbind="innerHTML:valor fn.toUpperCase"></td>
-              </tr>
-            </tbody>
-          </table>
-          <h2 xfor="entrada in otro.data" xbind="innerHTML:entrada.descripcion fn.toUpperCase"></h2>       
-        </div>
-      </div>
-    `;
-    let template = pol.build('div', html);
-    let r = pol.templates.fill(
-              template, 
-              { id      : 555, 
-                nombre  : 'fer',
-                enlaces : [
-                  { id : 555, nombre : 'Enlace 1'},
-                  { id : 444, nombre : 'Enlace 444'},
-                  { id : 333, nombre : 'Enlace 333'}
-                ],
-                otros : [
-                  { id : 555, 
-                    nombre  : 'Otros 1', 
-                    data    : [ { numero : 5, descripcion : 'La descripción' }, 
-                                { numero : 15, descripcion : 'La descripción 15' }], 
-                    valores : ['v1', 'v2', 56]
-                  },
-                  { id : 444, nombre : 'Otros 2', valores : ['v3', 'v4']},
-                  { id : 333, nombre : 'Otros 3', valores : ['v5', 'v6']}
-                ],
-                fn: {
-                  toUpperCase : (v, scope, child, p1, p2, p3) => {
-                    return (v) ? v.toString().toUpperCase(v) : '';
-                  },
-                  counter: scope => {
-                    return 'a78';
-                  }
-                }
-              });
-
-    component.root.appendChild(r);
-    utils.addEventListeners(template, {}, 
-                            { __click : (event) => {
-                                  console.log(event);
-                              }
-                            });
-  }
-
-  // ==========================================================================================
-  // ExecuteTemplate
-  // ==========================================================================================
-  function onTestButtonClick(mouseEvent){
-    let template = pol.build('div', 
-                             '<h3 xbind="id:id;innerHTML:nombre;"></h3>')
-                      .firstElementChild;
-    let innerHtml = pol.templates
-                       .execute(template, [{ id : 555, nombre : 'rafa'},
-                                           { id : 444, nombre : 'rafa 444'},
-                                           { id : 333, nombre : 'rafa 333'}]);
-    pol.templates
-       .execute(template,
-                [{ id : 555, nombre : 'rafa'},
-                 { id : 444, nombre : 'rafa 444'},
-                 { id : 333, nombre : 'rafa 333'}],
-                true
-               )
-      .map( e => e.node )
-      .forEach( node => component.root.appendChild(node) );
-  }
-
-
   return component;
 
 }
@@ -409,20 +328,20 @@ let getValueInfoPage = function (ctx) {
       getValue('location.host.length|toFixed,3');
     </div>
     <p style="text-indent:1em;">
-      Se puede especificar el ambito o contexto en el que se relizará la búsqueda.
+      Se puede especificar el ámbito  o contexto en el que se relizará la búsqueda.
     </p>
     <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
       getValue('id|toFixed,3', { id : 5 })');
     </div>
     <p style="text-indent:1em;">
-      Se puede utlizar la palabra <i>this</i> para acceder al ambito o contexto asociado.
+      Se puede utlizar la palabra <i>this</i> para acceder al ámbito o contexto asociado.
     </p>
     <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
       getValue('this', { id : 5 })');
     </div>
     <p style="text-indent:1em;">
-      En el caso de no existir el valor en el ambito actual se intentará encontrar en un ambito asociado si es que existe.
-      Para ello se comprueba que existe la propiedad <i>outerScope</i> que sera el ambito de búsqueda.
+      En el caso de no existir el valor en el ámbito actual se intentará encontrar en un ámbito asociado si es que existe.
+      Para ello se comprueba que existe la propiedad <i>outerScope</i> que sera el ámbito de búsqueda.
     </p>
     <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
       getValue('id', { items : [1,2,3] , outerScope : { id : 5 }})');
@@ -448,14 +367,14 @@ let getValueInfoPage = function (ctx) {
       el valor devuelto será el utilizado a la hora de realizar la transformación.
     </p>
     <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
-      merge('Id: {format}', { id : 5 , format : function(o){ return o.id; } });
+      merge('Id: {format=>a b|toLowerCase;c}', { id : 5 , format : function(a,b,c){ return this.id; } });
     </div>
     <p style="text-indent:1em;">
       Es posible especificar una función de transformación. Se utiliza el caracter ":" como separador.
     </p>
     <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
       merge('{tag:format}', { tag : 'DIV', format : function(s){ return 'Tag: ' + s.toLowerCase(); } });<br>
-      merge('{tag|trim:format}', { tag : 'DIV   ', format : function(s){ return 'Tag: ' + s; } });<br>
+      merge('{tag|trim:format=>a @tag|toLowerCase;c}', { tag : 'DIV   ', format : function(value,a,b,c){ return 'Tag: ' + value; } });<br>
       merge('{tag|startsWith,D:format}', { tag : 'DIV', format : function(s){ return 'Tag: ' + s; } });<br>
     </div>
     <h3>execute</h3>
@@ -466,6 +385,41 @@ let getValueInfoPage = function (ctx) {
     </p>
     <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
       execute(domElement|id, values, dom[true|false]);
+    </div>
+    <h3>string.format</h3>
+    <p style="text-indent:1em;">
+      El método <span class="w3-bold w3-italic">format</span> permite reemplazar lo valores de una cadena de texto.
+      La sintaxis es muy similar a el método <span class="w3-bold w3-italic">merge</span> aunque existen algunas diferencias entre ambos.
+    </p>
+    <p style="text-indent:1em;">
+      La principal diferencia radica en que <span class="w3-bold w3-italic">format</span> acepta un número indeterminado de parámetros de entrada.
+      Estos parámetros pueden ser referenciados en la plantilla por medio de su indice:
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      '{0} - {1}'.format(55, 'Nombre');
+    </div>
+    <p style="text-indent:1em;">
+      El último parámetro proporcionado será tomado como el ámbito o contexto a la hora resolver referencias:
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      '{0} - {nombre}'.format(55, { nombre : 'Antonio' });
+    </div>
+    <p style="text-indent:1em;">
+      Resumen de las posibles formas de uso:
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      '{0|toFixed,2}'.format(55);<br/>
+      '{0|toUpperCase}'.format('aaa');<br/>
+      '{0|toUpperCase:format}'.format('aaa', { format(value){ return '->' + value; } });<br/>
+      '{0:format}'.format('aaa', { format(value){ return '->' + value; } });<br/>
+      '{0:format=>1;2}'.format('aaa', { format(value,a,b){ return '->' + value + a + b; } });<br/>
+      '{format}'.format({ id : 55, format(){ return this.id; }});<br/>
+      '{format:url;@window.location.href|toUpperCase b}'.format({ format(value, href, b){ return value + ' ' + href;}});<br/>
+      '{id}'.format({ id : 55, format(){ return this.id; }});<br/>
+      '{id|toFixed,3}'.format({ id : 55 });<br/>
+      '{id|toFixed,3:format}'.format({ id : 55, format(v){ return v + ' €'; }});<br/>
+      '{id:format=>@window.location.href|toUpperCase;b;c}'.format({ id : 55, format(v,a,b,c){ return v + ' €'; }});<br/>
+
     </div>
   </div>`;
 
@@ -493,10 +447,7 @@ let getValueInfoPage = function (ctx) {
 
   function initAll(container) {
     let scope = { id : 9, nombre : 'rafa' };
-    let POL = pol;
-    let r = '{id|toFixed,2}-{nombre|toUpperCase}-{0|toUpperCase}'.format('bbbb', { id :4, nombre : 'aaaaa' });
-    return r;
-    //resultContainer.innerHTML = POL.templates.getValue('location.host|toUpperCase'); 
+    window.POL = pol;
   }
 
   return component;
