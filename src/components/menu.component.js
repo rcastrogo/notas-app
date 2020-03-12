@@ -8,6 +8,7 @@ const __TEMPLATE = `
       <a href="templates" route-link on-click="hideMenu" class="w3-bar-item w3-button">Libros en <i>OpenLibra</i></a>
       <hr style="margin:0"/>
       <a href="templates/get-value" route-link on-click="hideMenu" class="w3-bar-item w3-button">Templates</a>
+      <a href="templates/utils" route-link on-click="hideMenu" class="w3-bar-item w3-button">addEventListeners</a>
     </div>
   </div>
   <a href=""          route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button selected">Inicio</a>

@@ -113,17 +113,19 @@ let __module = {};
             value = module.templates.getValue(key, __context);
           }
           // fn(scope.Other, 'A', '5')
-          // @window.location.href;A;5
+          // fnName:@window.location.href;A;5
           if(module.isFunction(value)){
             return __call_fn(value, 
-                             (fnName || '').split(/\s|\;/), 
+                             fnName ? fnName.split(/\s|\;/) 
+                                    : [], 
                              []);
           }
           // Data.toUpper(value, scope.Other, 'A', '5')
           // name:Data.toUpper=>@Other;A;5
           if(fnName){          
             let [name, params] = String.trimValues(fnName.split(/=>/));
-            params = (params || '').split(/\s|\;/);
+            params = params ? params.split(/\s|\;/)
+                            : [];
             return __call_fn(module.templates
                                    .getValue(name, __context), 
                              params,
@@ -299,13 +301,14 @@ let __module = {};
 
       var __result = template.replace(/{([^{]+)?}/g, function (m, key) {
                        if(key.indexOf(':') > 0){
-                         var __tokens = String.trimValues(key.split(':'));                       
-                         let value = getValue(__tokens[0], o);                      
-                         let [name, params] = String.trimValues(__tokens[1].split(/=>/));
-                         let _params = String.trimValues(params.split(/\s|\;/));
+                         let tokens = String.trimValues(key.split(':'));                       
+                         let value  = getValue(tokens[0], o);                      
+                         let [name, params] = String.trimValues(tokens[1].split(/=>/));
+                         let _params = params ? String.trimValues(params.split(/\s|\;/))
+                                              : [];
                          return __call_fn(getValue(name, o), _params, [value]);
                        }
-                       let [name, params] = String.trimValues(key.split(/=>/));
+                       let [name, params] = String.trimValues(key.split(/=>/)); 
                        var value = getValue(name, o);
                        if(module.isFunction(value))
                          return __call_fn(value, params.split(/\s|\;/), []);
@@ -348,19 +351,20 @@ let __module = {};
           if (token === '') return;
           let [name, params] = String.trimValues(token.split(':'));
           let [prop_name, _params] = String.trimValues(params.split(/=>/));
-          var _value =  getValue(prop_name, scope);
+          var _value = getValue(prop_name, scope);
           // ==========================================================================
           // _value es una función de transformación:
           // xbind="textContent:Data.toUpper => @Other A 5"
-          // Que recibirá: Data.toUpper(scope, child, scope.Other, 'A', '5')
+          // Que recibirá: Data.toUpper(scope.Other, 'A', '5', child)
           // ==========================================================================
-          if (module.isFunction(_value)) {
+          if (module.isFunction(_value)){
             var _args = String.trimValues(_params.split(/\s|#/))
-                              .reduce(function (a, p) {                                
+                              .reduce(function (a, p){                                
                                 a.push(p.charAt(0) == '@' ? getValue(p.slice(1), scope)
                                                           : p);
                                 return a;
-                              }, [scope, child]);
+                              }, []);
+            _args.push(child);
             _value = _value.apply(scope, _args);
           } 
           child[name] = _value;

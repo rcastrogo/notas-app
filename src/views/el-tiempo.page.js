@@ -32,10 +32,10 @@ function aemetComponent() {
 
   const __TEMPLATE = `
   <div class="w3-container w3-teal w3-center w3-small w3-padding">
-    {elaborado:fn.formatFecha=>day}
+    {elaborado:fn.formatFecha=>time}
   </div>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:@prediccion.dia[0].fecha date}</h3>
+    <h3 class="w3-center w3-border-bottom">{prediccion.dia[0].fecha:fn.formatFecha => day}</h3>
     <div>{fn.showDay:@rows-0}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[0].orto}</div>
@@ -44,7 +44,7 @@ function aemetComponent() {
   </div>
   <br/>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:@prediccion.dia[1].fecha  date}</h3>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:@prediccion.dia[1].fecha day}</h3>
     <div>{fn.showDay:@rows-1}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[1].orto}</div>
@@ -53,7 +53,7 @@ function aemetComponent() {
   </div>
   <br/>
   <div style="padding:0">
-    <h3 class="w3-center w3-border-bottom">{fn.formatFecha@prediccion.dia[2].fecha  date}</h3>
+    <h3 class="w3-center w3-border-bottom">{fn.formatFecha:@prediccion.dia[2].fecha day}</h3>
     <div>{fn.showDay:@rows-2}</div>
     <div class="w3-small w3-teal w3-padding w3-center">
       <div><i class="fa fa-arrow-up"></i> {prediccion.dia[2].orto}</div>
@@ -255,7 +255,8 @@ export default function(ctx){
          if(result.estado == 200) return pol.ajax.get(result.datos);
          throw new Error(result.descripcion);
        })
-       .then( text => {                                               
+       .then( text => { 
+         clearInterval(timerId);
          aemetContainer.innerHTML = '';
          (function(componet) {
            componet.init(ctx);
@@ -264,6 +265,7 @@ export default function(ctx){
          }(aemetComponent().withData(text)));         
        })
        .catch( e => {
+         clearInterval(timerId);
          console.log(e);
        });
   }

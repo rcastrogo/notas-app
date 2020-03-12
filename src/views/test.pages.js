@@ -137,7 +137,7 @@ let templatePage = function(ctx){
         <header class="w3-container w3-light-grey" id="rafa">
           <h1>Libros</h1>
         </header>
-        <span xbind="" class="w3-small">{length:fn.formatId2 => a} Elementos</span>
+        <span xbind="" class="w3-small">{length:fn.formatId2} Elementos</span>
         <div class="w3-light-grey w3-tiny" style="overflow:auto;width:100%">    
           <div book-cat xfor="bookmark in bookmarks" class="w3-cell" >
             <p xbind="id:bookmark.id" on-click="goToBookmark" class="w3-border w3-round w3-white" style="padding:2px 6px;margin:2px 4px;white-space:nowrap;">{bookmark.letra}</p>
@@ -182,13 +182,13 @@ let templatePage = function(ctx){
     `);
 
     data.fn = {
-      formatId: function (scope, element, id, prefix) {
+      formatId: function (id, prefix, element) {
         return '{0}-{1}'.format(prefix, id);
       },
       htmlDecode: function (encodedHtml) {
         return encodedHtml.htmlDecode();
       },
-      formatId2: function (count,a,b,c,d) {
+      formatId2: function (count, element,b,c) {
         return count;
       }
     }
@@ -377,15 +377,6 @@ let getValueInfoPage = function (ctx) {
       merge('{tag|trim:format=>a @tag|toLowerCase;c}', { tag : 'DIV   ', format : function(value,a,b,c){ return 'Tag: ' + value; } });<br>
       merge('{tag|startsWith,D:format}', { tag : 'DIV', format : function(s){ return 'Tag: ' + s; } });<br>
     </div>
-    <h3>execute</h3>
-    <p style="text-indent:1em;">
-      El método <span class="w3-bold w3-italic">execute</span> permite aplicar una plantilla a todos y cada uno de los elementos de un array.
-      El valor devuelto puede ser una cadena de texto que será asignada a la propiedad <span class="w3-bold w3-italic">innerHTML</span> de un elementos contenedor o 
-      un array de elementos DOM para añadirlos utilizando el método <span class="w3-bold w3-italic">appendChild</span>.
-    </p>
-    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
-      execute(domElement|id, values, dom[true|false]);
-    </div>
     <h3>string.format</h3>
     <p style="text-indent:1em;">
       El método <span class="w3-bold w3-italic">format</span> permite reemplazar lo valores de una cadena de texto.
@@ -419,7 +410,127 @@ let getValueInfoPage = function (ctx) {
       '{id|toFixed,3}'.format({ id : 55 });<br/>
       '{id|toFixed,3:format}'.format({ id : 55, format(v){ return v + ' €'; }});<br/>
       '{id:format=>@window.location.href|toUpperCase;b;c}'.format({ id : 55, format(v,a,b,c){ return v + ' €'; }});<br/>
+    </div>
+    <h3>execute</h3>
+    <p style="text-indent:1em;">
+      El método <span class="w3-bold w3-italic">execute</span> permite aplicar a una plantilla (<span class="w3-bold w3-italic">HTMLElement</span>) los valores de todos y cada uno de los elementos de un array.
+    </p>
+    <p style="text-indent:1em;">
+      El valor devuelto puede ser o una cadena de texto para establecer la propiedad <span class="w3-bold w3-italic">innerHTML</span> o 
+      un array de <span class="w3-bold w3-italic">HTMLElement</span> para añadirlos con el método <span class="w3-bold w3-italic">appendChild</span>.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      execute(HTMLElement|id, values, dom[true|false]);
+    </div>
+    <h3>fill</h3>
+    <p style="text-indent:1em;">
+      El método <span class="w3-bold w3-italic">fill</span> permite aplicar los valores de un ámbito o contexto una plantilla (<span class="w3-bold w3-italic">HTMLElement</span>).
+    </p>
+    <p style="text-indent:1em;">
+      El valor devuelto es la propia plantilla en la que se han establecido los valores especificados. 
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      fill(HTMLElement|id, scope);
+    </div>
+    <p style="text-indent:1em;">
+      Formas de modificar/crear contenido:
+      <ul>
+        <li>xbind</li>
+        <li>templates.merge</li>
+        <li>xfor</li>
+      </ul>
+    </p>
+    <h5>Plantilla:</h5>
+    <div class="w3-code htmlHigh w3-small" style="overflow: auto;white-space: pre;">
+&lt;header&gt;
+  &lt;h1&gt;Libros&lt;/h1&gt;
+&lt;/header&gt;
+&lt;span <b>xbind=&quot;&quot;</b>&gt;<b>{length:fn.formatId2}</b> Elementos&lt;/span&gt;
+&lt;div&gt;    
+  &lt;div <b>xfor=&quot;bookmark in bookmarks&quot;</b>&gt;
+    &lt;p <b>xbind=&quot;id:bookmark.id&quot;</b> on-click=&quot;goToBookmark&quot;&gt;<b>{bookmark.letra}</b>&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;<b>xfor=&quot;libro in this&quot;</b> <b>xbind=&quot;id:fn.formatId =&gt; @libro.ID mark&quot</b>;&gt;
+  &lt;header on-click=&quot;expandCollapse&quot;&gt;
+    &lt;h4 <b>xbind=&quot;&quot;</b>&gt;<b>{libro.title}</b>&lt;/h4&gt;
+  &lt;/header&gt;
+  &lt;div&gt;
+    &lt;div <b>xbind=&quot;&quot;</b>&gt;
+      &lt;img <b>xbind=&quot;id:libro.thumbnail&quot;</b>&gt;
+      &lt;b&gt;Autor&lt;/b&gt; <b>{libro.author}</b>&lt;br/&gt;
+      &lt;b&gt;P&#225;ginas&lt;/b&gt; <b>{libro.pages}</b>&lt;br/&gt;
+      &lt;b&gt;A&#241;o&lt;/b&gt; <b>{libro.publisher_date}</b>&lt;br/&gt;
+      &lt;b&gt;Editorial&lt;/b&gt; <b>{libro.publisher}</b>&lt;br/&gt;
+      &lt;b&gt;Idioma&lt;/b&gt; <b>{libro.language}</b>
+      &lt;div <b>xbind=&quot;id:fn.formatId =&gt; @libro.ID book;innerHTML:libro.content_short|htmlDecode&quot;</b> 
+            on-click=&quot;showAllContent&quot;&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div <b>xbind=&quot;&quot;</b>&gt;Categor&#237;as (<b>{libro.categories.length}</b>)&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div <b>xfor=&quot;categoria in libro.categories&quot;</b>&gt;
+        &lt;p <b>xbind=&quot;id:categoria.nicename;innerHTML:categoria.name&quot;</b> on-click=&quot;makeRequest:cat&quot;&gt;&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+    </div>
 
+    <h5>Datos:</h5>
+    <div class="w3-code htmlHigh w3-small" style="overflow: auto;white-space: pre;">
+[
+  {
+    "ID": "17003",
+    "title": "Book of Scratch Vol. 1",
+    "author": "Varios",
+    "content": "The first ever Code Club bo...",
+    "content_short": "The first ever Code Club book...",
+    "publisher": "Raspberry Pi Press",
+    "publisher_date": "2018",
+    "pages": "111",
+    "language": "english",
+    "url_details": "http://www.etnassoft.com/biblioteca/book-of-scratch-vol-1/",
+    "url_download": "https://openlibra.com/book/book-of-scratch-vol-1",
+    "cover": "https://olcovers2.blob.core.windows.net/coverswp/2018/12/CC_Book_of_Scratch_v1-OpenLibra-339x461.gif",
+    "thumbnail": "https://olcovers2.blob.core.windows.net/coverswp/2018/12/CC_Book_of_Scratch_v1-OpenLibra-110x153.gif",
+    "categories": [
+      {
+        "category_id": 224,
+        "name": "Otros Lenguajes",
+        "nicename": "programacion_otros_lenguajes"
+      },
+      {
+        "category_id": 220,
+        "name": "Programación",
+        "nicename": "libros_programacion"
+      }
+    ]
+  }
+]
+    </div>
+
+    <h3>xbind</h3>
+    <p style="text-indent:1em;">
+      El atributo <span class="w3-bold w3-italic">xbind</span> permite determinar que elementos <span class="w3-bold w3-italic">HTMLElement</span>
+      serán procesados y en los que se reliazará la sustitución.
+    </p>
+    <p style="text-indent:1em;">
+      El contenido de este atributo es una lista de pares (propiedad:valor|función) separados por el caracter ";".
+      El valor obtenido es asignado a la propiedad correspondiente del <span class="w3-bold w3-italic">HTMLElement</span>.
+    </p>
+    <p style="text-indent:1em;">
+      Si el valor obtenido fuera una función, esta se invocará para obtener el valor de reemplazo. La función se ejecuta en el ámbito o
+      contexto altual y se le pasan los parámetros indicados después de "=>". Estos parámetros son procesados por el método <span class="w3-bold w3-italic">getValue</span>
+      si empiezan por "@". Por ejemplo : <code class="w3-gray">xbind="id:fn.formatId => @libro.ID p1 A2"</code>. La función referenciada tendrá la siguiente firma: 
+      <code class="w3-gray">formatId(id, 'p1', 'A2', targetHTMLElement)</code>
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      &lt;img xbind=&quot;id:libro.thumbnail&quot;&gt;<br/>
+      &lt;p xbind=&quot;id:categoria.nicename;innerHTML:categoria.name&quot;&gt;&lt;/p&gt;<br/>
+      &lt;div xbind=&quot;innerHTML:libro.content_short|trim&quot;&gt; &lt;/div&gt;<br/>
+      &lt;xfor=&quot;libro in this&quot; xbind=&quot;id:fn.formatId =&gt; @libro.ID mark&quot;;&gt;<br/>
+      &lt;div xbind=&quot;&quot;&gt;Categor&#237;as ({libro.categories.length})&lt;/div&gt;
     </div>
   </div>`;
 
@@ -453,7 +564,120 @@ let getValueInfoPage = function (ctx) {
   return component;
 
 }
+
+let addEventListenersInfoPage = function (ctx) {
+
+  const __TEMPLATE = `
+  <div class="w3-container w3-margin-bottom w3-animate-left">
+    <h1>Utils</h1>
+    <p style="text-indent:1em;">
+      Documentación sobre los métodos y los parámetros utilizados para la asociación de eventos de forma declarativa.
+    </p>
+    <h3>addEventListeners</h3>
+    <p style="text-indent:1em;">
+      El método <span class="w3-bold w3-italic">addEventListeners</span> permite realizar la asociación de una serie de
+      eventos de una forma declarativa.
+    </p>
+    <p style="text-indent:1em;">
+      Los eventos disponibles son:
+      <ul>
+        <li>on-click</li>
+        <li>on-publish</li>
+        <li>route-link</li>
+        <li>on-change</li>
+      </ul>
+    </p>
+    <p style="text-indent:1em;">
+      El método tiene la siguiente firma;
+      <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+        addEventListeners(container, handlers, context);<br>
+        <br>
+        utils.addEventListeners(<br>component.root, 
+                                <br>component.eventHandlers, { 
+                                <br>&nbsp router      : component.router,
+                                <br>&nbsp toggleMenu  : toggleMenu,
+                                <br>&nbsp hideMenu    : hideMenu
+                                <br>});
+      </div>
+      <i>Container</i> es el <span class="w3-bold w3-italic">HTMLElement</span> raíz en el que se realizará el enlace.
+      <i>Handlers</i> y <i>context</i> son objetos en los que residen las funciones referenciadas. La búsqueda se realiza en el orden indicado.
+      Si la función no existe en <i>handlers</i> se busca en <i>context</i>.
+    </p>
+    <h4>on-click</h4>
+    <p style="text-indent:1em;">
+      El atributo <span class="w3-bold w3-italic">on-click</span> permite asociar el evento click de un elemento con una función.
+      La función se ejecutará en el contexto proporcionado. Es posible pasar parámetros adicionales a la función. Los parámetros 
+      se separan por el caracter ":".
+      <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+        &lt;button on-click=&quot;addNote:1:@id&quot;&gt;＋&lt;/button&gt;<br>
+        <br>
+        function addNote(target, mouseEvent, 1, 55);
+      </div>
+    </p>
+    <h4>on-publish</h4>
+    <p style="text-indent:1em;">
+      El atributo <span class="w3-bold w3-italic">on-publish</span> permite realizar la 
+      subcripción a una determinada publicación o mensaje y asociarla con el elemento.
+      <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+        &lt;a href=&quot;&quot; route-link on-publish=&quot;TOPICS.VIEW_CHANGE:syncMenuItem&quot;&gt;Inicio&lt;/a&gt;<br>
+        <br>
+        function syncMenuItem(target, data){
+          <br>&nbsp hideMenu();
+        <br>}
+        <br>
+        <br>&lt;span on-publish=&quot;TOPICS.XXX_CHANGE:innerHTML&quot;&gt;Madrid&lt;/span&gt;
+        <br>
+        <br>let fn = {
+        <br>&nbsp innerHTML : (e, value) => e.innerHTML = value,
+        <br>&nbsp className : (e, value) => e.className = value
+        <br>}
+    </p>
+    <h4>route-link</h4>
+    <p style="text-indent:1em;">
+      El atributo <span class="w3-bold w3-italic">route-link</span> permite.
+    </p>
+    <h4>on-change</h4>
+    <p style="text-indent:1em;">
+      El atributo <span class="w3-bold w3-italic">on-change</span> permite.
+    </p>
+    <div class="w3-code jsHigh w3-small" style="overflow: auto;white-space: nowrap;">
+      
+    </div>
+
+  </div>`;
+
+  let component = {
+    root   : {},
+    data   : {},
+    init   : function(container){
+
+    },
+    render : function(container){
+      this.root = pol.build('div', __TEMPLATE);
+      return this.root;
+    },
+    mounted : function(container){
+      initAll(container);   
+    },
+    dispose : function(){
+
+    },
+    eventHandlers : { 
+
+    }
+  };
+
+  function initAll(container) {
+    let scope = { id : 9, nombre : 'rafa' };
+    window.POL = pol;
+  }
+
+  return component;
+
+}
+
 export {
   templatePage,
-  getValueInfoPage
+  getValueInfoPage,
+  addEventListenersInfoPage
 }

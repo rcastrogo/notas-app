@@ -42,13 +42,13 @@ function addEventListeners(container, handlers, context) {
            let topic = pol.templates.getValue(tokens[0], pubsub);
            pubsub.subscribe(topic, (message, data) => {
              let fnName = tokens[1];
-             if (fnName) {
+             if(fnName){
                let f = fn[fnName]       ||
                        handlers[fnName] || 
                        pol.templates.getValue(fnName, context);
                if (f) f(e, data);
                return;
-             } else {
+             }else{
                fn.innerHTML(e, data);
              }
            })
