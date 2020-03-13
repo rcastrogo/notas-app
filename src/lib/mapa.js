@@ -143,7 +143,7 @@ let __module = {};
   }(_module));      
   // ========================================================================================
   // Array
-  // ========================================================================================    
+  // ========================================================================================
   (function(module){
     module.apply(Array.prototype, {          
       remove   : function(o) {
@@ -242,7 +242,35 @@ let __module = {};
       }
     });       
   }(_module));
-
+  // ========================================================================================
+  // Include
+  // ========================================================================================
+  (function(module){ 
+    var includes = [];
+    module.Include = function(url){
+      return new Promise( (resolve) => {
+        function __resolve() {
+          includes.push(url.toLowerCase());
+          resolve();
+        }
+        if(includes.indexOf(url.toLowerCase())>-1){
+          resolve();
+          return;
+        }
+        var script = module.build('script', { type : 'text/javascript' })
+        if (script.readyState){  
+          script.onreadystatechange = function(){
+            if(script.readyState=='loaded'||script.readyState=='complete'){
+              script.onreadystatechange = null;
+              __resolve();
+            }
+          };
+        }else{ script.onload = function(){ __resolve(); };}
+        script.src = url;
+        document.getElementsByTagName("head")[0].appendChild(script);   
+      });
+    }
+  }(_module));
   // =====================================================================================
   // Templates
   // =====================================================================================

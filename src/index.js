@@ -85,6 +85,10 @@ router.addRoute('list',  /list$/,            listPage)
     if(c.mounted) c.mounted(root); 
   });
 
+  pubsub.subscribe(TOPICS.SHOW_IMAGE, function (msg, data) {
+    console.log(data);
+  });
+
 })();
 // ===================================================
 // Sync content

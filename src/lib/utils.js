@@ -10,7 +10,6 @@ function addEventListeners(container, handlers, context) {
     className : (e, value) => e.className = value
   }
   
-
   EVENTS.forEach((selector, index) => {
     pol.toArray(pol.$(selector, container))
        .forEach( e => {
@@ -46,7 +45,7 @@ function addEventListeners(container, handlers, context) {
                let f = fn[fnName]       ||
                        handlers[fnName] || 
                        pol.templates.getValue(fnName, context);
-               if (f) f(e, data);
+               if (f) f.apply(context, [e, data]);
                return;
              }else{
                fn.innerHTML(e, data);
@@ -86,9 +85,9 @@ function addEventListeners(container, handlers, context) {
            let fn = handlers[value] ||
                     pol.templates.getValue(value, context);
            if (select) 
-             e.onchange = () => fn(e);
+             e.onchange = () => fn.apply(context, [e]);
            else 
-             e.oninput = () => fn(e);
+             e.oninput  = () => fn.apply(context, [e]);
          }
        }); 
   });

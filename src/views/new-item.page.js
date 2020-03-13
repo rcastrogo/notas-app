@@ -46,12 +46,12 @@ export default function(ctx){
     // addEventListener
     // ==============================================================
     utils.addEventListeners(__container, {}, {
-      onChange: (e) => {
+      onChange: function(e){
         console.log('onChange_fn', e.value);
       }
     });
 
-    pubsub.subscribe(TOPICS.VALUE_CHANGE, (message, e) => {
+    pubsub.subscribe(TOPICS.VALUE_CHANGE, function(message, e){
       console.log('value.change', e.value);
     })
 

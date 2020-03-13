@@ -51,6 +51,7 @@ export default {
     VIEW_CHANGE      : 'view:change',
     VALUE_CHANGE     : 'value:change',
     MUNICIPIO_CHANGE : 'municipio:change',
-    WINDOW_SCROLL    : 'window.scroll'
+    WINDOW_SCROLL    : 'window.scroll',
+    SHOW_IMAGE       : 'show.image'
   }
 }
