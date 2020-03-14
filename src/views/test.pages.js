@@ -80,7 +80,6 @@ let templatePage = function(ctx){
          req.setRequestHeader('Accept', 'application/javascript');
        })
        .then(result => {
-         clearInterval(timerId);
          return JSON.parse(result); 
        })
        .then(result => { 
@@ -126,6 +125,9 @@ let templatePage = function(ctx){
        })
        .catch( e => {
          console.log(e);
+       })
+       .finally(() => {
+         clearInterval(timerId);
        });
  
   }
@@ -151,7 +153,7 @@ let templatePage = function(ctx){
         <div class="w3-container" style="transition: max-height .31s; overflow: hidden; max-height:500px">
 
           <div xbind="" class="w3-container" style="padding:3px 0">
-            <img xbind="id:libro.thumbnail" alt="Portada" on-click="publish" class="book w3-left w3-margin-right w3-margin-bottom">
+            <img xbind="id:libro.thumbnail;tag:index" alt="Portada" on-click="showImage" class="book w3-left w3-margin-right w3-margin-bottom">
             <b>Autor</b> {libro.author}<br/>
             <b>Páginas</b> {libro.pages}<br/>
             <b>Año</b> {libro.publisher_date}<br/>
@@ -223,7 +225,7 @@ let templatePage = function(ctx){
         }
       },
       goTop: () => {
-        ctx.components[0].root.scrollIntoView({ behavior: 'smooth' });
+        ctx.components[0].root.scrollIntoView();
       },
       goTo: function(target, mouseEvent, tag){
         mouseEvent.preventDefault();
@@ -234,9 +236,11 @@ let templatePage = function(ctx){
         pol.$('mark-{0}'.format(target.id))
            .scrollIntoView({ behavior: 'smooth', block: 'end' });
       },
-      publish: function (libro) {
-        console.log(libro.id);
-        pubsub.publish(TOPICS.SHOW_IMAGE, { id : libro.id });
+      showImage: function (libro) {
+        let message = `<div class="w3-center"><img src={thumbnail} width="16"> {title}<br> 
+                       <a href="{cover}" target="_blank">Ver imagen</a>
+                      </div>`.format(data[libro.tag]);
+        pubsub.publish(TOPICS.NOTIFICATION, { message });
       }
 
     });

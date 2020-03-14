@@ -47,12 +47,12 @@ export default function(ctx){
     // ==============================================================
     utils.addEventListeners(__container, {}, {
       onChange: function(e){
-        console.log('onChange_fn', e.value);
+        //console.log('onChange_fn', e.value);
       }
     });
 
     pubsub.subscribe(TOPICS.VALUE_CHANGE, function(message, e){
-      console.log('value.change', e.value);
+      //console.log('value.change', e.value);
     })
 
     // =====================================================
@@ -102,13 +102,16 @@ export default function(ctx){
               key   : current ? current.key  : date.valueOf(), 
               date  : current ? current.date :
                                 '{0}/{1}/{2}'.format(date.getDate(), 
-                                                     date.getMonth, 
+                                                     date.getMonth(), 
                                                      date.getFullYear()), 
               title : __title, 
               text  : __text 
             })
             .then( nota => {
               ctx.router.navigateTo('list'); 
+              pubsub.publish(TOPICS.NOTIFICATION, 
+                { message : current ? 'La nota se ha actualizado correctamente!!!'
+                                    : 'La nota se ha insertado correctamente!!!' });
             });
   }
 

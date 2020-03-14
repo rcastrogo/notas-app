@@ -18,6 +18,7 @@ import elTiempoPage from "./views/el-tiempo.page";
 import {templatePage,
         getValueInfoPage,
         addEventListenersInfoPage} from "./views/test.pages";
+import utils from "./lib/utils.js";
 
 const TOPICS = pubsub.TOPICS;
 
@@ -43,7 +44,7 @@ const router = {
     return this.routes.where(function(r){
       let match = r.path.exec(route);
       if (match) {
-        r.params = match.map( e => e );
+        r.params = match.map( e => e ); 
       }
       return match;
     })[0];
@@ -85,9 +86,55 @@ router.addRoute('list',  /list$/,            listPage)
     if(c.mounted) c.mounted(root); 
   });
 
-  pubsub.subscribe(TOPICS.SHOW_IMAGE, function (msg, data) {
-    console.log(data);
-  });
+  // ==============================================================================
+  // Init Notifications system
+  // ==============================================================================
+  (function(){
+
+    let panel = pol.build('div', { id        : 'notificationPanel', 
+                                   className : 'w3-border-bottom' });
+    root.parentNode.insertBefore(panel, root)
+
+    pubsub.subscribe(TOPICS.WINDOW_SCROLL, (message, w) => {
+      if (w.pageYOffset >= 40) {
+        panel.classList.add("sticky");
+      } else {
+        panel.classList.remove("sticky");
+      }
+    });
+
+    pubsub.subscribe(TOPICS.NOTIFICATION, function (msg, data) {
+      let template = `<div class="w3-container w3-border w3-round w3-animate-top">
+                        <span on-click="close" class="w3-button w3-large w3-display-right">x</span>
+                        <p style="overflow:hidden;margin-right:27px;">{message}</p>
+                      </div>`
+      let item = pol.build('div', template.format(data))
+                    .firstElementChild;
+      panel.insertBefore(item, panel.firstChild);
+      // =====================================================
+      // addEventListeners
+      // =====================================================
+      utils.addEventListeners(
+        item, 
+        {
+          close : target => {
+            item.classList.remove('w3-animate-top');
+            item.style.backgroundColor = 'gray';
+            item.style.color = 'white';
+            item.style.opacity = '0';
+            item.style.transform = 'translate(0, -200px)';
+            setTimeout(() => { 
+              if(item.parentNode) panel.removeChild(item);
+            }, 500);
+          }
+      });
+      // ====================================
+      // Auto-close
+      // ====================================
+      if(Math.random() < .6) setTimeout(() => item.firstElementChild.onclick(), 3500);
+    });
+
+  })();
 
 })();
 // ===================================================

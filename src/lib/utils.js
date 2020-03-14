@@ -12,8 +12,10 @@ function addEventListeners(container, handlers, context) {
   
   EVENTS.forEach((selector, index) => {
     pol.toArray(pol.$(selector, container))
+       .concat([container])
        .forEach( e => {
          let name   = selector.replace('[', '').replace(']', '');
+         if (!e.attributes[name]) return;
          let value  = e.attributes[name].value
          let tokens = value.split(':');
          // =============================================================
