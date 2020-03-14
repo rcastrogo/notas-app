@@ -17,7 +17,8 @@ import notePage from "./views/new-item.page";
 import elTiempoPage from "./views/el-tiempo.page";
 import {templatePage,
         getValueInfoPage,
-        addEventListenersInfoPage} from "./views/test.pages";
+        addEventListenersInfoPage,
+        imagePage} from "./views/test.pages";
 import utils from "./lib/utils.js";
 
 const TOPICS = pubsub.TOPICS;
@@ -72,7 +73,8 @@ router.addRoute('list',  /list$/,            listPage)
       .addRoute('templates', /templates$/,   templatePage)
       .addRoute('get-value', /templates\/get-value$/,  getValueInfoPage)
       .addRoute('utils', /templates\/utils$/,  addEventListenersInfoPage)
-      .addRoute('',      /$/,                homePage);
+      .addRoute('images', /images\/(\d+)$/, imagePage)
+      .addRoute('',      /$/,             homePage);
 
 // ==============================================================================
 // Init App
@@ -92,7 +94,7 @@ router.addRoute('list',  /list$/,            listPage)
   (function(){
 
     let panel = pol.build('div', { id        : 'notificationPanel', 
-                                   className : 'w3-border-bottom' });
+                                   className : '' });
     root.parentNode.insertBefore(panel, root)
 
     pubsub.subscribe(TOPICS.WINDOW_SCROLL, (message, w) => {
@@ -104,7 +106,7 @@ router.addRoute('list',  /list$/,            listPage)
     });
 
     pubsub.subscribe(TOPICS.NOTIFICATION, function (msg, data) {
-      let template = `<div class="w3-container w3-border w3-round w3-animate-top">
+      let template = `<div class="msg w3-container w3-border w3-round w3-animate-top">
                         <span on-click="close" class="w3-button w3-large w3-display-right">x</span>
                         <p style="overflow:hidden;margin-right:27px;">{message}</p>
                       </div>`

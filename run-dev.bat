@@ -1,3 +1,3 @@
 
-start chrome "http://localhost/notas-app/"
-npm run build
+start chrome "http://localhost:8080"
+npm start
