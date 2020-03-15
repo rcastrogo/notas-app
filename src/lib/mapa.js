@@ -48,9 +48,10 @@ let __module = {};
                    append     : function(s){ this.value = this.value + s; return this;},
                    appendLine : function(s){ this.value = this.value + (s || '') + '\n'; return this;}}
       },
-      build : function(tagName, o){
+      build : function(tagName, o, firstElementChild){
         let options = module.isString(o) ? { innerHTML : o } : o;
-        return _module.apply(document.createElement(tagName), options);
+        let e = _module.apply(document.createElement(tagName), options)
+        return firstElementChild ? e.firstElementChild : e;
       },
       $ : function(e, control){ 
         return (typeof e === 'string') ? document.getElementById(e) || 

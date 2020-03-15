@@ -1,0 +1,6 @@
+﻿<div>
+  <div class="w3-bar w3-black">
+    <button on-click="goBack" class="pol-btn w3-button w3-black"><i class="fa fa fa-chevron-left"></i></button>
+    <span on-publish="msg_page_component_update_title:innerHTML">Imagen<span>
+  </div>   
+</div>

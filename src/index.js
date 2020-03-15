@@ -17,8 +17,11 @@ import notePage from "./views/new-item.page";
 import elTiempoPage from "./views/el-tiempo.page";
 import {templatePage,
         getValueInfoPage,
-        addEventListenersInfoPage} from "./views/test.pages";
-import {imagePage} from "./views/images/page";
+        addEventListenersInfoPage
+       } from "./views/test.pages";
+import imagePage from "./views/images/page";
+import schedulePage from "./views/schedule/page";
+
 import utils from "./lib/utils.js";
 
 const TOPICS = pubsub.TOPICS;
@@ -37,8 +40,11 @@ const components =  [
 // ==============================================================================
 const router = {
   routes  : [],
-  addRoute: function (name, pattern, controller) {
-    this.routes.push({ name : name, path : pattern, controler : controller });
+  addRoute: function (name, pattern, controller, isView) {
+    this.routes.push({ name      : name,
+                       path      : pattern,
+                       controler : controller, 
+                       isView    : isView || false });
     return this;
   },
   getRoute: function (route) {
@@ -73,8 +79,9 @@ router.addRoute('list',  /list$/,            listPage)
       .addRoute('templates', /templates$/,   templatePage)
       .addRoute('get-value', /templates\/get-value$/,  getValueInfoPage)
       .addRoute('utils', /templates\/utils$/,  addEventListenersInfoPage)
-      .addRoute('images', /images\/(\d+)$/, imagePage)
-      .addRoute('',      /$/,             homePage);
+      .addRoute('images', /images\/(\d+)$/, imagePage, true)
+      .addRoute('schedule', /schedule$/,    schedulePage, true)
+      .addRoute('',      /$/,               homePage);
 
 // ==============================================================================
 // Init App
@@ -95,16 +102,8 @@ router.addRoute('list',  /list$/,            listPage)
     let headerStyle  = components[0].root.style;
     let menu         = components[1].root;
     let contentStyle = components[2].root.style;
-    
-    if (route.name != 'images') {
-      menu.style.display = '';
-      contentStyle.position ='';
-      contentStyle.paddingBottom = '60px';
-      contentStyle.overflow = '';
-      headerStyle.position  = '';
-      headerStyle.width     = '';
-      headerStyle.zIndex    = '';
-    } else {
+
+    if (route.isView) {
       menu.classList.remove('sticky');
       menu.style.display = 'none';
       contentStyle.position ='absolute';
@@ -117,6 +116,14 @@ router.addRoute('list',  /list$/,            listPage)
       headerStyle.position = 'fixed';
       headerStyle.width    = '100%';
       headerStyle.zIndex   = '1000';
+    } else {
+      menu.style.display = '';
+      contentStyle.position ='';
+      contentStyle.paddingBottom = '60px';
+      contentStyle.overflow = '';
+      headerStyle.position  = '';
+      headerStyle.width     = '';
+      headerStyle.zIndex    = ''; 
     }
 
   });

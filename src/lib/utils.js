@@ -41,6 +41,7 @@ function addEventListeners(container, handlers, context) {
          // =============================================================
          if (index === 1) {
            let topic = pol.templates.getValue(tokens[0], pubsub);
+           topic = topic === window ? tokens[0] : topic;
            pubsub.subscribe(topic, (message, data) => {
              let fnName = tokens[1];
              if(fnName){

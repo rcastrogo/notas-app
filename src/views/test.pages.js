@@ -19,8 +19,8 @@ let templatePage = function(ctx){
 
     },
     render : function(container){
-      this.root = pol.build('div', __TEMPLATE);
-      itemsContainer = this.root.firstElementChild;
+      this.root = pol.build('div', __TEMPLATE, 'firstElementChild');
+      itemsContainer = this.root;
       return this.root;
     },
     mounted : function(container){

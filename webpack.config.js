@@ -42,9 +42,12 @@ module.exports = (env, options) => {
       rules: [
         {
           test: /\.txt$/i,
-          use: 'raw-loader',
+          use: ['html-loader'],
         },
       ],
+    },
+    resolveLoader: {
+      modules: ['node_modules', path.resolve(__dirname, './src/loaders')]
     }
   };
 }
