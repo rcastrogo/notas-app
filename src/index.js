@@ -17,8 +17,8 @@ import notePage from "./views/new-item.page";
 import elTiempoPage from "./views/el-tiempo.page";
 import {templatePage,
         getValueInfoPage,
-        addEventListenersInfoPage,
-        imagePage} from "./views/test.pages";
+        addEventListenersInfoPage} from "./views/test.pages";
+import {imagePage} from "./views/images/page";
 import utils from "./lib/utils.js";
 
 const TOPICS = pubsub.TOPICS;
@@ -87,6 +87,39 @@ router.addRoute('list',  /list$/,            listPage)
     root.appendChild(c.render(root));
     if(c.mounted) c.mounted(root); 
   });
+  // ======================================================
+  // Sync UI
+  // ======================================================
+  pubsub.subscribe(TOPICS.VIEW_CHANGE, (msg, route) => {
+
+    let headerStyle  = components[0].root.style;
+    let menu         = components[1].root;
+    let contentStyle = components[2].root.style;
+    
+    if (route.name != 'images') {
+      menu.style.display = '';
+      contentStyle.position ='';
+      contentStyle.paddingBottom = '60px';
+      contentStyle.overflow = '';
+      headerStyle.position  = '';
+      headerStyle.width     = '';
+      headerStyle.zIndex    = '';
+    } else {
+      menu.classList.remove('sticky');
+      menu.style.display = 'none';
+      contentStyle.position ='absolute';
+      contentStyle.paddingBottom = '0';
+      contentStyle.left   = '0';
+      contentStyle.right  = '0';
+      contentStyle.bottom = '52px';
+      contentStyle.top    = '74px';
+      contentStyle.overflow = 'auto';
+      headerStyle.position = 'fixed';
+      headerStyle.width    = '100%';
+      headerStyle.zIndex   = '1000';
+    }
+
+  });
 
   // ==============================================================================
   // Init Notifications system
@@ -112,7 +145,7 @@ router.addRoute('list',  /list$/,            listPage)
                       </div>`
       let item = pol.build('div', template.format(data))
                     .firstElementChild;
-      panel.insertBefore(item, panel.firstChild);
+      panel.appendChild(item);
       // =====================================================
       // addEventListeners
       // =====================================================

@@ -19,7 +19,8 @@ export default function(){
           padding   : '0 0 60px 0'
         }
       }
-      return pol.build('section', options);
+      this.root = pol.build('section', options);
+      return this.root;
     },
     mounted: function(container){
       initScroll();  

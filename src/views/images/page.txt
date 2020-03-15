@@ -1,0 +1,5 @@
+﻿
+<div class="w3-bar w3-black">
+  <button on-click="goBack" class="pol-btn w3-button w3-black"><i class="fa fa fa-chevron-left"></i></button>Imagen
+</div>
+<div class="w3-animate-left img-container" on-click="notify"></div> 

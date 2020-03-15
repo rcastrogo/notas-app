@@ -37,7 +37,7 @@ textarea{ resize: none }
 
 #notificationPanel.sticky {top:40px; max-height:640px;}
 
-#appMenu.w3-bar .w3-button { border-bottom: solid 3px transparent;}
+#appMenu.w3-bar .w3-button, .pol-btn { border-bottom: solid 3px transparent;}
 #appMenu.w3-bar .w3-button.selected { border-bottom: solid 3px #ccc;}
 
 tr.w3-center td, tr.w3-center th{ text-align:center; vertical-align: middle; padding:8px;}
@@ -52,3 +52,10 @@ i.pol-E { transform: rotate(-180deg);vertical-align: middle;}
 i.pol-O { vertical-align: middle; }
 
 img.book{ background-color:silver;min-width:110px;min-height:153px;}
+.img-container { background:gray url('') center center no-repeat; 
+                 background-size: cover;
+                 position:absolute;
+                 top:38px;
+                 bottom:0;
+                 left:0;
+                 right:0;}

@@ -37,7 +37,15 @@ module.exports = (env, options) => {
           baseHref : '/notas-app/',
         }
       })
-    ]
+    ],
+    module: {
+      rules: [
+        {
+          test: /\.txt$/i,
+          use: 'raw-loader',
+        },
+      ],
+    }
   };
 }
 ;

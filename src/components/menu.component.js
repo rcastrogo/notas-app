@@ -4,7 +4,7 @@ import utils from "../lib/utils.js";
 const __TEMPLATE = `  
   <div class="w3-dropdown-click">
     <button on-click="toggleMenu" class="w3-button w3-black"><i class="fa fa-bars"></i></button>
-    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+    <div class="w3-dropdown-content w3-bar-block w3-card-4" style="z-index: 1002;">
       <a href="templates" route-link on-click="hideMenu" class="w3-bar-item w3-button">Libros en <i>OpenLibra</i></a>
       <hr style="margin:0"/>
       <a href="templates/get-value" route-link on-click="hideMenu" class="w3-bar-item w3-button">Templates</a>
