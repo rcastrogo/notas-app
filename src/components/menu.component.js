@@ -20,15 +20,14 @@ const __TEMPLATE = `
   <a href="about"     route-link on-publish="TOPICS.VIEW_CHANGE:sync" class="w3-bar-item w3-button w3-right">?</a>
   `;
 
-export default function(){
+export default function(ctx){
 
   let component =  {
     root   : {},
     id     : 'menu.component.ref',
-    init   : function(container, router){
-      this.router = router;
+    init   : function(){
     },
-    render : function(container) {
+    render : function() {
       let options = { 
         id        : "appMenu", 
         innerHTML : __TEMPLATE.format(this),
@@ -37,7 +36,7 @@ export default function(){
       this.root = pol.build('nav', options);
       return this.root;
     },
-    mounted: function(container){
+    mounted: function(){
       initAll();
     },
     eventHandlers : { 
@@ -49,7 +48,7 @@ export default function(){
 
     utils.addEventListeners(component.root, 
                             component.eventHandlers, { 
-                              router      : component.router,
+                              router      : ctx.router,
                               toggleMenu  : toggleMenu,
                               hideMenu    : hideMenu
                             });

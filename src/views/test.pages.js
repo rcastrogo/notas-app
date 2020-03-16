@@ -15,16 +15,16 @@ let templatePage = function(ctx){
   let component = {
     root   : {},
     data   : {},
-    init   : function(container){
+    init   : function(){
 
     },
-    render : function(container){
+    render : function(){
       this.root = pol.build('div', __TEMPLATE, 'firstElementChild');
       itemsContainer = this.root;
       return this.root;
     },
-    mounted : function(container){
-      initAll(container);   
+    mounted : function(){
+      initAll();   
     },
     dispose : function(){
       clearInterval(timerId);
@@ -37,7 +37,7 @@ let templatePage = function(ctx){
    
   let images;
   let subcription;
-  function initAll(container) {
+  function initAll() {
     callOpenLibraApi( { tipo : 'cat', id : 'libros_programacion' } );
     subcription = pubsub.subscribe(TOPICS.WINDOW_SCROLL, (message, w) => {
       loadImages(w.scrollY);

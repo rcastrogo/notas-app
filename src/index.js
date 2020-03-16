@@ -26,82 +26,94 @@ import utils from "./lib/utils.js";
 
 const TOPICS = pubsub.TOPICS;
 
-// ==============================================================================
-// Routes
-// ==============================================================================
-const components =  [ 
-  headerComponent(),
-  menuComponent(),
-  contentComponent(),
-  footerComponent()
-];
-// ==============================================================================
-// Router
-// ==============================================================================
-const router = {
-  routes  : [],
-  addRoute: function (name, pattern, controller, isView) {
-    this.routes.push({ name      : name,
-                       path      : pattern,
-                       controler : controller, 
-                       isView    : isView || false });
-    return this;
+// ==========================================================================
+// App context
+// ==========================================================================
+const ctx = {
+  root       : pol.$('appContent'),
+  components : [],
+  router : {
+    routes  : [],
+    addRoute: function (name, pattern, controller, isView) {
+      this.routes.push({ name      : name,
+                         path      : pattern,
+                         controler : controller, 
+                         isView    : isView || false });
+      return this;
+    },
+    getRoute: function (route) {
+      return this.routes.where(function(r){
+        let match = r.path.exec(route);
+        if (match) {
+          r.params = match.map( e => e ); 
+        }
+        return match;
+      })[0];
+    },
+    navigateTo : function (route) {
+      this.current = this.getRoute(route);
+      let url = '{origin}{0}{1}'.format(APP_PATH, route, location);
+      window.history.pushState({}, route, url);
+      showContent();
+    },
+    normalizePath : function (url) {
+      return url.replace(document.baseURI, '');
+    },
+    sync : function(){
+      this.current = this.getRoute(this.normalizePath(window.location.href));
+      showContent();
+    },
+    current : {}
   },
-  getRoute: function (route) {
-    return this.routes.where(function(r){
-      let match = r.path.exec(route);
-      if (match) {
-        r.params = match.map( e => e ); 
-      }
-      return match;
-    })[0];
-  },
-  navigateTo : function (route) {
-    this.current = this.getRoute(route);
-    let url = '{origin}{0}{1}'.format(APP_PATH, route, location);
-    window.history.pushState({}, route, url);
-    showContent();
-  },
-  normalizePath : function (url) {
-    return url.replace(document.baseURI, '');
-  },
-  sync : function(){
-    this.current = this.getRoute(this.normalizePath(window.location.href));
-    showContent();
-  },
-  current : {}
+  topics   : pubsub.TOPICS,
+  publish  : pubsub.publish,
+  subcribe : pubsub.subscribe
 };
-router.addRoute('list',  /list$/,            listPage)
-      .addRoute('about', /about$/,           aboutPage)
-      .addRoute('note',  /note$/,            notePage)
-      .addRoute('note',  /note\/(\d{13})$/,  notePage)
-      .addRoute('el-tiempo',  /el-tiempo$/,  elTiempoPage)
-      .addRoute('templates', /templates$/,   templatePage)
-      .addRoute('get-value', /templates\/get-value$/,  getValueInfoPage)
-      .addRoute('utils', /templates\/utils$/,  addEventListenersInfoPage)
-      .addRoute('images', /images\/(\d+)$/, imagePage, true)
-      .addRoute('schedule', /schedule$/,    schedulePage, true)
-      .addRoute('',      /$/,               homePage);
 
-// ==============================================================================
+// =====================================================================
 // Init App
-// ==============================================================================
+// =====================================================================
 (function(){
-
-  const root = pol.$('appContent');
-  components.forEach( c => {
-    if(c.init) c.init(root, router);
-    root.appendChild(c.render(root));
-    if(c.mounted) c.mounted(root); 
+  // ===================================================================
+  // Main components
+  // ===================================================================
+  ctx.components = [ 
+    headerComponent(ctx),
+    menuComponent(ctx),
+    contentComponent(ctx),
+    footerComponent(ctx)
+  ];
+  // ===================================================================
+  // Add Routes
+  // ===================================================================
+  ctx.router
+     .addRoute('list',  /list$/,            listPage)
+     .addRoute('about', /about$/,           aboutPage)
+     .addRoute('note',  /note$/,            notePage)
+     .addRoute('note',  /note\/(\d{13})$/,  notePage)
+     .addRoute('el-tiempo',  /el-tiempo$/,  elTiempoPage)
+     .addRoute('templates', /templates$/,   templatePage)
+     .addRoute('get-value', /templates\/get-value$/,  getValueInfoPage)
+     .addRoute('utils', /templates\/utils$/,  addEventListenersInfoPage)
+     .addRoute('images', /images\/(\d+)$/, imagePage, true)
+     .addRoute('schedule', /schedule$/,    schedulePage, true)
+     .addRoute('',      /$/,               homePage);
+  // ===================================================================
+  // Init components
+  // ===================================================================
+  ctx.components.forEach( c => {
+    if(c.init) c.init();
+    ctx.root.appendChild(c.render());
+    if(c.mounted) c.mounted(); 
   });
-  // ======================================================
-  // Sync UI
-  // ======================================================
+  // ===================================================================
+  // Sync UI on view change
+  // ===================================================================
   pubsub.subscribe(TOPICS.VIEW_CHANGE, (msg, route) => {
 
-    let headerStyle  = components[0].root.style;
-    let menu         = components[1].root;
-    let contentStyle = components[2].root.style;
+    let headerStyle  = ctx.components[0].root.style;
+    let menu         = ctx.components[1].root;
+    let contentStyle = ctx.components[2].root.style;
 
     if (route.isView) {
       menu.classList.remove('sticky');
@@ -127,15 +139,13 @@ router.addRoute('list',  /list$/,            listPage)
     }
 
   });
-
   // ==============================================================================
   // Init Notifications system
   // ==============================================================================
   (function(){
 
-    let panel = pol.build('div', { id        : 'notificationPanel', 
-                                   className : '' });
-    root.parentNode.insertBefore(panel, root)
+    let panel = pol.build('div', { id : 'notificationPanel'});
+    ctx.root.parentNode.insertBefore(panel, ctx.root)
 
     pubsub.subscribe(TOPICS.WINDOW_SCROLL, (message, w) => {
       if (w.pageYOffset >= 40) {
@@ -170,55 +180,55 @@ router.addRoute('list',  /list$/,            listPage)
             }, 500);
           }
       });
-      // ====================================
+      // =================================================================================
       // Auto-close
-      // ====================================
-      if(Math.random() < .6) setTimeout(() => item.firstElementChild.onclick(), 3500);
+      // =================================================================================
+      // if(Math.random() < .6) setTimeout(() => item.firstElementChild.onclick(), 3500);
     });
 
   })();
 
 })();
 // ===================================================
-// Sync content
+// View change
 // ===================================================
 const container = pol.$('app-content-container');
 let currentBuilder;
 let current;
 function showContent(){
-  let viewBuilder = router.current.controler;
+  let viewBuilder = ctx.router.current.controler;
   if(!current || currentBuilder != viewBuilder) {
-    // ===============================================
+    // =======================================================
     // Dispose
-    // ===============================================
+    // =======================================================
     if (current && current.dispose) current.dispose();
-    // ===============================================
+    // =======================================================
     // Clear 
-    // ===============================================
+    // =======================================================
     container.innerHTML = '';  
-    // ===============================================
+    // =======================================================
     // Init
-    // ===============================================  
-    current = viewBuilder({router, components});
+    // =======================================================  
+    current = viewBuilder(ctx);
     currentBuilder = viewBuilder;
     if(current.init) current.init(); 
-    // ===============================================
+    // =======================================================
     // Render
-    // ===============================================
+    // =======================================================
     container.appendChild(current.render());
-    // ===============================================
+    // =======================================================
     // Mounted
-    // ===============================================
-    if(current.mounted) current.mounted(container);
-    pubsub.publish(TOPICS.VIEW_CHANGE, router.current);
+    // =======================================================
+    if(current.mounted) current.mounted();
+    pubsub.publish(TOPICS.VIEW_CHANGE, ctx.router.current);
   }
 
 }
 
-router.sync();
+ctx.router.sync();
 
 window.onpopstate = function(){
-  router.sync();
+  ctx.router.sync();
 }
 // ==============================================================================
 // ServiceWorker

@@ -1,11 +1,9 @@
 import pol from "../../lib/mapa.js";
 import utils from "../../lib/utils.js";
-import pubsub from "../../lib/pubSub.Service.js";
+//import pubsub from "../../lib/pubSub.Service.js";
 import pageContainer from "../components/page.component";
 
 import HTML from "./page.txt";
-
-const TOPICS = pubsub.TOPICS;
 
 export default function (ctx) {
   
@@ -14,18 +12,16 @@ export default function (ctx) {
 
   let component   = {
     root   : {},
-    init   : function(container, router){ },
-    render : function(container){
-      this.root = pageWrapper.render(container);
+    init   : function(){ },
+    render : function(){
+      this.root = pageWrapper.render();
       page = pol.build('div', HTML, 'firstElementChild');
       this.root.appendChild(initEventListeners(page));
       return this.root;
     },
     mounted : function(){
       initAll();
-    },
-    dispose       : function(){ },
-    eventHandlers : { }
+    }
   };
   
   function initEventListeners(target) {
@@ -36,7 +32,7 @@ export default function (ctx) {
   }
 
   function initAll() {
-    pubsub.publish('msg_page_component_update_title', 'Agenda' );
+    ctx.publish('msg\\page_component\\update\\title', 'Agenda' );
   }
 
   return component;

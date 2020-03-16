@@ -6,8 +6,8 @@ export default function (ctx) {
   
   let component = {
     root   : {},
-    init   : function(container, router){ },
-    render : function(container){
+    init   : function(){ },
+    render : function(){
       this.root = pol.build('div', HTML, 'firstElementChild');
       return initEventListeners(this.root);
     }

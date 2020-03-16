@@ -4,12 +4,12 @@ const __template = `
   <h1>{title}</h1>
 `;
 
-export default function(){
+export default function(ctx){
   return {
     root   : {},
     title  : 'Notas App',
-    init   : function(container){},
-    render : function(container){
+    init   : function(){},
+    render : function(){
       let options = { 
         id        : 'appHeader',
         innerHTML : __template.format(this),
@@ -18,7 +18,7 @@ export default function(){
       this.root = pol.build('header', options);
       return this.root;
     },
-    mounted: function(container){
+    mounted: function(){
       
     }
   };

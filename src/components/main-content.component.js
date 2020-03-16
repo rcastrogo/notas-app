@@ -2,17 +2,16 @@ import pol from "../lib/mapa.js";
 import pubsub from "../lib/pubSub.Service";
 
 const TOPICS     = pubsub.TOPICS;
-const __template = ``;
 
-export default function(){
+export default function(ctx){
 
   let component = {
     root   : {},
-    init   : function(container){ },
-    render : function(container) {
+    init   : function(){ },
+    render : function() {
       let options = { 
         id        : "app-content-container",
-        innerHTML : __template,
+        innerHTML : '',
         className : 'w3-container',
         style     : { 
           minHeight : '440px',
@@ -22,7 +21,7 @@ export default function(){
       this.root = pol.build('section', options);
       return this.root;
     },
-    mounted: function(container){
+    mounted: function(){
       initScroll();  
     }
   };

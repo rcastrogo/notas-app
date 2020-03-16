@@ -10,14 +10,12 @@ export default function(){
 
   let component = {
     root   : {},
-    init   : function(container){ },
-    render : function(container){
+    init   : function(){ },
+    render : function(){
       this.root = pol.build('div', __template).firstElementChild ;
       return this.root;
     },
-    mounted : function(container){ 
-     
-    },
+    mounted : function(){ },
     dispose : function(){ }
   };
 

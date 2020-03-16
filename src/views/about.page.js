@@ -30,16 +30,17 @@ export default function(){
 
   let component = {
     root   : {},
-    init   : function(container){ },
-    render : function(container){
+    init   : function(){ },
+    render : function(){
       this.root = pol.build('div', __template);
       return this.root;
     },
-    mounted : function(container){
-      container.querySelector('[about-btn-back]')
-               .onclick = () => {
-                 history.back();
-               };
+    mounted : function(){
+      this.root
+          .querySelector('[about-btn-back]')
+          .onclick = () => {
+            history.back();
+          };
     }
   };
 

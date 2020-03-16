@@ -32,13 +32,13 @@ export default function(ctx){
   let itemsContainer;
   let component = {
     root   : {},
-    init   : function(container){ },
-    render : function(container){
+    init   : function(){ },
+    render : function(){
       this.root = pol.build('div', TEMPLATE);
       itemsContainer = this.root.firstElementChild;
       return this.root;
     },
-    mounted : function(container){
+    mounted : function(){
       initAll();  
     },
     eventHandlers : { 

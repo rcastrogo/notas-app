@@ -28,12 +28,12 @@ export default function(ctx){
   let db;
   let component = {
     root   : {},
-    init   : function(container){ },
-    render : function(container){
+    init   : function(){ },
+    render : function(){
       this.root = pol.build('div', __template);
       return this.root;
     },
-    mounted : function(container){
+    mounted : function(){
       initAll();
     }
   };

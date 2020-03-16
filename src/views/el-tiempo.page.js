@@ -106,12 +106,12 @@ function aemetComponent() {
 
   let component = {
     root   : {},
-    init   : function(container){ },
-    render : function(container){
+    init   : function(){ },
+    render : function(){
       this.root = pol.build('div', __TEMPLATE.format(this.data));
       return this.root;
     },
-    mounted : function(container){ },
+    mounted : function(){ },
     withData : function(data){
       let ref_date = (function(now) { 
         return '{0|paddingLeft,0000}-{1|paddingLeft,00}-{2|paddingLeft,00}-{3|paddingLeft,00}'.format(
@@ -186,13 +186,13 @@ export default function(ctx){
         '28079' : 'Madrid'
       }
     },
-    init   : function(container){ },
-    render : function(container){
+    init   : function(){ },
+    render : function(){
       this.root = pol.build('div', __TEMPLATE);
       return this.root;
     },
-    mounted : function(container){
-      initAll(container);
+    mounted : function(){
+      initAll();
     },
     dispose : function(){
       clearInterval(timerId);

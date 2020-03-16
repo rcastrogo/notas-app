@@ -59,10 +59,4 @@ img.book{ background-color:silver;min-width:110px;min-height:153px;}
                  bottom:0;
                  left:0;
                  right:0;}
-.page-container { position:absolute;
-                  top:38px;
-                  bottom:0;
-                  left:0;
-                  right:0;
-                  background-color:red
-}
+.page-container {position:absolute;top:38px;bottom:0;left:0;right:0;}

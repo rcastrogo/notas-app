@@ -13,20 +13,17 @@ export default function (ctx) {
 
   let component   = {
     root   : {},
-    init   : function(container, router){ },
-    render : function(container){
-      this.root = pageWrapper.render(container);
+    init   : function(){ },
+    render : function(){
+      this.root = pageWrapper.render();
       page = pol.build('div', HTML, 'firstElementChild');
       this.root.appendChild(initEventListeners(page));
       return this.root;
     },
     mounted : function(){
       initAll();
-    },
-    dispose       : function(){ },
-    eventHandlers : { }
+    }
   };
-
 
   function initEventListeners(target) {
     utils.addEventListeners(target, { 
@@ -37,7 +34,7 @@ export default function (ctx) {
 
   function initAll() {
     
-    pubsub.publish('msg_page_component_update_title', 'Imagen' );
+    pubsub.publish('msg\\page_component\\update\\title', 'Imagen' );
 
     pol.ajax
        .get('./assets/js/libros.json', req => {

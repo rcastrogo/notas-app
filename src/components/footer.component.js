@@ -7,8 +7,8 @@ const __template = `
 export default function(){
   return {
     text   : '© Rafael Castro Gómez, 2020',
-    init   : function(container){},
-    render : function(container){
+    init   : function(){},
+    render : function(){
       let options = { 
         id        : "appFooter",
         innerHTML : __template.format(this),
@@ -16,7 +16,7 @@ export default function(){
       }
       return pol.build('footer', options);
     },
-    mounted: function(container){
+    mounted: function(){
       
     }
   };
