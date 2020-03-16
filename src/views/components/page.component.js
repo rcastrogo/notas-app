@@ -10,6 +10,9 @@ export default function (ctx) {
     render : function(){
       this.root = pol.build('div', HTML, 'firstElementChild');
       return initEventListeners(this.root);
+    },
+    addButton: button => {
+      component.root.firstElementChild.appendChild(button);
     }
   };
 

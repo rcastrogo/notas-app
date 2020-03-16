@@ -142,6 +142,17 @@ let __module = {};
       }
     });      
   }(_module));      
+
+  (function(module){
+    module.apply(Date.prototype, {
+      format: function () {
+        return '{0|paddingLeft,00}/{1|paddingLeft,00}/{2|paddingLeft,0000}'.format(
+                        this.getDate().toString(),
+                        (this.getMonth() + 1).toString(),
+                        this.getFullYear().toString());
+      }
+    });
+  })(_module);
   // ========================================================================================
   // Array
   // ========================================================================================
