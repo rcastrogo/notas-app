@@ -43,7 +43,7 @@ export default function(ctx) {
     window.location = 'https://www.strava.com/oauth/authorize?' + 
                       'client_id=44665&' + 
                       'response_type=code&' + 
-                      'redirect_uri=https://github.com/rcastrogo/notas-app/strava/exchange_token&' + 
+                      'redirect_uri=https://rcastrogo.github.io/notas-app/strava/exchange_token&' + 
                       'approval_prompt=force&scope=read,activity:read_all';
   }
 
