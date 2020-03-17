@@ -25,9 +25,7 @@ export default function (ctx) {
   };
   
   function initEventListeners(target) {
-    utils.addEventListeners(target, { 
-      
-    });
+    utils.addEventListeners(target, { });
     return target;
   }
 
@@ -67,7 +65,7 @@ export default function (ctx) {
         }).reduce( function(nodes, e){               
           nodes[e.fecha] = [];
           nodes[e.fecha].push(pol.build('div', {innerHTML : ~~(1 + Math.random() * 6),
-                                                className : 'w3-badge w3-red w3-display-middle',
+                                                className : 'w3-badge w3-red w3-display-middle w3-large',
                                                 id        : 'ctn_{fecha}'.format(e),
                                                 onclick   : function(){ sender.ShowDayView(this.id.split('_')[1]); }
           }));
@@ -81,24 +79,33 @@ export default function (ctx) {
   function onDayChanged(sender, date) {
     sender.ClearDayView();
     sender.ClearAgendaView();
-    // =============================================================================
+    // =======================================================================
     // Contenido dia
-    // =============================================================================
-    let d_template = '<div class="w3-padding w3-margin w3-teal w3-round" style="width:50px">{0|paddingLeft,00}</div>';
+    // =======================================================================
+    let d_template = require("./page.t.dia.txt");
     sender.LoadDayView((() => {
+      let top = -50;
       return [...Array(24).keys()].reduce( (nodes, e, i) => {
-        let element = pol.build('div', d_template.format(i.toString()));
+        if(Math.random() * 100 < 80) return nodes;
+        if(i > 29) return nodes;
+        let context = {
+          hora       : i.toString(),
+          dimension  : pol.apply( { top : '{0}px'.format(top += 60) },
+                                  sender.MeasureDayItem( { start : i * 60, 
+                                                           end   : i * 60 + 360 }))
+        }
+        let element = pol.build('div', d_template.format(context), true);
         nodes.push(element);
         return nodes;
       }, []);
     })());
-    // =================================================================================================
+    // =======================================================================
     // Contenido agenda
-    // =================================================================================================
-    let a_template = '<div class="w3-card-4 w3-margin w3-padding w3-round">{0|paddingLeft,00}:00</div>';
+    // =======================================================================
+    let a_template = require("./page.t.agenda.txt");
     sender.LoadAgendaView((() => {
       return [...Array(24).keys()].reduce( (nodes, e, i) => {
-        let element = pol.build('div', a_template.format(i.toString()));
+        let element = pol.build('div', a_template.format(i.toString()), true);
         nodes.push(element);
         return nodes;
       }, []);

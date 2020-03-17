@@ -57,7 +57,15 @@ let __module = {};
         return (typeof e === 'string') ? document.getElementById(e) || 
                                          module.toArray((control || document).querySelectorAll(e) || [])
                                        : e;
-      } 
+      },
+      parseQueryString : function (){
+        return location.search
+                       .slice(1)
+                       .split('&').reduce( (o, a) => { 
+                         o[a.split('=')[0]] = a.split('=')[1] || '';
+                         return o;
+                       }, {})
+      }
     });
   }(_module));
   // ========================================================================================
@@ -474,12 +482,18 @@ let __module = {};
         });
 
       },
-      post : function(url, params, callBack) {                                          
-        var xml = this.createXMLHttpRequest();
-        xml.open('POST', url, true);
-        xml.onreadystatechange = function() { if (xml.readyState == 4) callBack(xml.responseText) };
-        xml.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset:ISO-8859-1');
-        xml.send(params);
+      post : function(url, params, interceptor) {
+        return new Promise( (resolve, reject) => {
+          var xml = this.createXMLHttpRequest();
+          xml.open('POST', url, true);
+          if(interceptor){
+            interceptor(xml);
+          } else {
+            xml.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset:ISO-8859-1');
+          }
+          xml.onreadystatechange = function() { if (xml.readyState == 4) resolve(xml.responseText) };
+          xml.send(params);        
+        });
       },
       callWebMethod : function(url, params, callBack) {
         var xml = this.createXMLHttpRequest();

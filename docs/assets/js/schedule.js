@@ -15,9 +15,9 @@
       }
     }
 
-    var _that = { Min            : o.Min || 8*60, 
-                  Max            : o.Max || 20*60,
-                  Step           : 60,
+    var _that = { Min            : o.Min || 0, 
+                  Max            : o.Max || 24 * 60,
+                  Step           : 180,
                   Date           : o.Date || new Date(),
                   OnMonthChanged : o.OnMonthChanged,
                   OnDayChanged   : o.OnDayChanged
@@ -57,9 +57,9 @@
       _that.Containers.Day.style.display = 'none';
       _that.Containers.Agenda.style.display = 'none';
       _that.Containers[t].style.display = '';
-      _that.Buttons.Month.style.borderBottom = __currentView=='Month' ? 'solid 2px red' : '';
-      _that.Buttons.Day.style.borderBottom = __currentView=='Day' ? 'solid 2px red' : ''
-      _that.Buttons.Agenda.style.borderBottom = __currentView=='Agenda' ? 'solid 2px red' : '';   
+      _that.Buttons.Month.style.borderBottom = __currentView=='Month' ? 'solid 2px #ccc' : '';
+      _that.Buttons.Day.style.borderBottom = __currentView=='Day' ? 'solid 2px #ccc' : ''
+      _that.Buttons.Agenda.style.borderBottom = __currentView=='Agenda' ? 'solid 2px #ccc' : '';   
       __syncLabelText();
     }
 
@@ -268,8 +268,8 @@
     }
   
     _that.MeasureDayItem = function(value){
-      return { Left  : '{0}%'.format(__rangeToScreen(value.S)) , 
-               Width : '{0}%'.format((value.E-value.S)*100/__getRange()) };
+      return { left  : '{0}%'.format(__rangeToScreen(value.start)) , 
+               width : '{0}%'.format((value.end - value.start)*100/__getRange()) };
     }
   
     _that.Utils = { 
@@ -310,12 +310,12 @@
                     };
     // Containers                                                    
     _that.Containers = {  'Agenda': $.$('div', { className : 'ScheduleContainer',
-                                                 style     : { left : '0', right : '0', top: '1px', bottom : '1px' }                                                                                           
+                                                 style     : { left : '0', right : '0', top: '0', bottom : '10' }                                                                                           
                                                }),
                           'Day'   : $.$('div', { className : 'ScheduleContainer'
                                                }),
                           'Month' : $.$('div', { className : 'ScheduleContainer',                                               
-                                                 style     : { left : '0', right : '0', top: '2px', bottom : '-3px' }
+                                                 style     : { left : '0', right : '0', top: '0', bottom : '0' }
                                                })
                         };
     // Day                    

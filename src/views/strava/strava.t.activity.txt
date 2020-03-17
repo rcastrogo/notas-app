@@ -1,0 +1,10 @@
+﻿<div class= "w3-padding">
+
+  <h2 xbind="">Últimas {this.length} actividades</h2>
+
+	<div class= "w3-card-4 w3-padding w3-margin-bottom" xfor="activity in this" xbind="">
+		<h3 xbind="">{activity.name}</h3>
+		{activity.distance} km {activity.total_elevation_gain} metros
+	<div>
+
+</div>
