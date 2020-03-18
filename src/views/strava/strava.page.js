@@ -1,5 +1,5 @@
 import pol from "../../lib/mapa.js";
-import utils from "../../lib/utils.js";
+import {stravaApi} from "./strava"
 import pageContainer from "../components/page.component";
 
 import HTML from "./strava.page.txt";
@@ -25,55 +25,66 @@ export default function(ctx) {
 
   function initAll() {
     ctx.publish('msg\\page_component\\update\\title', 'Strava');
-    // ===========================================================================
-    // Leer la configuración de Strava
-    // ===========================================================================
-    let strava_config = JSON.parse( localStorage.getItem('strava') || '{}' );
-    if (strava_config.token_type) {
-      activities();
+    // ======================================================================
+    // Strava no está configurado
+    // ======================================================================
+    if (!stravaApi.config.token_type) {
+      stravaApi.redirectToAuthPage();
       return;
     }
-    // ===========================================================================
-    // Strava no está configurado
-    // ===========================================================================
-    callStravaAuth();
+    // ======================================================================
+    // Cargar las actividades
+    // ======================================================================
+    page.innerHTML = '<div class= "w3-container w3-padding w3.center">' +
+                     '  Cargando actividades...' + 
+                     '<div>';
+    stravaApi.loadActivities()
+             .then(loadActivities)
+             .catch( e => {
+               ctx.publish(ctx.topics.NOTIFICATION, { message : e.message });
+             });
   }
-
-  function callStravaAuth() {
-    window.location = 'https://www.strava.com/oauth/authorize?' + 
-                      'client_id=44665&' + 
-                      'response_type=code&' + 
-                      'redirect_uri=https://rcastrogo.github.io/notas-app/strava/exchange_token&' + 
-                      'approval_prompt=force&scope=read,activity:read_all';
+  
+  function loadActivities(result) {
+    let html        = require("./strava.t.activity.txt");
+    let htmlElement = pol.build('div', html, true);
+    let context = {
+      activities : result,
+      fn: {
+        toKilometers   : meters => {
+          return (meters / 1000).toLocaleString('es', { maximumFractionDigits: 2}); 
+        },
+        formatSpeed : v => {
+          return (v * 3.6).toLocaleString('es', { maximumFractionDigits: 2});
+        },
+        formatDuration : seconds => {
+          let h = '' + Math.floor(seconds / 60 / 60);
+          let m = '' + Math.floor(seconds / 60) % 60;
+          let s = '' + Math.floor(seconds - m * 60);
+          return h == '0' ? '{0|paddingLeft,00}m {1|paddingLeft,00}s'.format(m, s) :
+                            '{0}h {1|paddingLeft,00}m'.format(h, m)
+        },
+        formatTime : time => {
+          return time.fixTime('T').replace('Z', '');
+        },
+        formatDate : time => {
+          let hoy = new Date().format(); // dd/mm/yyyy
+          let t   = time.fixDate('T')    // yyyy-mm-dd
+                        .split('-')
+                        .reverse()
+                        .join('/');
+          return hoy == t ? 'Hoy' : t;
+        },
+        showIf : (value, target)  => {
+          let v = value === window ? '' : value;
+          if(!v) target.style.display = 'none';
+        }
+      }
+    }
+    page.innerHTML = '';
+    page.appendChild(pol.templates.fill(htmlElement, context));
+    console.log(result);
   }
-
-  const STRAVA_ENDPOINT = 'https://www.strava.com/api/v3/';
-
-
-  // athlete/activities
-  function activities() { 
-    //let url = {}.format(STRAVA_ENDPOINT, 'athletes/{0}?access_token={1}')
-    let config = JSON.parse(localStorage.getItem('strava'));
-    let url = '{0}athlete/activities?access_token={1}'.format(STRAVA_ENDPOINT, config.access_token);
-    //let url = '{0}athletes/{1}?access_token={2}'.format(STRAVA_ENDPOINT, config.athlete.id, config.access_token);
-    pol.ajax
-        .get(url, req => {
-          req.setRequestHeader('Accept', 'application/javascript');
-        })
-        .then(text => JSON.parse(text))
-        .then(result => {
-          console.log(result);
-          let html = require("./strava.t.activity.txt");
-          let template = pol.build('div', html, true).cloneNode(true);
-          page.appendChild(pol.templates.fill(template, result));
-
-        })
-        .catch( e => {
-          ctx.publish(ctx.topics.NOTIFICATION, { message : e.message });
-        });
-  }
-   
-
 
   return component;
 

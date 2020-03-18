@@ -1,6 +1,9 @@
 
 .w3-italic { font-style: italic; }
 .w3-bold { font-weight: bold;}
+.w3-myfont {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
 
 footer#appFooter {
   position: fixed;
@@ -59,7 +62,7 @@ img.book{ background-color:silver;min-width:110px;min-height:153px;}
                  bottom:0;
                  left:0;
                  right:0;}
-.page-container {position:absolute;top:40px;bottom:0;left:0;right:0;}
+.page-container {position:absolute;top:40px;bottom:0;left:0;right:0;overflow:auto}
 
 .Schedule{ position:absolute; top:0; right:0; bottom:0; left:0; }
 .ScheduleHeader{ position:absolute; top:0; right:0; left:0; text-align:center; padding: 8px; z-index:3}
@@ -84,3 +87,5 @@ img.book{ background-color:silver;min-width:110px;min-height:153px;}
 .Schedule table.Cal td.Cal_Day { font-size: 12px; font-family:monospace}
 .Schedule table.Cal td.Cal_Day_Disabled {color:silver; font-size: 12px;font-family:monospace}
 .Schedule table.Cal td div.Cal_day_con{ position:absolute; top:1.5em; bottom:.2em; left:.2em; right:.2em; overflow:auto; overflow-y:hidden; border-bottom: solid 1px silver; text-align:center}
+
+[activity-container] div.w3-cell div.w3-small.w3-light-grey{ padding:3px; margin:0 1px;}

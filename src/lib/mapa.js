@@ -415,7 +415,7 @@ let __module = {};
             _args.push(child);
             _value = _value.apply(scope, _args);
           } 
-          child[name] = _value;
+          if(name) child[name] = _value;
         });
       });
       // ====================================================================
@@ -476,7 +476,11 @@ let __module = {};
           if(interceptor) interceptor(xml);
           xml.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
           xml.setRequestHeader('Cache-Control', 'no-cache');
-          xml.onreadystatechange = function () { if (xml.readyState == 4) resolve(xml.responseText) };
+          xml.onreadystatechange = function () { 
+            if (xml.readyState == 4){
+              resolve(xml.responseText)
+            }
+          };
           xml.onerror = function(e) { reject(e); };
           xml.send(null);
         });
