@@ -13,6 +13,7 @@ let stravaApi = (function () {
 
   return {
     config             : config,
+    athlete            : undefined,
     redirectToAuthPage : function () {
       window.location = 'https://www.strava.com/oauth/authorize?' + 
                         'client_id=44665&' + 
@@ -20,6 +21,8 @@ let stravaApi = (function () {
                         'redirect_uri={0}&'.format(REDIRECT_URI) + 
                         'approval_prompt=force&scope=read,activity:read_all';
     },
+    cache           : { activities : { } },
+    loadActivity    : __loadActivity,
     loadActivities  : __loadActivities,
     loadAthleteInfo : __loadAthleteInfo
   }
@@ -68,6 +71,45 @@ let stravaApi = (function () {
     });
   }
 
+  function __loadActivity(activityId) { 
+    // ===========================================================================================
+    // Return cached data
+    // ===========================================================================================
+    if (stravaApi.cache.activities[activityId]) {
+      return new Promise((resolve, reject) => {
+        console.log('Cached activity info...', stravaApi.athlete)
+        resolve(stravaApi.cache.activities[activityId]);
+      });
+    }
+    return new Promise((resolve, reject) => {
+      let url = '{0}activities/{1}?access_token={access_token}'.format(STRAVA_URI, activityId, config);
+      let request;
+      pol.ajax
+         .get(url, req => {
+           request = req;
+           req.setRequestHeader('Accept', 'application/javascript');
+         })
+        .then(result => { 
+          if (request.status == 401) throw new Error('Authorization Error');
+          return JSON.parse(result);
+        })
+        .then(result => {
+          stravaApi.cache.activities[result.id] = result;
+          resolve(result);
+        })
+        .catch( e => {
+          if (request.status == 401) {
+            __refreshToken(__loadActivity).then( result => {
+              stravaApi.cache.activities[result.id] = result;
+              resolve(result);
+            });
+            return;
+          }
+          reject(e);
+        });
+    });
+  }
+
   function __loadActivities() { 
     return new Promise((resolve, reject) => {
       let url = '{0}athlete/activities?access_token={access_token}'.format(STRAVA_URI, config);
@@ -96,7 +138,19 @@ let stravaApi = (function () {
     });
   }
 
-  function __loadAthleteInfo() { 
+  function __loadAthleteInfo(){ 
+    // ===========================================================================================
+    // Return cached data
+    // ===========================================================================================
+    if (stravaApi.athlete) {
+      return new Promise((resolve, reject) => {
+        console.log('Cached athlete info...', stravaApi.athlete)
+        resolve(stravaApi.athlete);
+      });
+    }
+    // ===========================================================================================
+    // Invoke strava api
+    // ===========================================================================================
     return new Promise((resolve, reject) => {
       let url = '{0}athletes/{athlete.id}?access_token={access_token}'.format(STRAVA_URI, config);
       let request;
@@ -110,9 +164,17 @@ let stravaApi = (function () {
           return JSON.parse(result);
         })
         .then(result => {
+          stravaApi.athlete = result;
           resolve(result);
         })
         .catch( e => {
+          if (request.status == 401) {
+            __refreshToken(__loadAthleteInfo).then( result => {
+              stravaApi.athlete = result;
+              resolve(result);
+            });
+            return;
+          }
           reject(e);
         });
     });

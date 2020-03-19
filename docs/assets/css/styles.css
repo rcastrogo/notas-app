@@ -89,3 +89,12 @@ img.book{ background-color:silver;min-width:110px;min-height:153px;}
 .Schedule table.Cal td div.Cal_day_con{ position:absolute; top:1.5em; bottom:.2em; left:.2em; right:.2em; overflow:auto; overflow-y:hidden; border-bottom: solid 1px silver; text-align:center}
 
 [activity-container] div.w3-cell div.w3-small.w3-light-grey{ padding:3px; margin:0 1px;}
+[activity-container] .foto {
+    margin: 4px;
+    display: block;
+    float: left;
+    background-color: silver;
+    border-radius: 6%;
+    border: solid 2px black;
+}
+[act-desc] { font-style: italic; font-family: sans-serif } 

@@ -1,11 +1,14 @@
-﻿<div class= "w3-padding" activity-container>
-	<div class="w3-card-4 w3-round w3-padding w3-margin-bottom" xfor="activity in activities" xbind="">
+﻿<div class="" activity-container>
+	<div xbind="id:fn.formatId => @activity.id activity" xfor="activity in activities" class="w3-padding-small w3-margin-top w3-border-bottom" activity>
 		
-		<div class="w3-border-bottom w3-margin-bottom" xbind>
-			<h3 class="w3-bold" xbind>{activity.name}</h3>
-			<div xbind=":fn.showIf=>@activity.description">{activity.description}</div>
-	    <div class="" style="width:49%;display:inline-block" xbind>{activity.start_date_local:fn.formatDate}</div>
-			<div class="" style="width:49%;display:inline-block; text-align:right" xbind>{activity.start_date_local:fn.formatTime}</div>
+		<div>
+			<img xbind="src:athlete.profile_medium" class="w3-left w3-circle" style="margin-right:10px">
+			<p xbind style="padding:5px;margin:0;min-height:63px;">
+			  <b xbind>{athlete.firstname} {athlete.lastname}</b><br/>
+			  <span class="w3-small w3-text-gray" xbind>{activity.start_date_local:fn.formatDate} {activity.start_date_local:fn.formatTime}</span>
+			</p>
+			<div xbind class="w3-bold w3-large">{activity.name}</div>
+			<div xbind="id:fn.formatId => @activity.id desc" act-desc></div>
 		</div>
 
 		<div class="w3-cell-row w3-center">
@@ -26,7 +29,7 @@
 			</div>
 		  <div class="w3-cell">
 			  <div class="w3-small w3-light-grey">Velocidad máxima</div>
-				<div class="w3-bold w3-large" xbind>{activity.max_speed:fn.formatSpeed}<span class="w3-small"> km</span></div>
+				<div class="w3-bold w3-large" xbind>{activity.max_speed:fn.formatSpeed}<span class="w3-small"> km/h</span></div>
 			</div>
     </div>
 
@@ -56,13 +59,19 @@
 			</div>
 		</div>
 
-		<p xbind="">
-			{activity.achievement_count} logros, {activity.comment_count} comentarios y {activity.kudos_count} kudos.
-		</p>
-
-		<div class="w3-cell-row" xbind="id:activity.id;tag:activity.total_photo_count">
-
+		<div xbind=":fn.showIf=>@activity.total_photo_count" class="w3-center w3-small w3-light-grey">{activity.fotos.length} Fotos</div>
+		<div xbind=":fn.showIf=>@activity.total_photo_count" class="" style="overflow:auto;">
+			<div style="width:380px">
+				<img xfor="foto in activity.fotos" xbind="id:foto" height="80" style="min-width:100px;" class="foto">
+		  </div>
 		</div>
+
+		<p class="w3-center">
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.achievement_count" class="w3-white w3-large"><i class="fa fa-trophy"></i> {activity.achievement_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.comment_count" class="w3-white w3-large"><i class="fa fa-comments"></i> {activity.comment_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.kudos_count" class="w3-white w3-large"><i class="fa fa-thumbs-up"></i> {activity.kudos_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIfGreather=>@activity.athlete_count 1" class="w3-white w3-large"><i class="fa fa-bicycle"></i> {activity.athlete_count}</span>
+		</p>
 
 	<div>
 

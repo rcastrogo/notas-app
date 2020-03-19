@@ -70,7 +70,8 @@ const ctx = {
   },
   topics   : pubsub.TOPICS,
   publish  : pubsub.publish,
-  subcribe : pubsub.subscribe
+  subscribe : pubsub.subscribe,
+  unsubscribe : pubsub.unsubscribe
 };
 
 // =====================================================================
