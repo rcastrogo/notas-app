@@ -1,4 +1,5 @@
-import pol from "../../lib/mapa.js";
+﻿import pol from "../../lib/mapa.js";
+import utils from "../../lib/utils";
 import {stravaApi} from "./strava"
 import pageContainer from "../components/page.component";
 
@@ -21,39 +22,66 @@ export default function(ctx) {
     mounted : function(){
       initAll();
     },
-    disposed : function(){
+    dispose : function(){
       ctx.unsubscribe(subcription);
     }
   };
+  
+  function showAuthInfo() {
+    page.innerHTML = `
+      <div class= "w3-container w3-padding">
+        <h2>Autorización</h2>
+        <p style="text-indent:1em;">
+          Antes de continuar debes conceder permisos a la aplicación para acceder a tus datos en <span class="w3-bold w3-italic">Strava</span>.
+        </p>
+        <p style="text-indent:1em;">
+          El proceso de autorización es <span class="w3-bold w3-italic">seguro y se realiza en la web de Strava</span>.
+          Este permiso puede ser revocado si lo estimas oportuno.
+        </p>
+        <div class="w3-container w3-margin-bottom w3-center">
+          <button type="button" on-click="doAuth" class="w3-button w3-black">Autorizar</button>
+          <button type="button" on-click="goHome" class="w3-button w3-black">Cancelar</button>
+        </div>
+      <div>`;
+    utils.addEventListeners(page,
+      {
+        doAuth : () => stravaApi.redirectToAuthPage(),
+        goHome : () => ctx.router.navigateTo('')
+      }
+    );
+  }
 
   function initAll() {
-    ctx.publish('msg\\page_component\\update\\title', 'Strava');
-    // ======================================================================
-    // Strava no est� configurado
-    // ======================================================================
+    // ==========================================================================
+    // Strava no está configurado
+    // ==========================================================================
     if (!stravaApi.config.token_type) {
-      stravaApi.redirectToAuthPage();
-      return;
+      ctx.publish('msg\\page_component\\update\\title', 'Strava - Autorización');
+      return showAuthInfo();
     }
-    // ======================================================================
+    ctx.publish('msg\\page_component\\update\\title', 'Strava - Actividades');
+    // ==========================================================================
     // Cargar las actividades
-    // ======================================================================
+    // ==========================================================================
     page.innerHTML = '<div class= "w3-container w3-padding w3.center">' +
                      '  <h2>Cargando actividades...</h2>' + 
                      '<div>';
-    // ======================================================================
+    // ==========================================================================
     // Cargar los dato del atleta
-    // ======================================================================
+    // ==========================================================================
     stravaApi.loadAthleteInfo()
              .then(result => {
-                // ==========================================================
+                // ==============================================================
                 // Cargar las actividades
-                // ==========================================================
+                // ==============================================================
                 return stravaApi.loadActivities()
              })
              .then(loadActivities)
              .catch( e => {
-               ctx.publish(ctx.topics.NOTIFICATION, { message : e.message });
+               page.innerHTML = ('<div class= "w3-container w3-padding">' +
+                                 '  <h2>Error</h2>' + 
+                                 '  <p>{message}</p>' + 
+                                 '<div>').format(e);
              });
   }
   
@@ -106,6 +134,16 @@ export default function(ctx) {
         },
         formatId: (id, prefix, target) => {
           return '{0}-{1}'.format(prefix, id);
+        },
+        xif : (p1, p2, body, target) => {
+          let v1 = p1 === window ? '' : p1;
+          if(arguments.length == 1) {
+            if(!v1) p2.style.display = 'none';
+            return;
+          }
+          let v2 = p2 === window ? '' : p2;
+          let _fn = new Function('a', 'b', 'return {0};'.format(body));
+          target.style.display = _fn(v1, v2) ? '' : 'none';
         }
       }
     }
@@ -123,43 +161,69 @@ export default function(ctx) {
     let bookmarks    = pol.$('[activity]', page);
     let descriptions = pol.$('[act-desc]', page).toDictionary('id');
     let photos       = pol.$('img[xfor]', page).toDictionary('id');
+    let maps         = pol.$('[act-map-img]', page).toDictionary('id');
     // =====================================================================
-    // Cargar m�s datos de las actividades
+    // Cargar más datos de las actividades
     // =====================================================================
     ctx.unsubscribe(subcription);
     subcription = ctx.subscribe('msg\\activities\\scroll', (message, w) => {
       loadMore(w.scrollTop, { bookmarks, 
                               descriptions, 
-                              photos });
+                              photos,
+                              maps});
     });
-    ctx.publish('msg\\activities\\scroll', { scrollTop : 200 });
+    ctx.publish('msg\\activities\\scroll', { scrollTop : 100 });
   }
 
   function loadMore(value, controls) {
     controls.bookmarks
-            .where( mark => mark.offsetTop - 700 < value  && !mark.tag )
+            .where( mark => mark.offsetTop - 500 < value  && !mark.tag )
             .map( mark => {
               mark.tag = true
               let id = mark.id.split('-')[1];
               stravaApi.loadActivity(id)
                        .then(result => {
-                         console.log(result);
-                         let id = '';
-                         // ================================================================
-                         // Descripci�n
-                         // ================================================================
-                         id = 'desc-{0}'.format(result.id);
+                         //console.log(result);
+                         // ==================================================================
+                         // Descripción
+                         // ==================================================================
+                         let __id ='desc-{0}'.format(result.id);
                          if(result.description) {
-                            controls.descriptions[id].innerHTML = result.description || '';                            
+                            controls.descriptions[__id].innerHTML = result.description || '';                           
                          }
-                         // ================================================================
+                         // ==================================================================
                          // Fotos
-                         // ================================================================
+                         // ==================================================================
                          if (result.total_photo_count) {
-                           id = 'img-{0}-{1}'.format(result.id, 0);
-                           controls.photos[id].src = result.photos.primary.urls[100];
+                           __id = 'img-{0}-{1}'.format(result.id, 0);
+                           controls.photos[__id].src = result.photos.primary.urls[100];
+                         }
+                         // ==================================================================
+                         // Mapas del recorrido
+                         // ==================================================================
+                         if (result.map.polyline) {
+                           __id = 'map-{0}'.format(result.id);
+                           
+                           let _src = ('https://maps.googleapis.com/maps/api/staticmap?' +  
+                                       'visible={start_latlng[0]},{start_latlng[1]}&' +
+                                       'size=340x100&' + 
+                                       'key=AIzaSyD-FEw7obgz5yH2' + '1OO84Xm1XzGoWFuWas&' + 
+                                       'path=color:0x0000ff80|weight:2|enc:{map.polyline}'
+                                      ).format(result);
+                           controls.maps[__id]
+                                   .appendChild( pol.build('img', { src       : _src, 
+                                                                    className : 'w3-border',
+                                                                    style     : { 
+                                                                      width : '100%'
+                                                                    }
+                                                                  }));     
                          }
 
+
+                         return stravaApi.loadActivityStream(result.id);
+                       })
+                       .then(result => {
+                          //console.log(result);
                        })
             });
   }

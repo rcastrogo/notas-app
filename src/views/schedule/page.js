@@ -1,5 +1,6 @@
 import pol from "../../lib/mapa.js";
 import utils from "../../lib/utils.js";
+import {stravaApi} from "../strava/strava"
 import pageContainer from "../components/page.component";
 
 import HTML from "./page.txt";
@@ -46,6 +47,9 @@ export default function (ctx) {
   }
 
   function onMonthChanged(sender, date) {
+
+    console.log(stravaApi.cache);
+
     sender.ClearMonthView();
     // =============================================================================
     // Contenido mensual

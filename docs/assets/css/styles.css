@@ -4,6 +4,7 @@
 .w3-myfont {
   font-family: "Comic Sans MS", cursive, sans-serif;
 }
+.w3-30{ font-size: 31px }
 
 footer#appFooter {
   position: fixed;
@@ -62,7 +63,7 @@ img.book{ background-color:silver;min-width:110px;min-height:153px;}
                  bottom:0;
                  left:0;
                  right:0;}
-.page-container {position:absolute;top:40px;bottom:0;left:0;right:0;overflow:auto}
+.page-container {position:absolute;top:41px;bottom:0;left:0;right:0;overflow:auto}
 
 .Schedule{ position:absolute; top:0; right:0; bottom:0; left:0; }
 .ScheduleHeader{ position:absolute; top:0; right:0; left:0; text-align:center; padding: 8px; z-index:3}

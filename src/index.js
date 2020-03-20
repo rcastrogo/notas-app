@@ -47,16 +47,16 @@ const ctx = {
       return this.routes.where(function(r){
         let match = r.path.exec(route);
         if (match) {
-          r.params = match.map( e => e ); 
+          r.params = match.map( e => e );
         }
-        r.queryValues = pol.parseQueryString();
         return match;
       })[0];
     },
     navigateTo : function (route) {
-      this.current = this.getRoute(route);
+      this.current = this.getRoute(route); 
       let url = '{origin}{0}{1}'.format(APP_PATH, route, location);
-      window.history.pushState({}, route, url);
+      window.history.pushState('', route, url);
+      this.current.queryValues = pol.parseQueryString();
       showContent();
     },
     normalizePath : function (url) {
@@ -64,6 +64,7 @@ const ctx = {
     },
     sync : function(){
       this.current = this.getRoute(this.normalizePath(window.location.href));
+      this.current.queryValues = pol.parseQueryString();
       showContent();
     },
     current : {}
@@ -102,7 +103,7 @@ const ctx = {
      .addRoute('images', /images\/(\d+)$/, imagePage, true)
      .addRoute('schedule', /schedule$/,    schedulePage, true)
      .addRoute('strava-exchange-token', /strava\/exchange_token/, stravaAuthPage, true)
-     .addRoute('strava-main', /strava/, stravaMainPage, true)
+     .addRoute('strava-main', /strava[?]?(.*)$/, stravaMainPage, true)
      .addRoute('',      /$/,               homePage);
   // ===================================================================
   // Init components
@@ -233,7 +234,7 @@ function showContent(){
 
 ctx.router.sync();
 
-window.onpopstate = function(){
+window.onpopstate = function(event){
   ctx.router.sync();
 }
 // ==============================================================================
