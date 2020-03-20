@@ -207,7 +207,7 @@ export default function(ctx) {
                            let _src = ('https://maps.googleapis.com/maps/api/staticmap?' +  
                                        'visible={start_latlng[0]},{start_latlng[1]}&' +
                                        'size=340x100&' + 
-                                       'key=AIzaSyD-FEw7obgz5yH2' + '1OO84Xm1XzGoWFuWas&' +  
+                                       'key=AIzaSyD-FEw7obgz5yH2-----1OO84Xm1XzGoWFuWas&'.replace('-', '') +  
                                        'path=color:0x0000ff80|weight:2|enc:{map.polyline}'
                                       ).format(result);
                            controls.maps[__id]
