@@ -31,7 +31,12 @@ let stravaApi = (function () {
     loadActivity       : __loadActivity,
     loadActivityStream : __loadActivityStream,
     loadActivities     : __loadActivities,
-    loadAthleteInfo    : __loadAthleteInfo
+    loadAthleteInfo    : __loadAthleteInfo,
+    GOOGLE_STATIC_MAP  : 'https://maps.googleapis.com/maps/api/staticmap?' +  
+                         'visible={start_latlng[0]},{start_latlng[1]}&' +
+                         'size=340x100&' + 
+                         'key=AIzaSyD-FEw7obgz5yH2a1OO84Xm1XzGoWFuWas&' +  
+                         'path=color:0x0000ff80|weight:2|enc:{map.polyline}'
   }
   
   function __refreshToken(fn, payload) {

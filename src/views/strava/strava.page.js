@@ -64,6 +64,15 @@ export default function(ctx) {
     }
     ctx.publish('msg\\page_component\\update\\title', 'Strava - Actividades');
     // ==========================================================================
+    // Botón para ir a la agenda
+    // ==========================================================================
+    pageWrapper.addButton( 
+      pol.build('button', {
+        className : 'pol-btn w3-button w3-black w3-right',
+        innerHTML : '<i class="fa fa-calendar"></i>',
+        onclick   : () => ctx.router.navigateTo('schedule')
+      }));
+    // ==========================================================================
     // Cargar las actividades
     // ==========================================================================
     page.innerHTML = '<div class= "w3-container w3-padding w3.center">' +
@@ -255,12 +264,7 @@ export default function(ctx) {
                          // Mapas del recorrido
                          // ==================================================================
                          if (result.map.polyline) {                    
-                           let _src = ('https://maps.googleapis.com/maps/api/staticmap?' +  
-                                       'visible={start_latlng[0]},{start_latlng[1]}&' +
-                                       'size=340x100&' + 
-                                       'key=AIzaSyD-FEw7obgz5yH2a1OO84Xm1XzGoWFuWas&' +  
-                                       'path=color:0x0000ff80|weight:2|enc:{map.polyline}'
-                                      ).format(result);
+                           let _src = stravaApi.GOOGLE_STATIC_MAP.format(result);
                            let __id = 'map-{0}'.format(result.id);
                            controls.maps[__id]
                                    .appendChild( pol.build('img', { src       : _src, 

@@ -74,10 +74,10 @@
 		</div>
 
 		<p class="w3-center">
-			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.achievement_count" class="w3-white w3-large"><i class="fa fa-trophy"></i> {activity.achievement_count}</span>
-			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.comment_count" class="w3-white w3-large"><i class="fa fa-comments"></i> {activity.comment_count}</span>
-			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.kudos_count" class="w3-white w3-large"><i class="fa fa-thumbs-up"></i> {activity.kudos_count}</span>
-			<span style="margin-right: 3px" xbind=":fn.showIfGreather=>@activity.athlete_count 1" class="w3-white w3-large"><i class="fa fa-bicycle"></i> {activity.athlete_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.achievement_count" class="w3-large"><i class="fa fa-trophy"></i> {activity.achievement_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.comment_count" class="w3-large"><i class="fa fa-comments"></i> {activity.comment_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.kudos_count" class="w3-large"><i class="fa fa-thumbs-up"></i> {activity.kudos_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIfGreather=>@activity.athlete_count 1" class="w3-large"><i class="fa fa-bicycle"></i> {activity.athlete_count}</span>
 		</p>
 
 	</div>

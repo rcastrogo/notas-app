@@ -1,3 +1,78 @@
-﻿<div class="w3-card-4 w3-margin w3-padding w3-round">
-  <div>{0|paddingLeft,00}:00</div>
+﻿<div class="" activity-container>
+
+	<div xbind="id:fn.formatId => @activity.id activity" xfor="activity in activities" class="w3-padding-small w3-margin-top w3-border-bottom" activity>
+		
+		<div>
+			<img xbind="src:athlete.profile_medium" class="w3-left w3-circle" style="margin-right:10px">
+			<p xbind style="padding:5px;margin:0;min-height:63px;">
+			  <b xbind>{athlete.firstname} {athlete.lastname}</b><br/>
+			  <span class="w3-small w3-text-gray" xbind>{activity.start_date_local:fn.formatDate} {activity.start_date_local:fn.formatTime}</span>
+			</p>
+			<div xbind class="w3-bold w3-large">{activity.name}</div>
+			<div xbind="id:fn.formatId => @activity.id desc" act-desc></div>
+		</div>
+
+		<div class="w3-cell-row w3-center">
+		  <div class="w3-cell">
+			  <div class="w3-small w3-light-grey">Distancia</div>
+				<div class="w3-bold w3-30" xbind>{activity.distance:fn.toKilometers}<span class="w3-small"> km</span></div>
+			</div>
+		  <div class="w3-cell">
+			  <div class="w3-small w3-light-grey">Tiempo</div>
+				<div class="w3-bold w3-30" xbind>{activity.moving_time:fn.formatDuration}</div>
+			</div>
+		</div>
+
+		<div class="w3-cell-row  w3-center">
+			<div class="w3-cell">
+			  <div class="w3-small w3-light-grey">Velocidad media</div>
+				<div class="w3-bold w3-large" xbind>{activity.average_speed:fn.formatSpeed}<span class="w3-small"> km/h</span></div>
+			</div>
+		  <div class="w3-cell">
+			  <div class="w3-small w3-light-grey">Velocidad máxima</div>
+				<div class="w3-bold w3-large" xbind>{activity.max_speed:fn.formatSpeed}<span class="w3-small"> km/h</span></div>
+			</div>
+    </div>
+
+		<div class="w3-cell-row w3-center">
+		  <div class="w3-cell">
+			  <div class="w3-small w3-light-grey">Pulsaciones medias</div>
+				<div class="w3-bold w3-large" xbind>{activity.average_heartrate|toFixed,0}<span class="w3-small"> ppm</span></div>
+			</div>
+		  <div class="w3-cell">
+			  <div class="w3-small w3-light-grey">Pulsaciones máximas</div>
+				<div class="w3-bold w3-large" xbind>{activity.max_heartrate}<span class="w3-small"> ppm</span></div>
+			</div>
+		</div>
+
+		<div class="w3-cell-row w3-center">
+			<div class="w3-cell" xbind=":fn.showIf=>@activity.total_elevation_gain">
+				<div class="w3-small w3-light-grey">Desnivel</div>
+				<div class="w3-bold w3-large" xbind>{activity.total_elevation_gain|toLocaleString,de-DE}<span class="w3-small"> m</span></div>
+			</div>
+			<div class="w3-cell" xbind=":fn.showIf=>@activity.average_cadence">
+				<div class="w3-small w3-light-grey">Cadencia</div>
+				<div class="w3-bold w3-large" xbind>{activity.average_cadence|toFixed,0}<span class="w3-small"></span></div>
+			</div>
+			<div class="w3-cell" xbind=":fn.showIf=>@activity.average_watts">
+				<div class="w3-small w3-light-grey">Potencia media</div>
+				<div class="w3-bold w3-large" xbind>{activity.average_watts|toFixed,0}<span class="w3-small"> W</span></div>
+			</div>
+		</div>
+
+	  <div xbind=":fn.showIf=>@activity.map.polyline" 
+		     class="w3-margin-bottom w3-light-gray" 
+				 style="min-height:100px">
+				 <img act-img xbind="id:fn.formatId => @activity.id img" class="w3-border" style="width:100%">
+		</div>
+
+		<p class="w3-center">
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.achievement_count" class="w3-large"><i class="fa fa-trophy"></i> {activity.achievement_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.comment_count" class="w3-large"><i class="fa fa-comments"></i> {activity.comment_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIf=>@activity.kudos_count" class="w3-large"><i class="fa fa-thumbs-up"></i> {activity.kudos_count}</span>
+			<span style="margin-right: 3px" xbind=":fn.showIfGreather=>@activity.athlete_count 1" class="w3-large"><i class="fa fa-bicycle"></i> {activity.athlete_count}</span>
+		</p>
+
+	</div>
+
 </div>
