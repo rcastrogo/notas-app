@@ -10,6 +10,8 @@ export default function (ctx) {
   let pageWrapper = pageContainer(ctx);
   let page        = {};
   let schedule;
+  let stravaCache = JSON.parse(localStorage.getItem('strava_cache')); 
+  let viewDataSet;
 
   let component   = {
     root   : {},
@@ -47,32 +49,42 @@ export default function (ctx) {
   }
 
   function onMonthChanged(sender, date) {
-
-    console.log(stravaApi.cache);
-
+    // =========================================================================
+    // Obtener las actividades entre las fechas mostradas
+    // =========================================================================
+    let f1US = sender.FirstDate.format('yyyymmdd');
+    let f2US = sender.LastDate.format('yyyymmdd');
+    viewDataSet = Object.keys(stravaCache.activities)
+                        .map(id => { 
+                          let activity = stravaCache.activities[id];
+                          return { fechaUS : activity.start_date
+                                                      .fixDate('T')
+                                                      .replaceAll('-', '/'), 
+                                    id    : activity.id };
+                        })
+                        .where( a => {
+                            return f1US <= a.fechaUS && f2US >= a.fechaUS;
+                        });
     sender.ClearMonthView();
-    // =============================================================================
+    // =========================================================================
     // Contenido mensual
-    // =============================================================================
+    // =========================================================================
     sender.LoadMonthView((() => {
-      let count =  1 + ~~(Math.random() * 12);
-      let values = [];
-      while (values.length < count) {
-        let value = 1 + ~~(Math.random() * 34);
-        if (!values.includes(value)) {
-          values.push(value);
-        }
-      }
-      return values
-        .map( i => {
-          return { fecha : new Date(sender.FirstDate.valueOf() + i * 86400000).format() };
-        }).reduce( function(nodes, e){               
-          nodes[e.fecha] = [];
-          nodes[e.fecha].push(pol.build('div', {innerHTML : ~~(1 + Math.random() * 6),
-                                                className : 'w3-badge w3-red w3-display-middle w3-large',
-                                                id        : 'ctn_{fecha}'.format(e),
-                                                onclick   : function(){ sender.ShowDayView(this.id.split('_')[1]); }
-          }));
+      return viewDataSet.reduce( 
+        function(nodes, activity){
+          let fechaES = activity.fechaUS
+                                .split('/')
+                                .reverse()
+                                .join('/');
+          let content = pol.build('div', { 
+            innerHTML : '<i class="fa fa-bicycle"></i>',
+            className : 'w3-badge w3-red w3-display-middle w3-large',
+            id        : 'activity_{0}'.format(fechaES),
+            onclick   : function(){ sender.ShowDayView(this.id.split('_')[1]); }
+          });
+
+          nodes[fechaES] = [];
+          nodes[fechaES].push(content);
           return nodes;
         }, {});
 
@@ -108,8 +120,11 @@ export default function (ctx) {
     // =======================================================================
     let a_template = require("./page.t.agenda.txt");
     sender.LoadAgendaView((() => {
-      return [...Array(24).keys()].reduce( (nodes, e, i) => {
-        let element = pol.build('div', a_template.format(i.toString()), true);
+      let dateUS = date.format('yyyymmdd');
+      return viewDataSet.where( a => a.fechaUS == dateUS)
+                        .reduce((nodes, a, i) => {
+        let activity = stravaCache.activities[a.id];
+        let element = pol.build('div', { innerHTML : JSON.stringify(activity) }, false);
         nodes.push(element);
         return nodes;
       }, []);

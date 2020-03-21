@@ -153,11 +153,17 @@ let __module = {};
 
   (function(module){
     module.apply(Date.prototype, {
-      format: function () {
+      format: function (fmt) {
+        if (fmt == 'yyyymmdd') {
+          return '{2|paddingLeft,0000}/{1|paddingLeft,00}/{0|paddingLeft,00}'.format(
+                    this.getDate().toString(),
+                    (this.getMonth() + 1).toString(),
+                    this.getFullYear().toString());
+        }
         return '{0|paddingLeft,00}/{1|paddingLeft,00}/{2|paddingLeft,0000}'.format(
-                        this.getDate().toString(),
-                        (this.getMonth() + 1).toString(),
-                        this.getFullYear().toString());
+                  this.getDate().toString(),
+                  (this.getMonth() + 1).toString(),
+                  this.getFullYear().toString());
       }
     });
   })(_module);

@@ -23,15 +23,18 @@ let stravaApi = (function () {
     reloadConfig       : function () {
       this.config = JSON.parse( localStorage.getItem('strava') || '{}' );
     },
-    cache              : { activities : { streams : { }, 
-                                          zones   : {} } },
+    cache : {
+      activities : {}, 
+      streams    : {}, 
+      zones      : {}
+    },
     loadActivity       : __loadActivity,
     loadActivityStream : __loadActivityStream,
     loadActivities     : __loadActivities,
     loadAthleteInfo    : __loadAthleteInfo
   }
   
-  function __refreshToken(fn) {
+  function __refreshToken(fn, payload) {
     return new Promise((resolve, reject) => {
       const url = ('{0}?client_id=44665&' +
 	                 'client_secret=e872f05ea832f409ffe0e1ce042b074f691718d3&' +
@@ -64,7 +67,7 @@ let stravaApi = (function () {
            stravaApi.config.refresh_token = result.refresh_token;
            localStorage.setItem('strava', JSON.stringify(stravaApi.config));
            if(fn){
-             fn().then( result => resolve(result) );
+             fn(payload).then( result => resolve(result) );
              return;
            }
            resolve();
@@ -79,10 +82,10 @@ let stravaApi = (function () {
     // ============================================================================
     // Return cached data
     // ============================================================================
-    if (stravaApi.cache.activities.streams[activityId]) {
+    if (stravaApi.cache.streams[activityId]) {
       return new Promise((resolve, reject) => {
         console.log('Cached activity stream...', activityId);
-        resolve(stravaApi.cache.activities.streams[activityId]);
+        resolve(stravaApi.cache.streams[activityId]);
       });
     }
     return new Promise((resolve, reject) => {
@@ -101,13 +104,14 @@ let stravaApi = (function () {
           return JSON.parse(result);
         })
         .then(result => {
-          stravaApi.cache.activities.streams[result.id] = result;
+          console.log('Api call: activities/{0}/streams'.format(activityId));
+          stravaApi.cache.streams[activityId] = result;
           resolve(result);
         })
         .catch( e => {
           if (request.status == 401) {
             __refreshToken(__loadActivityStream).then( result => {
-              stravaApi.cache.activities.streams[result.id] = result;
+              stravaApi.cache.streams[result.id] = result;
               resolve(result);
             });
             return;
@@ -140,6 +144,7 @@ let stravaApi = (function () {
           return JSON.parse(result);
         })
         .then(result => {
+          console.log('Api call: activities/{0}'.format(activityId));
           stravaApi.cache.activities[result.id] = result;
           resolve(result);
         })
@@ -156,9 +161,14 @@ let stravaApi = (function () {
     });
   }
 
-  function __loadActivities() { 
+  function __loadActivities(payload) { 
     return new Promise((resolve, reject) => {
-      let url = '{0}athlete/activities?access_token={access_token}'.format(STRAVA_URI, stravaApi.config);
+      let url = ('{0}athlete/activities?access_token={access_token}&' +
+                 'page={1}&' + 
+                 'per_page={2}').format(STRAVA_URI,
+                                        payload.page,
+                                        payload.rows,
+                                        stravaApi.config);
       let request;
       pol.ajax
          .get(url, req => {
@@ -170,11 +180,12 @@ let stravaApi = (function () {
           return JSON.parse(result);
         })
         .then(result => {
+          console.log('Api call: activities/page:{page}/rows:{rows}'.format(payload));
           resolve(result);
         })
         .catch( e => {
           if (request.status == 401) {
-            __refreshToken(__loadActivities).then( result => {
+            __refreshToken(__loadActivities, filter).then( result => {
               resolve(result);
             });
             return;
@@ -210,6 +221,7 @@ let stravaApi = (function () {
           return JSON.parse(result);
         })
         .then(result => {
+          console.log('Api call: athletes/{id}'.format(result));
           stravaApi.athlete = result;
           resolve(result);
         })

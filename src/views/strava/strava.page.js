@@ -9,6 +9,7 @@ export default function(ctx) {
 
   let pageWrapper = pageContainer(ctx);
   let page        = {};
+  let pageOffset  = 1;
 
   let component   = {
     root   : {},
@@ -23,7 +24,9 @@ export default function(ctx) {
       initAll();
     },
     dispose : function(){
+      pageOffset = 1;
       ctx.unsubscribe(subcription);
+      localStorage.setItem('strava_cache', JSON.stringify(stravaApi.cache));
     }
   };
   
@@ -72,11 +75,21 @@ export default function(ctx) {
     stravaApi.loadAthleteInfo()
              .then(result => {
                 // ==============================================================
-                // Cargar las actividades
+                // Cargar las n últimas actividades
                 // ==============================================================
-                return stravaApi.loadActivities()
+                return stravaApi.loadActivities({ page : pageOffset,
+                                                  rows : 5});
              })
-             .then(loadActivities)
+             .then(result => {
+               page.innerHTML = '<div activity-container>' + 
+                                '	<div id="load-more-mark" ' + 
+                                      'class="w3-container w3-round w3-margin ' + 
+                                             'w3-teal w3-center" ' + 
+                                      'style="min-height:2px"></div>' +
+                                '</div';
+               page.onscroll = () => ctx.publish('msg\\activities\\scroll', page)
+               loadActivities(result);
+             })
              .catch( e => {
                page.innerHTML = ('<div class= "w3-container w3-padding">' +
                                  '  <h2>Error</h2>' + 
@@ -147,69 +160,108 @@ export default function(ctx) {
         }
       }
     }
-    // ==============================================================
+    // ===================================================
     // Crear las actividades
-    // ==============================================================
-    page.innerHTML = '';
-    page.appendChild(pol.templates.fill(htmlElement, context));
-    page.onscroll = function() {
-      ctx.publish('msg\\activities\\scroll', page);
-    }; 
-    // ================================================================
+    // ===================================================
+    pol.templates.fill(htmlElement, context)
+    // ===================================================
+    // Configurar la carga de más datos
+    // ===================================================
+    configureLazyLoad(htmlElement);
+    // ===================================================
+    // Añadir las actividades al contenedor principal
+    // ===================================================
+    let loadMark = pol.$('load-more-mark');
+    pol.toArray(htmlElement.childNodes)
+       .forEach( n => {
+         if(n.nodeType == 3) return;
+         loadMark.insertAdjacentElement('beforebegin', n);
+       });
+    pageOffset++;
+  }
+
+  function configureLazyLoad(container) {
+    // =======================================================================
     // Referencias a controles con datos por cargar
-    // ================================================================
-    let bookmarks    = pol.$('[activity]', page);
-    let descriptions = pol.$('[act-desc]', page).toDictionary('id');
-    let photos       = pol.$('img[xfor]', page).toDictionary('id');
-    let maps         = pol.$('[act-map-img]', page).toDictionary('id');
-    // =====================================================================
+    // =======================================================================
+    let bookmarks    = pol.$('[activity]', container);
+    let descriptions = pol.$('[act-desc]', container).toDictionary('id');
+    let photos       = pol.$('img[xfor]', container).toDictionary('id');
+    let maps         = pol.$('[act-map-img]', container).toDictionary('id');
+    let loadMark     = pol.$('load-more-mark');
+    // =======================================================================
     // Cargar más datos de las actividades
-    // =====================================================================
+    // =======================================================================
     ctx.unsubscribe(subcription);
     subcription = ctx.subscribe('msg\\activities\\scroll', (message, w) => {
-      loadMore(w.scrollTop, { bookmarks, 
-                              descriptions, 
-                              photos,
-                              maps});
+      loadMoreData(w.scrollTop, { bookmarks, 
+                                  descriptions, 
+                                  photos,
+                                  maps,
+                                  loadMark});
     });
+    loadMark.innerHTML = '';
     ctx.publish('msg\\activities\\scroll', { scrollTop : 100 });
   }
 
-  function loadMore(value, controls) {
+  // =========================================================================
+  // Cargar las siguiente n actividades
+  // =========================================================================
+  function loadNextChunk() {
+    stravaApi.loadActivities({ page : pageOffset, rows : 5})
+             .then(result => {
+               loadActivities(result);  
+             })
+             .catch(e => {
+                ctx.publish(ctx.topics.NOTIFICATION, { message : e.message });
+             });
+  }
+
+  function loadMoreData(value, controls) {
+    const HEIGHT = 500;
+    // ===========================================================================================
+    // Determinar si es necesario cargar más actividades
+    // ===========================================================================================
+    if(controls.loadMark.innerHTML == '' && controls.loadMark.offsetTop < value + 1.5 * HEIGHT){
+      controls.loadMark.innerHTML = 'Cargando...';
+      return loadNextChunk();
+    }
+    // ===========================================================================================
+    // Determinar qué actividades no tienen cargados todos sus datos
+    // ===========================================================================================    
     controls.bookmarks
-            .where( mark => mark.offsetTop - 500 < value  && !mark.tag )
+            .where( mark => mark.offsetTop - HEIGHT < value  && !mark.loaded )
             .map( mark => {
-              mark.tag = true
+              mark.loaded = true
               let id = mark.id.split('-')[1];
               stravaApi.loadActivity(id)
                        .then(result => {
                          //console.log(result);
                          // ==================================================================
                          // Descripción
-                         // ==================================================================
-                         let __id ='desc-{0}'.format(result.id);
+                         // ==================================================================                  
                          if(result.description) {
+                            let __id ='desc-{0}'.format(result.id);
                             controls.descriptions[__id].innerHTML = result.description || '';                           
                          }
                          // ==================================================================
                          // Fotos
                          // ==================================================================
                          if (result.total_photo_count) {
-                           __id = 'img-{0}-{1}'.format(result.id, 0);
+                           let __id = 'img-{0}-{1}'.format(result.id, 0);
                            controls.photos[__id].src = result.photos.primary.urls[100];
                          }
                          // ==================================================================
                          // Mapas del recorrido
                          // ==================================================================
-                         if (result.map.polyline) {
-                           __id = 'map-{0}'.format(result.id);
-                           
+                         if (result.map.polyline) {                    
                            let _src = ('https://maps.googleapis.com/maps/api/staticmap?' +  
                                        'visible={start_latlng[0]},{start_latlng[1]}&' +
                                        'size=340x100&' + 
                                        'key=AIzaSyD-FEw7obgz5yH2a1OO84Xm1XzGoWFuWas&' +  
                                        'path=color:0x0000ff80|weight:2|enc:{map.polyline}'
                                       ).format(result);
+                           let __id = 'map-{0}'.format(result.id);
                            controls.maps[__id]
                                    .appendChild( pol.build('img', { src       : _src, 
                                                                     className : 'w3-border',
@@ -218,8 +270,6 @@ export default function(ctx) {
                                                                     }
                                                                   }));     
                          }
-
-
                          return stravaApi.loadActivityStream(result.id);
                        })
                        .then(result => {
