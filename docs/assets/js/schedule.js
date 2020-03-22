@@ -213,6 +213,7 @@
     }   
   
     var __initDayView = function(){     
+      _that.Containers.Day.Overlay0.innerHTML = '';
       for(var i=0; i<=(__getRange()/_that.Step); i++){
         var __minutes = _that.Min + (i*_that.Step);             
         var __vline = $.$('div', { className : 'vline'});
@@ -242,6 +243,13 @@
     _that.ClearMonthView  = function() { _that.Containers.Month.Table.__Cells.forEach( function(c){ c.childNodes[1].innerHTML = '';});}; 
     _that.ClearDayView    = function() { _that.Containers.Day.Overlay1.innerHTML = ''; };
     _that.ClearAgendaView = function() { _that.Containers.Agenda.Overlay0.innerHTML = ''; };
+
+    _that.ConfigureView = function(o) {
+      _that.Min   = o.min;
+      _that.Max   = o.max;      
+      _that.Step  = o.step;
+      __initDayView();
+    }
   
     _that.LoadMonthView = function(childNodes){                   
       Object.keys( childNodes || {})
@@ -286,27 +294,29 @@
     _that.Container = o.Element;
     _that.Container.onselectstart = function(){ return false; };  
     // Buttons      
-    _that.Buttons = { 'Agenda': $.$('input', { className : 'w3-button w3-black w3-right',
-                                               type      : 'button', 
-                                               value     : 'Agenda', 
-                                               onclick   : function() { __toogle('Agenda'); } }),
-                      'Day'   : $.$('input', { className : 'w3-button w3-black w3-right',
-                                               type      : 'button', 
-                                               value     : 'Día', 
-                                               onclick   : function() { __toogle('Day'); } }),
-                      'Month' : $.$('input', { className : 'w3-button w3-black w3-right', 
-                                               type      : 'button',  
-                                               value     : 'Mes',                                                 
-                                               onclick   : function() { __toogle('Month'); } }),
-                      'Previous' : $.$('input', { className : 'ScheduleButton left', 
-                                                  type      : 'button',  
-                                                  value     : '<',                                                 
-                                                  onclick   : function() { __Handle('Previous'); } }),
+    _that.Buttons = { 'Agenda': $.$('button', { className : 'pol-btn w3-button w3-black w3-right',
+                                                type      : 'button', 
+                                                innerHTML : 'A', 
+                                                onclick   : function() { __toogle('Agenda'); } }),
+                      'Day'   : $.$('button', { className : 'pol-btn w3-button w3-black w3-right',
+                                                type      : 'button', 
+                                                innerHTML : 'D', 
+                                                onclick   : function() { __toogle('Day'); } }),
+                      'Month' : $.$('button', { className : 'pol-btn w3-button w3-black w3-right', 
+                                                type      : 'button',  
+                                                innerHTML : 'M',                                                 
+                                                onclick   : function() { __toogle('Month'); } }),
+                      'Previous' : $.$('button', { className : 'w3-button w3-white w3-left', 
+                                                   type  : 'button',
+                                                   style : { padding : '4px 6px' },
+                                                   innerHTML : '<i class="fa fa fa-chevron-left"></i>',                                                 
+                                                   onclick   : function() { __Handle('Previous'); } }),
                       'Label': $.$('div',   { className : 'ScheduleLabel' }),                                                  
-                      'Next' : $.$('input', { className : 'ScheduleButton right', 
-                                              type      : 'button',  
-                                              value     : '>',                                                 
-                                              onclick   : function() { __Handle('Next'); } })                                               
+                      'Next' : $.$('button', { className : 'w3-button w3-white w3-right', 
+                                               type      : 'button',
+                                               style     : { padding : '4px 6px' },  
+                                               innerHTML     : '<i class="fa fa fa-chevron-right"></i>',                                                 
+                                               onclick   : function() { __Handle('Next'); } })                                               
                     };
     // Containers                                                    
     _that.Containers = {  'Agenda': $.$('div', { className : 'ScheduleContainer',
