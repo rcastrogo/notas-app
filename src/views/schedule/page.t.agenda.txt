@@ -69,6 +69,40 @@
 				 <img xbind="src:fn.googleStaticMapUrl=>@activity" class="w3-border" style="width:100%">
 		</div>
 
+		<div class="w3-small w3-light-grey w3-center">Zonas</div>
+		<div class="w3-cell-row w3-border-bottom w3-padding-small w3-center w3-margin-bottom" style="height:140px;">
+		  <div class="w3-cell w3-padding-small" style="position:relative; margin:5px">
+				<div class="w3-red" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:50%">
+				</div>
+				<span class="w3-small">Z1</span>
+			</div>
+			<div class="w3-cell w3-padding-small w3-center" style="position:relative; margin:5px">
+				<div class="w3-green" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:30%">
+				</div>
+				<span class="w3-small">Z2</span>
+			</div>
+		  <div class="w3-cell w3-padding-small w3-center"" style="position:relative; margin:5px">
+				<div class="w3-blue w3-border" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:70%">
+				</div>
+        <span class="w3-small">Z3</span>
+			</div>
+		  <div class="w3-cell w3-padding-small w3-center"" style="position:relative; margin:5px">
+				<div class="w3-blue w3-border" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:60%">
+				</div>
+				<span class="w3-small">Z4</span>
+			</div>
+		  <div class="w3-cell w3-padding-small w3-center"" style="position:relative; margin:5px">
+				<div class="w3-blue w3-border" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:20%">
+				</div>
+				<span class="w3-small">Z5</span>
+			</div>
+		</div>
+
+		<div class="w3-small w3-light-grey  w3-center">Perfil</div>
+		<canvas xbind="id:fn.formatId => @activity.id canvas"	width="300"	height="150" 
+						style="width:calc(100% - 12px); height:150px; margin:6px;" canvas-profile/>
+		</canvas>
+
 	</div>
 
 </div>

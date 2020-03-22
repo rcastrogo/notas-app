@@ -1,4 +1,4 @@
-import pol from "../../lib/mapa.js";
+ï»¿import pol from "../../lib/mapa.js";
 import utils from "../../lib/utils.js";
 import {stravaApi} from "../strava/strava"
 import pageContainer from "../components/page.component";
@@ -28,7 +28,7 @@ export default function (ctx) {
   };
 
   function initAll() {
-    ctx.publish('msg\\page_component\\update\\title', '');
+    ctx.publish('msg\\page_component\\update\\title', 'Strava - Resumen');
     stravaApi.loadAthleteInfo()
              .then(() => {
                 pol.Include('./assets/js/schedule.js')
@@ -84,7 +84,7 @@ export default function (ctx) {
             }
           });
           // ========================================================
-          // Numero de actividades en el día
+          // Numero de actividades en el dÃ­a
           // ========================================================
           nodes[fechaES] = nodes[fechaES] || [];
           if(nodes[fechaES].length == 0){
@@ -117,7 +117,7 @@ export default function (ctx) {
       }
 
       // =======================================================================
-      // Actividades del día
+      // Actividades del dÃ­a
       // =======================================================================
       let activities = viewDataSet.where(a => a.fechaUS == dateUS)
                                   .map( a => stravaCache.activities[a.id]);
@@ -162,13 +162,13 @@ export default function (ctx) {
         });
       }
       // ================================================================================
-      // Generación del array de HTMLElement
+      // GeneraciÃ³n del array de HTMLElement
       // ================================================================================
       let d_template = require("./page.t.dia.txt");
       let top        = -10;
       return activities.reduce((nodes, activity, i) => {
         // ===============================================================================
-        // Posición y tamaño de la actividad
+        // PosiciÃ³n y tamaÃ±o de la actividad
         // ===============================================================================
         let start = minutesFromDate(activity.start_date_local);
         let context = {
@@ -190,7 +190,7 @@ export default function (ctx) {
     })());
 
     // ==========================================================================================================
-    // Crear las actividades del día
+    // Crear las actividades del dÃ­a
     // ==========================================================================================================
     sender.LoadAgendaView((() => {
 
@@ -245,11 +245,57 @@ export default function (ctx) {
       return pol.toArray(pol.templates.fill(htmlElement, context).childNodes)
                 .where( n => n.nodeType != 3)
                 .map( node => {
+                  let canvas = pol.$('[canvas-profile]', node)[0];
+                  if (canvas) {
+                    let id = canvas.id.split('-')[1];
+                    let activity = context.activities.item('id', id);
+                    let stream   = stravaCache.streams[id];
+                    drawChart(canvas, activity, stream);
+                  }
                   return node;
                 });
     })());  
   }
 
   return component;
+
+}
+
+function drawChart(canvas, activity, stream){
+  
+  const PADDING = 8;
+  const HEIGHT  = canvas.height;
+  const WIDTH   = canvas.width;
+  let ctx       = canvas.getContext("2d");
+
+  // ===================================================
+  // Draw axis
+  // ===================================================
+  function __drawAxes() {
+    ctx.lineWidth   = 1;
+    ctx.strokeStyle = 'gray';  
+    ctx.beginPath();
+    ctx.moveTo(WIDTH - PADDING, PADDING);                  
+    ctx.lineTo(PADDING - 4 , PADDING);
+    ctx.moveTo(PADDING, PADDING - 4);
+    ctx.lineTo(PADDING, HEIGHT- PADDING);
+    ctx.stroke();
+  }
+  // ======================================
+  // Clear all
+  // ======================================
+  function __clear(){
+    canvas.width  = WIDTH;
+    canvas.height = HEIGHT;    
+    ctx.fillStyle = 'rgba(255,255,255,1)';
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    ctx.imageSmoothingEnabled = false;
+    ctx.setTransform(1, 0, 0, -1, 0, HEIGHT);
+  }
+  // ======================================
+  // Init
+  // ======================================
+  __clear();
+  __drawAxes();
 
 }

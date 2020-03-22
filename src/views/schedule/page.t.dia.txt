@@ -1,4 +1,7 @@
-﻿<div class="w3-small w3-round w3-white w3-border w3-padding-small" style="position:absolute;left:{pos.left};top:{top};margin-top:-2.5em;white-space:nowrap;">{activity.name}</div>
-<div class="w3-padding w3-teal w3-round" style="position:absolute;left:{pos.left};top:{top};width:{pos.width}">
-
+﻿<div class="w3-small w3-round w3-white w3-border w3-padding-small"
+     style="position:absolute;left:{pos.left};top:{top};margin-top:-2.5em;white-space:nowrap;">
+  {activity.name}
+</div>
+<div class="w3-padding w3-teal w3-round" 
+     style="position:absolute;left:{pos.left};top:{top};width:{pos.width}">
 </div>
