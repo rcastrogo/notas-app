@@ -99,9 +99,8 @@
 		</div>
 
 		<div class="w3-small w3-light-grey  w3-center">Perfil</div>
-		<canvas xbind="id:fn.formatId => @activity.id canvas"	width="300"	height="150" 
-						style="width:calc(100% - 12px); height:150px; margin:6px;" canvas-profile/>
-		</canvas>
+	  <div class="w3-border-bottom" xbind="id:fn.formatId => @activity.id profile" style="width:100%; height:180px; margin:6px 0; overflow:auto;" div-profile>
+		</div>
 
 	</div>
 

@@ -61,7 +61,8 @@ function initScroll(){
         navbar.classList.remove("sticky");
       }
       pubsub.publish(TOPICS.WINDOW_SCROLL, window);
-    };  
+    };
+    pubsub.publish(TOPICS.WINDOW_RESIZE, window);
   }
   window.addEventListener("resize", debounce(initScroll, 150), false);
   initScroll();

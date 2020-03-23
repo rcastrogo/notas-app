@@ -52,6 +52,7 @@ export default {
     VALUE_CHANGE     : 'value:change',
     MUNICIPIO_CHANGE : 'municipio:change',
     WINDOW_SCROLL    : 'window.scroll',
+    WINDOW_RESIZE    : 'window.resize',
     NOTIFICATION     : 'notification.show'
   }
 }

@@ -269,10 +269,13 @@
       });    
     }
   
-    _that.LoadAgendaView = function(childNodes){               
+    _that.LoadAgendaView = function(childNodes, callback){               
       (childNodes||[]).forEach( function(child){
         _that.Containers.Agenda.Overlay0.appendChild(child);
-      });    
+      }); 
+      if(callback){
+        setTimeout(function(){ callback(_that.Containers.Agenda.Overlay0); }, 100);
+      }
     }
   
     _that.MeasureDayItem = function(value){

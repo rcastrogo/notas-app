@@ -1,6 +1,7 @@
 ﻿import pol from "../../lib/mapa.js";
 import utils from "../../lib/utils.js";
-import {stravaApi} from "../strava/strava"
+import {stravaApi, speedToWatts} from "../strava/strava"
+import {lineChart} from "../components/lineChart.component"
 import pageContainer from "../components/page.component";
 
 import HTML from "./page.txt";
@@ -100,6 +101,8 @@ export default function (ctx) {
     })()); 
     onDayChanged(sender, sender.Date);
   }
+
+  let resizeSubcriptions = [];
 
   function onDayChanged(sender, date) {
     sender.ClearDayView();
@@ -245,57 +248,107 @@ export default function (ctx) {
       return pol.toArray(pol.templates.fill(htmlElement, context).childNodes)
                 .where( n => n.nodeType != 3)
                 .map( node => {
-                  let canvas = pol.$('[canvas-profile]', node)[0];
-                  if (canvas) {
-                    let id = canvas.id.split('-')[1];
-                    let activity = context.activities.item('id', id);
-                    let stream   = stravaCache.streams[id];
-                    drawChart(canvas, activity, stream);
-                  }
+                  let container = pol.$('[div-profile]', node)[0];
+                  container.appendChild( 
+                    lineChart({ Width   : 0, 
+                                Height  : 0,
+                                Padding : [10, 20, 20, 50]
+                              }).canvas
+                  );               
                   return node;
                 });
-    })());  
+    })(),
+    // ========================================================
+    // Configurar los perfiles(canvas) una vez añadidos al DOM
+    // ========================================================
+    (container) => {
+      // ==================================================
+      // Cancelar las subcripciones existentes (RESIZE)
+      // ==================================================
+      resizeSubcriptions.forEach(ctx.unsubscribe);
+      resizeSubcriptions = [];
+      // ==================================================
+      // inicializar los canvas para los perfiles
+      // ==================================================
+      pol.$('div[div-profile] canvas', container)
+         .map( canvas => {
+            let __id = canvas.parentNode.id.split('-')[1];
+            return {
+              canvas, 
+              id       : __id,
+              parent   : canvas.parentNode,
+              dataset  : { 
+                activity : viewDataSet.item('id', __id),
+                streams  : stravaCache.streams[__id]
+              }
+            };
+         })
+         .forEach(item => {
+            let chart = item.canvas.lineChart;
+            chart.data = createProfileDocument(item.dataset);
+            function __resize() {
+              chart.Resize(item.parent.clientWidth - 9, 
+                           item.parent.clientHeight - 9);
+            }
+            resizeSubcriptions.push(ctx.subscribe(ctx.topics.WINDOW_RESIZE, __resize));
+            __resize();
+            
+            ctx.subscribe('msg\\line_chart\\range', (message, e) => {
+              //var __dis = Math.abs( __document.distances[e.start] - __document.distances[e.end]);
+              //if(__dis>2500){
+              //  var __from   = Math.min(e.start, e.end);
+              //  var __to     = Math.max(e.start, e.end);
+              //  //__fillDocument(__from, __to);
+              //  //__resize();
+              //}
+            });
+         });
+    });  
+  }
+               
+  function createProfileDocument(dataset){
+
+    function __getRange(array, start, end){
+      var __res     = { min : Number.POSITIVE_INFINITY, max : Number.NEGATIVE_INFINITY }; 
+      var __current = start
+      while(__current < end){
+        __res.min = Math.min(__res.min, array[__current]);
+        __res.max = Math.max(__res.max, array[__current]);
+        __current++;
+      }
+      __res.min = .9 * __res.min;
+      __res.range = __res.max - __res.min;
+      return __res;
+    }
+
+    let document = { 
+      length     : dataset.streams.distance.data.length,
+      distances  : dataset.streams.distance.data,
+      altitude   : dataset.streams.altitude.data,
+      heartrate  : dataset.streams.heartrate.data,
+      watts      : dataset.streams.velocity_smooth.data.map( s => {
+        return speedToWatts(s * 3.6);
+      }),
+      offset     : 0.0,
+      view       : {},
+      getRange   : __getRange,
+      configureView : function (start, end){
+        this.view.start   = start;
+        this.view.end     = end; 
+        this.view.x       = {}; 
+        this.view.x.max   = this.distances[end];
+        this.view.x.min   = this.distances[start];
+        this.view.x.range = this.view.x.max - this.view.x.min;
+        this.view.y       = this.getRange(this.altitude, start, end);
+        this.view.h       = this.getRange(this.heartrate, start, end);
+        this.view.w       = this.getRange(this.watts, start, end);
+        return this;
+      }
+    };
+
+    return document.configureView(0, document.length - 1);
   }
 
   return component;
-
-}
-
-function drawChart(canvas, activity, stream){
-  
-  const PADDING = 8;
-  const HEIGHT  = canvas.height;
-  const WIDTH   = canvas.width;
-  let ctx       = canvas.getContext("2d");
-
-  // ===================================================
-  // Draw axis
-  // ===================================================
-  function __drawAxes() {
-    ctx.lineWidth   = 1;
-    ctx.strokeStyle = 'gray';  
-    ctx.beginPath();
-    ctx.moveTo(WIDTH - PADDING, PADDING);                  
-    ctx.lineTo(PADDING - 4 , PADDING);
-    ctx.moveTo(PADDING, PADDING - 4);
-    ctx.lineTo(PADDING, HEIGHT- PADDING);
-    ctx.stroke();
-  }
-  // ======================================
-  // Clear all
-  // ======================================
-  function __clear(){
-    canvas.width  = WIDTH;
-    canvas.height = HEIGHT;    
-    ctx.fillStyle = 'rgba(255,255,255,1)';
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.imageSmoothingEnabled = false;
-    ctx.setTransform(1, 0, 0, -1, 0, HEIGHT);
-  }
-  // ======================================
-  // Init
-  // ======================================
-  __clear();
-  __drawAxes();
 
 }

@@ -1,6 +1,6 @@
 ﻿import pol from "../../lib/mapa.js";
 import utils from "../../lib/utils";
-import {stravaApi} from "./strava"
+import {stravaApi, speedToWatts} from "./strava"
 import pageContainer from "../components/page.component";
 
 import HTML from "./strava.page.txt";
@@ -120,6 +120,9 @@ export default function(ctx) {
                        .map( (e, i) => {
                          return 'img-{0}-{1}'.format(a.id, i); 
                        });
+        }
+        if (a.trainer && a.athlete.id == 8955526) {
+          a.average_watts = speedToWatts(a.average_speed * 3.6);
         }
         return a;
       }),

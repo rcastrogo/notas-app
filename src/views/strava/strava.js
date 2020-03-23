@@ -245,8 +245,16 @@ let stravaApi = (function () {
 
 }());
 
+
+function speedToWatts(v) {
+  return ~~((4.31746 * v) + 
+            (-2.59259e-002 * Math.pow(v, 2)) + 
+            (9.41799e-003  * Math.pow(v, 3)));
+}
+
 export {
   stravaAuthPage,
   stravaMainPage,
-  stravaApi  
+  stravaApi,
+  speedToWatts
 }
