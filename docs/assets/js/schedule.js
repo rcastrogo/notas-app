@@ -20,7 +20,8 @@
                   Step           : 180,
                   Date           : o.Date || new Date(),
                   OnMonthChanged : o.OnMonthChanged,
-                  OnDayChanged   : o.OnDayChanged
+                  OnDayChanged   : o.OnDayChanged,
+                  OnViewChanged  : o.OnViewChanged
                 }; 
     var MonthsNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     var DaysNames   = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado' ];
@@ -31,6 +32,7 @@
     // =============================================================================================
     var __raiseMonthChanged = function() { if (_that.OnMonthChanged) _that.OnMonthChanged(_that, _that.Date); };
     var __raiseDayChanged   = function() { if (_that.OnDayChanged) _that.OnDayChanged(_that, _that.Date); };
+    var __raiseViewChanged  = function() { if (_that.OnViewChanged) _that.OnViewChanged(_that, __currentView); };
     // =============================================================================================
     // Private stuff
     // ============================================================================================= 
@@ -61,6 +63,7 @@
       _that.Buttons.Day.style.borderBottom = __currentView=='Day' ? 'solid 2px #ccc' : ''
       _that.Buttons.Agenda.style.borderBottom = __currentView=='Agenda' ? 'solid 2px #ccc' : '';   
       __syncLabelText();
+      __raiseViewChanged();
     }
 
     _that.ShowDayView = function(date){

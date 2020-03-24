@@ -57,12 +57,12 @@ let stravaApi = (function () {
             return JSON.parse(result);
           })
          .then(result => {
-           pubsub.publish(
-             pubsub.TOPICS.NOTIFICATION,
-             { 
-               message : 'Se ha renovado el token de acceso'
-             }
-           );
+           //pubsub.publish(
+           //  pubsub.TOPICS.NOTIFICATION,
+           //  { 
+           //    message : 'Se ha renovado el token de acceso'
+           //  }
+           //);
            // ====================================================
            // Almacenar los nuevos valores para acceso a Strava
            // ====================================================

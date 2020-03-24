@@ -37,7 +37,11 @@ export default function (ctx) {
                      schedule = Schedule({ Element        : page, 
                                            View           : 'Month',
                                            OnMonthChanged : onMonthChanged,
-                                           OnDayChanged   : onDayChanged });
+                                           OnDayChanged   : onDayChanged,
+                                           OnViewChanged  : function (sender, view) {
+                                             ctx.publish('msg\\this_page\\view\\changed', {});  
+                                           }
+                                         });
                      schedule.Buttons.Month.innerHTML = '<i class="fa fa-calendar"></i>';
                      schedule.Buttons.Agenda.innerHTML = '<i class="fa fa-bicycle"></i>';
                      schedule.Buttons.Day.innerHTML = '<i class="fa fa-line-chart"></i>';
@@ -56,11 +60,15 @@ export default function (ctx) {
     let f2US = sender.LastDate.format('yyyymmdd');
     viewDataSet = Object.keys(stravaCache.activities)
                         .map(id => { 
-                          let activity = stravaCache.activities[id];
-                          return { fechaUS : activity.start_date
-                                                      .fixDate('T')
-                                                      .replaceAll('-', '/'),
-                                    id    : activity.id };
+                          let a = stravaCache.activities[id];
+                          if (a.trainer && a.athlete.id == 8955526) {
+                            a.average_watts = speedToWatts(a.average_speed * 3.6);
+                          }
+                          return { fechaUS  : a.start_date
+                                               .fixDate('T')
+                                               .replaceAll('-', '/'),
+                                   id       : a.id
+                                 };
                         })
                         .where( a => {
                             return f1US <= a.fechaUS && f2US >= a.fechaUS;
@@ -110,6 +118,12 @@ export default function (ctx) {
     let dateUS = date.format('yyyymmdd');
 
     // =======================================================================
+    // Actividades del día
+    // =======================================================================
+    let activities = viewDataSet.where(a => a.fechaUS == dateUS)
+                                .map( a => stravaCache.activities[a.id]);
+
+    // =======================================================================
     // Contenido dia
     // =======================================================================
     sender.LoadDayView((() => {
@@ -119,11 +133,6 @@ export default function (ctx) {
         return ~~horas * 60 + ~~minutos;
       }
 
-      // =======================================================================
-      // Actividades del día
-      // =======================================================================
-      let activities = viewDataSet.where(a => a.fechaUS == dateUS)
-                                  .map( a => stravaCache.activities[a.id]);
       // =======================================================================
       // Configurar hora de inicio y de fin la vista 
       // =======================================================================
@@ -202,8 +211,7 @@ export default function (ctx) {
 
       let context = {
         athlete    : stravaApi.athlete,
-        activities : viewDataSet.where(a => a.fechaUS == dateUS)
-                                .map( a => stravaCache.activities[a.id]),
+        activities : activities,
         fn: {
           toKilometers : meters => { return (meters / 1000).toLocaleString('es', { maximumFractionDigits: 2}); },
           formatSpeed  : value => { return (value * 3.6).toLocaleString('es', { maximumFractionDigits: 2}); },
@@ -252,7 +260,7 @@ export default function (ctx) {
                   container.appendChild( 
                     lineChart({ Width   : 0, 
                                 Height  : 0,
-                                Padding : [10, 20, 20, 50]
+                                Padding : [10, 40, 20, 50]
                               }).canvas
                   );               
                   return node;
@@ -278,7 +286,7 @@ export default function (ctx) {
               id       : __id,
               parent   : canvas.parentNode,
               dataset  : { 
-                activity : viewDataSet.item('id', __id),
+                activity : activities.item('id', __id),
                 streams  : stravaCache.streams[__id]
               }
             };
@@ -290,18 +298,26 @@ export default function (ctx) {
               chart.Resize(item.parent.clientWidth - 9, 
                            item.parent.clientHeight - 9);
             }
-            resizeSubcriptions.push(ctx.subscribe(ctx.topics.WINDOW_RESIZE, __resize));
-            __resize();
-            
-            ctx.subscribe('msg\\line_chart\\range', (message, e) => {
-              //var __dis = Math.abs( __document.distances[e.start] - __document.distances[e.end]);
-              //if(__dis>2500){
-              //  var __from   = Math.min(e.start, e.end);
-              //  var __to     = Math.max(e.start, e.end);
-              //  //__fillDocument(__from, __to);
-              //  //__resize();
-              //}
-            });
+            resizeSubcriptions.append(ctx.subscribe(ctx.topics.WINDOW_RESIZE, __resize))
+                              .append(ctx.subscribe('msg\\this_page\\view\\changed', __resize))
+                              .append(ctx.subscribe('msg\\line_chart\\range', (message, e) => {
+                                if(e.sender.data === chart.data){
+                                  var __from = Math.min(e.start, e.end);
+                                  var __to   = Math.max(e.start, e.end);
+                                  if(__to - __from > 10){
+                                    e.sender.data.configureView(__from, __to);
+                                    __resize();              
+                                  }
+                                }
+                              }))
+                              .append(ctx.subscribe('msg\\line_chart\\tap', (message, e) => { 
+                                if(e.sender.data === chart.data){
+                                  e.sender.data.resetView();
+                                  __resize();
+                                }
+                              }));
+            __resize();        
+            ;
          });
     });  
   }
@@ -326,9 +342,7 @@ export default function (ctx) {
       distances  : dataset.streams.distance.data,
       altitude   : dataset.streams.altitude.data,
       heartrate  : dataset.streams.heartrate.data,
-      watts      : dataset.streams.velocity_smooth.data.map( s => {
-        return speedToWatts(s * 3.6);
-      }),
+      watts      : dataset.streams.velocity_smooth.data.map( s => speedToWatts(s * 3.6) ),
       offset     : 0.0,
       view       : {},
       getRange   : __getRange,
@@ -342,11 +356,59 @@ export default function (ctx) {
         this.view.y       = this.getRange(this.altitude, start, end);
         this.view.h       = this.getRange(this.heartrate, start, end);
         this.view.w       = this.getRange(this.watts, start, end);
+        // ===============================================================================================
+        // Configurar distintas series de datos
+        // ===============================================================================================
+        this.series = [];
+        if (dataset.activity.trainer == true) {
+          this.series.push({ name        : 'heartrate', 
+                             unit        : 'ppm',
+                             view        : this.view.h,
+                             fillStyle   : 'rgba(150,0,0,.8)', 
+                             lineWidth   : 1,
+                             ratio       : 100.0 / this.view.h.range,
+                             transform   : function(sender, v){
+                               return sender.bounds.top + sender.bounds.height - ((v - sender.data.view.h.min) * this.ratio * sender.bounds.height / 100);
+                             }});
+          this.series.push({ name        : 'watts', 
+                             unit        : 'W',
+                             view        : this.view.w,
+                             lineWidth   : 1, 
+                             strokeStyle : 'rgba(0,0,255,0.8)',
+                             fillStyle   : 'rgba(0,0,200,.5)', 
+                             ratio       : 100.0 / this.view.w.range,
+                             transform   : function(sender, v){
+                               return sender.bounds.top + sender.bounds.height - (((v * .90) - sender.data.view.w.min) * this.ratio * sender.bounds.height / 100);
+                             }});
+        } else {
+          this.series.push({ name        : 'altitude',
+                             unit        : 'm',
+                             view        : this.view.y,
+                             fillStyle   : 'rgba(125,125,125,.8)', 
+                             lineWidth   : 1, 
+                             strokeStyle : 'rgba(0,0,0,.8)',
+                             ratio       : 100.0 / this.view.y.range });
+          this.series.push({ name        : 'heartrate', 
+                             unit        : 'ppm',
+                             view        : this.view.h,
+                             fillStyle   : 'rgba(150,0,0,.8)', 
+                             lineWidth   : 1, 
+                             strokeStyle : 'rgba(255,0,0,0)',
+                             ratio       : 100.0 / this.view.h.range,
+                             transform   : function(sender, v){
+                               return sender.bounds.top + sender.bounds.height - (((v * .90) - sender.data.view.h.min) * this.ratio * sender.bounds.height / 100);
+                             }});      
+        }
         return this;
+      },
+      resetView: function () {
+        this.configureView(0, this.length - 1);
       }
     };
 
-    return document.configureView(0, document.length - 1);
+    document.resetView();
+
+    return document;
   }
 
   return component;

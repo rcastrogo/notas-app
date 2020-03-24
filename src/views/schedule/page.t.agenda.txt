@@ -98,7 +98,7 @@
 			</div>
 		</div>
 
-		<div class="w3-small w3-light-grey  w3-center">Perfil</div>
+		<div class="w3-small w3-light-grey  w3-center">Gráficos</div>
 	  <div class="w3-border-bottom" xbind="id:fn.formatId => @activity.id profile" style="width:100%; height:180px; margin:6px 0; overflow:auto;" div-profile>
 		</div>
 

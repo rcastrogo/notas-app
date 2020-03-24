@@ -35,16 +35,24 @@ function __drawProfile(chart){
 
   var __offsetX = chart.worldToScreenX(chart.data.view.x.min) - chart.bounds.left ;
   chart.ctx.translate(-__offsetX, 0);
-  chart.ctx.beginPath();
-  chart.ctx.moveTo(chart.bounds.left, chart.bounds.top + chart.bounds.height);
-  chart.data.distances.forEach( function(d, i){ chart.ctx.lineTo(chart.worldToScreenX(d), chart.worldToScreenY(chart.data.altitude[i])); } );   
-  chart.ctx.lineTo(chart.bounds.left + chart.bounds.width, chart.bounds.height + chart.Padding[0] + 100 );
-  chart.ctx.closePath();
-  chart.ctx.lineWidth = 1;
-  chart.ctx.fillStyle = 'rgba(0,125,0,.8)';  
-  chart.ctx.fill();
-  chart.ctx.strokeStyle = 'black';
-  chart.ctx.stroke();
+  chart.data.series.forEach( (serie, i) => {
+    chart.ctx.beginPath();
+    chart.ctx.moveTo(chart.bounds.left, chart.bounds.top + chart.bounds.height);
+    chart.data[serie.name].forEach( function(v, i){ 
+      let x = chart.data.distances[i];
+      let y = serie.transform ? serie.transform (chart, v) : chart.worldToScreenY(v);
+      chart.ctx.lineTo(chart.worldToScreenX(x), y); 
+    });   
+    chart.ctx.lineTo(100000, 100000);
+    chart.ctx.closePath();
+    chart.ctx.lineWidth = serie.lineWidth || 1;
+    if(serie.fillStyle){
+      chart.ctx.fillStyle = serie.fillStyle;  
+      chart.ctx.fill();
+    }
+    chart.ctx.strokeStyle = serie.strokeStyle || 'black';
+    chart.ctx.stroke();
+  })
 
   if(chart.mouse.drag){      
     var __x0 = chart.worldToScreenX(chart.data.distances[chart.mouse.dragEnd]);
@@ -104,16 +112,29 @@ function __drawScaleY(chart){
   chart.ctx.rect(0, 0, chart.Width, chart.Height);
   chart.ctx.clip();
 
-  var __scale = __niceScale(~~chart.data.view.y.min, ~~chart.data.view.y.max, 8);
+  var __serie = chart.data.series[0];
+  var __scale = __niceScale(~~__serie.view.min, ~~__serie.view.max, 8);
   for(var x = __scale.max; x > __scale.min; x -= __scale.tickSpacing){      
-    var __y = chart.worldToScreenY(x);
+    var __y = __serie.transform ? __serie.transform(chart, x)
+                                : chart.worldToScreenY(x);
     if(__y < chart.bounds.top) continue;      
     chart.ctx.beginPath();
     chart.ctx.moveTo(chart.bounds.left - 4, __y);
     chart.ctx.lineTo(chart.bounds.left + chart.bounds.width + 2, __y);        
-    chart.ctx.stroke();          
-    chart.ctx.fillText('{0} m'.format(x.toFixed(0)), chart.bounds.left - 6, __y);      
+    chart.ctx.stroke();
+    chart.ctx.fillText('{0} {1}'.format(x.toFixed(0), (__serie.unit || 'm')), chart.bounds.left - 6, __y);
   }
+
+  __serie = chart.data.series[1];
+  __scale = __niceScale(~~__serie.view.min, ~~__serie.view.max, 8);
+  for(var x = __scale.max; x > __scale.min; x -= __scale.tickSpacing){      
+    var __y = __serie.transform ? __serie.transform(chart, x)
+                                : chart.worldToScreenY(x);
+    if(__y < chart.bounds.top) continue;
+    if(__y > chart.bounds.top + chart.bounds.height) continue; 
+    chart.ctx.fillText('{0} {1}'.format(x.toFixed(0), (__serie.unit || 'm')), chart.bounds.left + chart.bounds.width + 40, __y);
+  }
+
   chart.ctx.restore();
 }
 
@@ -177,14 +198,14 @@ function __create(o){
                                        onmouseup   : __onMouseUp,
                                        onmousedown : __onMouseDown,
                                        onmouseleave: __onMouseLeave,
-                                       onmousewheel: function (eventArg){  }
+
+                                       ontouchstart : __onTouchStart,
+                                       ontouchend   : __onTouchEnd,
+                                       ontouchmove  : __onTouchMove,
+
+                                       onmousewheel : function (eventArg){  }
                                       });
-  var __chart = {
-                  //Events  : { OnTap           : new Pol.Core.Event('Pol.ProfileViewer.OnTap'),
-                  //            OnItemSelected  : new Pol.Core.Event('Pol.ProfileViewer.OnItemSelected'),
-                  //            OnMouseMove     : new Pol.Core.Event('Pol.ProfileViewer.OnMouseMove'),
-                  //            OnRange         : new Pol.Core.Event('Pol.ProfileViewer.OnRange')},
-                  Width   : __canvas.width, 
+  var __chart = { Width   : __canvas.width, 
                   Height  : __canvas.height, 
                   Padding : o.Padding,                                     
                   fill    : 'rgba(255,255,255,1)',
@@ -227,55 +248,71 @@ function __create(o){
     }
   }
 
+  function __onTouchEnd(eventArg) {
+    var __reset = function(){
+      __chart.mouse.mouseDown = false;
+      __chart.mouse.drag = false; 
+      //__chart.Draw();
+      eventArg.preventDefault();
+    }
+
+    if(__chart.mouse.drag){
+      pubsub.publish('msg\\line_chart\\range', {
+        sender : __chart,
+        start  : __chart.mouse.dragStart,
+        end    : __chart.mouse.dragEnd
+      });            
+    }
+    else {     
+      pubsub.publish('msg\\line_chart\\tap', {
+        sender : __chart,
+        x : __chart.screenToWorldX(__chart.mouse.mouseDownPosition.x)
+      });
+    }
+    __reset();
+  }
+
   function __onMouseUp(eventArg){
     var __pos   = { x :  eventArg.offsetX, y : eventArg.offsetY };
     var __reset = function(){
       __chart.mouse.mouseDown = false;
       __chart.mouse.drag = false; 
-      __chart.Draw();
+      //__chart.Draw();
       eventArg.preventDefault();
     }
-    // =======================================================================
+    // =========================================================================
     // 1 - Tap
-    // =======================================================================
+    // =========================================================================
     if(__chart.mouse.mouseDown && __chart.mouse.mouseDownPosition.x == __pos.x 
-                                && __chart.mouse.mouseDownPosition.y == __pos.y){
-      console.log('pixel : {0} - distance : {1}'.format(__pos.x, __chart.screenToWorldX(__pos.x)));
-      //// ================================================================================================
-      //// 1.1 - Laps
-      //// ================================================================================================
-      //var __offsetX  = __chart.worldToScreenX(__chart.data.view.x.min) - __chart.bounds.left;
-      //var __lap = __chart.data.laps.find( function(lap){ 
-      //  return lap.circle.distance({ x : __offsetX + __pos.x, y : __pos.y}) < 4.0; 
-      //});
-      //if(__lap){
-      //  __chart.Events.OnItemSelected.Dispatch( { target : 'lap', lap : __lap });
-      //  return __reset();
-      //}
-      //// ===================================================================================
-      //// 1.2 - Add Waypoint
-      //// ===================================================================================       
-      //if(__chart.bounds.contains(__pos)){
-      //  __chart.Events.OnTap.Dispatch(__chart.indexPoinAt(__chart.screenToWorldX(__pos.x)));
-      //  return __reset();
-      //}        
-      ////__chart.Events.OnTap.Dispatch(-1);
+                               && __chart.mouse.mouseDownPosition.y == __pos.y){     
+      pubsub.publish('msg\\line_chart\\tap', {
+        sender : __chart,
+        x : __chart.screenToWorldX(__pos.x)
+      });
       return __reset();
     }
-    // =======================================================================
+    // =========================================================================
     // 2 - Drag
-    // =======================================================================
+    // =========================================================================
     if(__chart.mouse.drag){
-
-      pubsub.publish(pubsub.TOPICS.NOTIFICATION, 
-                     { message : '{dragStart} -> {dragEnd}'.format(__chart.mouse) });
-
-      //pubsub.publish('msg\\line_chart\\range', { 
-      //  start : __chart.mouse.dragStart,
-      //  end   : __chart.mouse.dragEnd
-      //});            
+      pubsub.publish('msg\\line_chart\\range', {
+        sender : __chart,
+        start  : __chart.mouse.dragStart,
+        end    : __chart.mouse.dragEnd
+      });            
     }
     __reset();
+  }
+
+  function __onTouchStart(eventArg) {
+    var event = document.createEvent("MouseEvent");
+    let touch = eventArg.touches[0];
+    event.initMouseEvent('mousedown', true, true, window, 1, 
+                         touch.screenX, touch.screenY, 
+                         touch.clientX, touch.clientY, false, 
+                         false, false, false, 0, null);
+    touch.target.dispatchEvent(event);
+    eventArg.preventDefault();
   }
 
   function __onMouseDown(eventArg){      
@@ -284,7 +321,18 @@ function __create(o){
     __chart.mouse.dragStart = __chart.mouse.dragEnd = __chart.indexPoinAt(__chart.screenToWorldX(__chart.mouse.mouseDownPosition.x));
     eventArg.preventDefault();
   } 
-    
+  
+  function __onTouchMove(eventArg) {
+    var event = document.createEvent("MouseEvent");
+    let touch = eventArg.touches[0];
+    event.initMouseEvent('mousemove', true, true, window, 1, 
+                         touch.screenX, touch.screenY, 
+                         touch.clientX, touch.clientY, false, 
+                         false, false, false, 0, null);
+    touch.target.dispatchEvent(event);
+    eventArg.preventDefault();
+  }
+
   function __onMouseMove(eventArg){
     var __pos = { x : eventArg.offsetX, y : eventArg.offsetY };
     __chart.mouse.drag = __chart.mouse.mouseDown && __chart.bounds.contains(__pos);
@@ -294,8 +342,7 @@ function __create(o){
     }      
     eventArg.preventDefault();
   }
- 
-    
+     
   __chart.ctx.imageSmoothingEnabled = false;
 
   return __chart;  
@@ -326,8 +373,6 @@ let Rect = (function(){
   };
   return __rect;
 }());
-
-
 
 export { 
   __create as lineChart 
