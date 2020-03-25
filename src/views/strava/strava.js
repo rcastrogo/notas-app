@@ -7,8 +7,8 @@ let stravaApi = (function () {
 
   const STRAVA_AUTH_URI = 'https://www.strava.com/oauth/token';
   const STRAVA_URI      = 'https://www.strava.com/api/v3/';
-  //const REDIRECT_URI    = 'https://rcastrogo.github.io/notas-app/strava/exchange_token';
-  const REDIRECT_URI    = 'http://localhost:8080/strava/exchange_token';
+  const REDIRECT_URI    = 'https://rcastrogo.github.io/notas-app/strava/exchange_token';
+  //const REDIRECT_URI    = 'http://localhost:8080/strava/exchange_token';
 
   return {
     config             : JSON.parse(localStorage.getItem('strava') || '{}' ),
