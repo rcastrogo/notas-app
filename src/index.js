@@ -22,6 +22,7 @@ import {templatePage,
 import imagePage from "./views/images/page";
 import schedulePage from "./views/schedule/page";
 import {stravaAuthPage,
+        stravaConfigPage,
         stravaMainPage} from "./views/strava/strava";
 
 import utils from "./lib/utils.js";
@@ -102,7 +103,8 @@ const ctx = {
      .addRoute('utils', /templates\/utils$/,  addEventListenersInfoPage)
      .addRoute('images', /images\/(\d+)$/, imagePage, true)
      .addRoute('schedule', /schedule$/,    schedulePage, true)
-     .addRoute('strava-exchange-token', /strava\/exchange_token/, stravaAuthPage, true)
+     .addRoute('strava-config', /strava\/config/, stravaConfigPage, true)
+     .addRoute('strava-exchange-token', /strava\/exchange_token/, stravaAuthPage, true) 
      .addRoute('strava-main', /strava[?]?(.*)$/, stravaMainPage, true)
      .addRoute('',      /$/,               homePage);
   // ===================================================================

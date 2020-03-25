@@ -1,27 +1,30 @@
 import pol from "../../lib/mapa.js";
-import pubsub from "../../lib/pubSub.Service";
 import stravaAuthPage from "./auth.page.js"
 import stravaMainPage from "./strava.page.js"
+import stravaConfigPage from "./config.page.js"
 
 let stravaApi = (function () {
 
   const STRAVA_AUTH_URI = 'https://www.strava.com/oauth/token';
   const STRAVA_URI      = 'https://www.strava.com/api/v3/';
-  const REDIRECT_URI    = 'https://rcastrogo.github.io/notas-app/strava/exchange_token';
-  //const REDIRECT_URI    = 'http://localhost:8080/strava/exchange_token';
+  //const REDIRECT_URI    = 'https://rcastrogo.github.io/notas-app/strava/exchange_token';
+  const REDIRECT_URI    = 'http://localhost:8080/strava/exchange_token';
 
   return {
-    config             : JSON.parse( localStorage.getItem('strava') || '{}' ),
+    config             : JSON.parse(localStorage.getItem('strava') || '{}' ),
     athlete            : undefined,
     redirectToAuthPage : function () {
       window.location = 'https://www.strava.com/oauth/authorize?' + 
                         'client_id=44665&' + 
                         'response_type=code&' + 
                         'redirect_uri={0}&'.format(REDIRECT_URI) + 
-                        'approval_prompt=force&scope=read,activity:read_all';
+                        'approval_prompt=force&scope=read,activity:read_all,profile:read_all';
     },
-    reloadConfig       : function () {
-      this.config = JSON.parse( localStorage.getItem('strava') || '{}' );
+    reloadConfig : function(){ this.config = JSON.parse( localStorage.getItem('strava') || '{}' ); },
+    saveConfig   : function(){ localStorage.setItem('strava', JSON.stringify(this.config)); },
+    resetConfig  : function(){ 
+      this.config = {};
+      this.saveConfig();
     },
     cache : {
       activities : {}, 
@@ -32,6 +35,7 @@ let stravaApi = (function () {
     loadActivityStream : __loadActivityStream,
     loadActivities     : __loadActivities,
     loadAthleteInfo    : __loadAthleteInfo,
+    loadAthleteZones   : __loadAthleteZones,
     GOOGLE_STATIC_MAP  : 'https://maps.googleapis.com/maps/api/staticmap?' +  
                          'visible={start_latlng[0]},{start_latlng[1]}&' +
                          'size=340x100&' + 
@@ -190,7 +194,7 @@ let stravaApi = (function () {
         })
         .catch( e => {
           if (request.status == 401) {
-            __refreshToken(__loadActivities, filter).then( result => {
+            __refreshToken(__loadActivities, {}).then( result => {
               resolve(result);
             });
             return;
@@ -243,6 +247,37 @@ let stravaApi = (function () {
     });
   }
 
+  function __loadAthleteZones(save){ 
+    // ===========================================================================================
+    // Invoke strava api
+    // ===========================================================================================
+    return new Promise((resolve, reject) => {
+      let url = '{0}athlete/zones?access_token={access_token}'.format(STRAVA_URI, stravaApi.config);
+      let request;
+      pol.ajax
+         .get(url, req => {
+           request = req;
+           req.setRequestHeader('Accept', 'application/javascript');
+         })
+        .then(result => { 
+          if (request.status == 401){
+            reject(new Error('Authorization Error'));
+          } else {
+            return JSON.parse(result);
+          } 
+        })
+        .then(result => {
+          console.log('Api call: athlete/zones'.format(result));
+          if(save) {
+            stravaApi.config.athlete.zones = result;
+            stravaApi.saveConfig();
+          }
+          resolve(result);
+        });
+    });
+  }
+
+
 }());
 
 
@@ -253,6 +288,7 @@ function speedToWatts(v) {
 }
 
 export {
+  stravaConfigPage,
   stravaAuthPage,
   stravaMainPage,
   stravaApi,

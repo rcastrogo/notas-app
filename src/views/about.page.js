@@ -1,4 +1,5 @@
 import pol from "../lib/mapa.js";
+import {stravaApi} from "./strava/strava"
 
 const __template = `  
 <div class="w3-container w3-margin-bottom w3-animate-left">
@@ -39,6 +40,7 @@ export default function(){
       this.root
           .querySelector('[about-btn-back]')
           .onclick = () => {
+            stravaApi.resetConfig();
             history.back();
           };
     }

@@ -132,6 +132,10 @@ function __drawScaleY(chart){
                                 : chart.worldToScreenY(x);
     if(__y < chart.bounds.top) continue;
     if(__y > chart.bounds.top + chart.bounds.height) continue; 
+    chart.ctx.beginPath();
+    chart.ctx.moveTo(chart.bounds.left + chart.bounds.width - 3, __y);
+    chart.ctx.lineTo(chart.bounds.left + chart.bounds.width + 4, __y);        
+    chart.ctx.stroke();
     chart.ctx.fillText('{0} {1}'.format(x.toFixed(0), (__serie.unit || 'm')), chart.bounds.left + chart.bounds.width + 40, __y);
   }
 
@@ -252,14 +256,14 @@ function __create(o){
     var __reset = function(){
       __chart.mouse.mouseDown = false;
       __chart.mouse.drag = false; 
-      //__chart.Draw();
+      __chart.Draw();
       eventArg.preventDefault();
     }
 
     if(__chart.mouse.drag){
       pubsub.publish('msg\\line_chart\\range', {
         sender : __chart,
-        start  : __chart.mouse.dragStart,
+        start  : __chart.mouse.dragStart < 0 ? 0 : __chart.mouse.dragStart,
         end    : __chart.mouse.dragEnd
       });            
     }
@@ -277,7 +281,7 @@ function __create(o){
     var __reset = function(){
       __chart.mouse.mouseDown = false;
       __chart.mouse.drag = false; 
-      //__chart.Draw();
+      __chart.Draw();
       eventArg.preventDefault();
     }
     // =========================================================================
@@ -297,7 +301,7 @@ function __create(o){
     if(__chart.mouse.drag){
       pubsub.publish('msg\\line_chart\\range', {
         sender : __chart,
-        start  : __chart.mouse.dragStart,
+        start  : __chart.mouse.dragStart < 0 ? 0 : __chart.mouse.dragStart,
         end    : __chart.mouse.dragEnd
       });            
     }
@@ -319,6 +323,7 @@ function __create(o){
     __chart.mouse.mouseDown = true;
     __chart.mouse.mouseDownPosition = { x :  eventArg.offsetX, y : eventArg.offsetY };       
     __chart.mouse.dragStart = __chart.mouse.dragEnd = __chart.indexPoinAt(__chart.screenToWorldX(__chart.mouse.mouseDownPosition.x));
+    if (__chart.mouse.dragStart == -1) __chart.mouse.dragStart = 0;
     eventArg.preventDefault();
   } 
   
@@ -335,11 +340,12 @@ function __create(o){
 
   function __onMouseMove(eventArg){
     var __pos = { x : eventArg.offsetX, y : eventArg.offsetY };
-    __chart.mouse.drag = __chart.mouse.mouseDown && __chart.bounds.contains(__pos);
+    __chart.mouse.drag = __chart.mouse.mouseDown;// && __chart.bounds.contains(__pos);
     if(__chart.mouse.drag){
       __chart.mouse.dragEnd = __chart.indexPoinAt(__chart.screenToWorldX(__pos.x));
+      if (__chart.mouse.dragEnd == -1) __chart.mouse.dragEnd = 0;
       __chart.Draw();
-    }      
+    } 
     eventArg.preventDefault();
   }
      

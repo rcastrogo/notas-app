@@ -64,6 +64,15 @@ export default function(ctx) {
     }
     ctx.publish('msg\\page_component\\update\\title', 'Strava - Actividades');
     // ==========================================================================
+    // Botón para la página de configuración
+    // ==========================================================================
+    pageWrapper.addButton( 
+      pol.build('button', {
+        className : 'pol-btn w3-button w3-black w3-right',
+        innerHTML : '<i class="fa fa-gear"></i>',
+        onclick   : () => ctx.router.navigateTo('strava/config')
+      }));
+    // ==========================================================================
     // Botón para ir a la agenda
     // ==========================================================================
     pageWrapper.addButton( 

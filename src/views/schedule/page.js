@@ -1,5 +1,4 @@
 ﻿import pol from "../../lib/mapa.js";
-import utils from "../../lib/utils.js";
 import {stravaApi, speedToWatts} from "../strava/strava"
 import {lineChart} from "../components/lineChart.component"
 import pageContainer from "../components/page.component";
@@ -13,6 +12,7 @@ export default function (ctx) {
   let schedule;
   let stravaCache = JSON.parse(localStorage.getItem('strava_cache')); 
   let viewDataSet;
+  let resizeSubcriptions = [];
 
   let component   = {
     root   : {},
@@ -109,8 +109,6 @@ export default function (ctx) {
     })()); 
     onDayChanged(sender, sender.Date);
   }
-
-  let resizeSubcriptions = [];
 
   function onDayChanged(sender, date) {
     sender.ClearDayView();
@@ -255,15 +253,25 @@ export default function (ctx) {
 
       return pol.toArray(pol.templates.fill(htmlElement, context).childNodes)
                 .where( n => n.nodeType != 3)
-                .map( node => {
+                .map( (node, index) => {
+                  // =======================================================
+                  // Perfiles
+                  // =======================================================
                   let container = pol.$('[div-profile]', node)[0];
                   container.appendChild( 
                     lineChart({ Width   : 0, 
                                 Height  : 0,
-                                Padding : [10, 40, 20, 50]
+                                Padding : [8, 42, 15, 42]
                               }).canvas
-                  );               
-                  return node;
+                  );
+                  // =======================================================
+                  // Zonas
+                  // =======================================================
+                  try {
+                    fillZoneBars(pol.$('div[zone]', node), activities[index]);
+                  } finally {
+                    return node;
+                  }
                 });
     })(),
     // ========================================================
@@ -342,7 +350,8 @@ export default function (ctx) {
       distances  : dataset.streams.distance.data,
       altitude   : dataset.streams.altitude.data,
       heartrate  : dataset.streams.heartrate.data,
-      watts      : dataset.streams.velocity_smooth.data.map( s => speedToWatts(s * 3.6) ),
+      watts      : dataset.streams.watts ? dataset.streams.watts.data :
+                                           dataset.streams.velocity_smooth.data.map( s => speedToWatts(s * 3.6) ),
       offset     : 0.0,
       view       : {},
       getRange   : __getRange,
@@ -368,7 +377,9 @@ export default function (ctx) {
                              lineWidth   : 1,
                              ratio       : 100.0 / this.view.h.range,
                              transform   : function(sender, v){
-                               return sender.bounds.top + sender.bounds.height - ((v - sender.data.view.h.min) * this.ratio * sender.bounds.height / 100);
+                               return sender.bounds.top + 
+                                      sender.bounds.height - 
+                                      ((v - sender.data.view.h.min) * this.ratio * sender.bounds.height / 100);
                              }});
           this.series.push({ name        : 'watts', 
                              unit        : 'W',
@@ -378,7 +389,9 @@ export default function (ctx) {
                              fillStyle   : 'rgba(0,0,200,.5)', 
                              ratio       : 100.0 / this.view.w.range,
                              transform   : function(sender, v){
-                               return sender.bounds.top + sender.bounds.height - (((v * .90) - sender.data.view.w.min) * this.ratio * sender.bounds.height / 100);
+                               return sender.bounds.top + 
+                                      sender.bounds.height - 
+                                      ((v - sender.data.view.w.min) * this.ratio * sender.bounds.height / 120);
                              }});
         } else {
           this.series.push({ name        : 'altitude',
@@ -393,22 +406,59 @@ export default function (ctx) {
                              view        : this.view.h,
                              fillStyle   : 'rgba(150,0,0,.8)', 
                              lineWidth   : 1, 
-                             strokeStyle : 'rgba(255,0,0,0)',
+                             strokeStyle : 'rgba(50,0,0,.9)',
                              ratio       : 100.0 / this.view.h.range,
                              transform   : function(sender, v){
-                               return sender.bounds.top + sender.bounds.height - (((v * .90) - sender.data.view.h.min) * this.ratio * sender.bounds.height / 100);
+                               return sender.bounds.top + 
+                                      sender.bounds.height - 
+                                      ((v - sender.data.view.h.min) * this.ratio * sender.bounds.height / 120);
                              }});      
         }
         return this;
       },
       resetView: function () {
-        this.configureView(0, this.length - 1);
+        return this.configureView(0, this.length - 1);
       }
     };
 
-    document.resetView();
+    return document.resetView();
 
-    return document;
+  }
+
+  function fillZoneBars(bars, activity) {
+    if(!activity.has_heartrate) return;
+    let strems = stravaCache.streams[activity.id];
+    let zones  = pol.clone(stravaApi.config.athlete.zones.heart_rate.zones)
+                    .map( z => {
+                      z.count = 0;
+                      return z;
+                    } );
+    strems.heartrate
+          .data
+          .reduce( (z, d) => {
+            if(z[0].max >= d){
+              z[0].count = z[0].count + 1;
+              return z;
+            }
+            if(z[1].max >= d){
+              z[1].count = z[1].count + 1;
+              return z;
+            }
+            if(z[2].max >= d){
+              z[2].count = z[2].count + 1;
+              return z;
+            }
+            if(z[3].max >= d){
+              z[3].count = z[3].count + 1;
+              return z;
+            }
+            z[4].count = z[4].count + 1;
+            return z;
+          }, zones)
+          .map( (z, i) => {
+            let top = z.count/strems.heartrate.data.length * 100;
+            bars[i].style.height = '{0|toFixed,2}%'.format(top < 3 ? 0 : top);
+          });
   }
 
   return component;

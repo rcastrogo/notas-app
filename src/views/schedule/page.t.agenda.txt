@@ -1,6 +1,6 @@
 ﻿<div class="" activity-container>
 
-	<div xbind="id:fn.formatId => @activity.id activity" xfor="activity in activities" class="w3-padding-small w3-margin-top" activity>
+	<div xbind="id:fn.formatId => @activity.id activity" xfor="activity in activities" class="w3-margin-top" activity>
 
 		<div xbind class="w3-bold w3-large">{activity.name}</div>
 		<div xbind="innerHTML:activity.description"></div>
@@ -69,33 +69,50 @@
 				 <img xbind="src:fn.googleStaticMapUrl=>@activity" class="w3-border" style="width:100%">
 		</div>
 
+	  <div xbind=":fn.showIf=>@activity.has_heartrate" 
+		     class="w3-margin-bottom w3-border-bottom">
+
 		<div class="w3-small w3-light-grey w3-center">Zonas</div>
-		<div class="w3-cell-row w3-border-bottom w3-padding-small w3-center w3-margin-bottom" style="height:140px;">
+		<div class="w3-cell-row w3-padding-small w3-center">
+			<div class="w3-cell" style="margin:5px">
+				<div class="w3-small">Z1</div>
+			</div>
+			<div class="w3-cell" style="margin:5px">
+				<div class="w3-small">Z2</div>
+			</div>
+			<div class="w3-cell" style="margin:5px">
+				<div class="w3-small">Z3</div>
+			</div>
+			<div class="w3-cell" style="margin:5px">
+				<div class="w3-small">Z4</div>
+			</div>
+			<div class="w3-cell" style="margin:5px">
+				<div class="w3-small">Z5</div>
+			</div>
+    </div>
+		<div class="w3-cell-row w3-padding-small w3-center" style="height:120px;">
 		  <div class="w3-cell w3-padding-small" style="position:relative; margin:5px">
-				<div class="w3-red" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:50%">
+				<div zone class="w3-red w3-small" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px;">
 				</div>
-				<span class="w3-small">Z1</span>
 			</div>
 			<div class="w3-cell w3-padding-small w3-center" style="position:relative; margin:5px">
-				<div class="w3-green" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:30%">
+				<div zone class="w3-red w3-small" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px;">
 				</div>
-				<span class="w3-small">Z2</span>
 			</div>
-		  <div class="w3-cell w3-padding-small w3-center"" style="position:relative; margin:5px">
-				<div class="w3-blue w3-border" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:70%">
+		  <div class="w3-cell w3-padding-small w3-center" style="position:relative; margin:5px">
+				<div zone class="w3-red w3-small" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px;">
 				</div>
-        <span class="w3-small">Z3</span>
 			</div>
-		  <div class="w3-cell w3-padding-small w3-center"" style="position:relative; margin:5px">
-				<div class="w3-blue w3-border" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:60%">
+		  <div class="w3-cell w3-padding-small w3-center" style="position:relative; margin:5px">
+				<div zone class="w3-red w3-small" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px;">
 				</div>
-				<span class="w3-small">Z4</span>
 			</div>
-		  <div class="w3-cell w3-padding-small w3-center"" style="position:relative; margin:5px">
-				<div class="w3-blue w3-border" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px; top:20%">
+		  <div class="w3-cell w3-padding-small w3-center" style="position:relative; margin:5px">
+				<div zone class="w3-red w3-small" style="position:absolute; left:0; right:0; bottom:0; margin:0 6px;">
 				</div>
-				<span class="w3-small">Z5</span>
 			</div>
+		</div>
+
 		</div>
 
 		<div class="w3-small w3-light-grey  w3-center">Gráficos</div>
