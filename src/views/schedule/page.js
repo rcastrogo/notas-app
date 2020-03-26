@@ -10,8 +10,10 @@ export default function (ctx) {
   let pageWrapper = pageContainer(ctx);
   let page        = {};
   let schedule;
-  let stravaCache = JSON.parse(localStorage.getItem('strava_cache')); 
+  let summary     = {};
+  //let stravaCache = JSON.parse(localStorage.getItem('strava_cache')); 
   let viewDataSet;
+  let viewDataSet2;
   let resizeSubcriptions = [];
 
   let component   = {
@@ -31,6 +33,12 @@ export default function (ctx) {
   function initAll() {
     ctx.publish('msg\\page_component\\update\\title', 'Strava - Resumen');
     stravaApi.loadAthleteInfo()
+             .then( result => {
+               return stravaApi.activitiesSummary()
+                               .then(result => {
+                                  summary = result; 
+                                });
+             })
              .then(() => {
                 pol.Include('./assets/js/schedule.js')
                    .then(() => {
@@ -58,53 +66,41 @@ export default function (ctx) {
     // =====================================================================
     let f1US = sender.FirstDate.format('yyyymmdd');
     let f2US = sender.LastDate.format('yyyymmdd');
-    viewDataSet = Object.keys(stravaCache.activities)
-                        .map(id => { 
-                          let a = stravaCache.activities[id];
-                          if (a.trainer && a.athlete.id == 8955526) {
-                            a.average_watts = speedToWatts(a.average_speed * 3.6);
-                          }
-                          return { fechaUS  : a.start_date
-                                               .fixDate('T')
-                                               .replaceAll('-', '/'),
-                                   id       : a.id
-                                 };
-                        })
-                        .where( a => {
-                            return f1US <= a.fechaUS && f2US >= a.fechaUS;
-                        });
+
+    viewDataSet = Object.keys(summary.data)
+                         .where( d => {
+                           let dateUS = d.replaceAll('-', '/');
+                           return f1US <= dateUS && f2US >= dateUS; 
+                         })
+                         .map( d => {
+                           return { 
+                             fechaUS : d.replaceAll('-', '/'),
+                             ids     : summary.data[d].ids
+                           };
+                         });
     sender.ClearMonthView();
-    // ==============================================================
+    // ==================================================================================
     // Contenido mensual
-    // ==============================================================
+    // ==================================================================================
     sender.LoadMonthView((() => {
-      return viewDataSet.reduce((nodes, activity) => {
-          let fechaES = activity.fechaUS
+      return viewDataSet.reduce((nodes, daySummary) => {
+        let fechaES = daySummary.fechaUS
                                 .split('/')
                                 .reverse()
                                 .join('/');
-          let content = pol.build('div', { 
-            innerHTML : '<i class="fa fa-bicycle"></i>',
+        nodes[fechaES] = [
+          pol.build('div', { 
+            innerHTML : daySummary.ids.length,
             className : 'w3-badge w3-red w3-display-middle w3-large',
             id        : 'activity_{0}'.format(fechaES),
             onclick   : function(){ 
               sender.ShowDayView(this.id.split('_')[1]);
               sender.Buttons.Agenda.click();
             }
-          });
-          // ========================================================
-          // Numero de actividades en el día
-          // ========================================================
-          nodes[fechaES] = nodes[fechaES] || [];
-          if(nodes[fechaES].length == 0){
-            content.count = 1;
-            nodes[fechaES].push(content);
-          } else {
-            nodes[fechaES][0].count++;
-          }
-          nodes[fechaES][0].innerHTML = nodes[fechaES][0].count;
-          return nodes;
-        }, {});
+          })
+        ];
+        return nodes;
+      }, {});
 
     })()); 
     onDayChanged(sender, sender.Date);
@@ -114,220 +110,231 @@ export default function (ctx) {
     sender.ClearDayView();
     sender.ClearAgendaView();
     let dateUS = date.format('yyyymmdd');
+    // =========================================================================
+    // Cargar los datos de las actividades del día
+    // =========================================================================
+    let promises = viewDataSet.where(summary => summary.fechaUS == dateUS)
+                              .reduce( (promises, summary) => {
+                                summary.ids.map( (id) => {
+                                  promises.push(stravaApi.loadActivity(id));
+                                  promises.push(stravaApi.loadActivityStream(id));
+                                });
+                                return promises;
+                              }, []);
 
-    // =======================================================================
-    // Actividades del día
-    // =======================================================================
-    let activities = viewDataSet.where(a => a.fechaUS == dateUS)
-                                .map( a => stravaCache.activities[a.id]);
-
-    // =======================================================================
-    // Contenido dia
-    // =======================================================================
-    sender.LoadDayView((() => {
-
-      function minutesFromDate(time) {
-        let [horas, minutos] = time.fixTime('T').split(':');
-        return ~~horas * 60 + ~~minutos;
-      }
-
+    Promise.all(promises).then( values => {
+      let activities = values.where(v => v.start_date);
       // =======================================================================
-      // Configurar hora de inicio y de fin la vista 
+      // Contenido dia
       // =======================================================================
-      if (activities.length == 0) {
-        sender.ConfigureView({ min : 0, max : 24 * 60, step : 3 * 60 });
-      } else{
-        let view_options = activities.map( a => {
-                                let start = minutesFromDate(a.start_date_local);
-                                // =========================================
-                                // Rango en minutos
-                                // =========================================
-                                a.chart = { 
-                                  start : start,
-                                  end   : start + ~~(a.elapsed_time / 60)
-                                }
-                                // =========================================
-                                // Rango en horas
-                                // =========================================                                
-                                return { 
-                                  start : ~~(start/60), 
-                                  end   : Math.ceil(a.chart.end/60)
-                                };
-                              })
-                              .reduce((a, value) => {
-                                if(value.start < a.min) a.min = value.start;
-                                if(value.end > a.max) a.max = value.end;
-                                let diff = value.end - value.start;
-                                if(diff <= 24) a.step = 120;
-                                if(diff <= 12) a.step = 60;
-                                if(diff <= 7) a.step = 30;
-                                if(diff <= 3) a.step = 10;
-                                if(diff <= 2) a.step = 5;
-                                return a;
-                              }, { min : 24, max : 0, step : 30 });
-        sender.ConfigureView({ 
-          min  : view_options.min * 60,
-          max  : view_options.max * 60,
-          step : view_options.step
-        });
-      }
-      // ================================================================================
-      // Generación del array de HTMLElement
-      // ================================================================================
-      let d_template = require("./page.t.dia.txt");
-      let top        = -10;
-      return activities.reduce((nodes, activity, i) => {
-        // ===============================================================================
-        // Posición y tamaño de la actividad
-        // ===============================================================================
-        let start = minutesFromDate(activity.start_date_local);
-        let context = {
-          activity : activity,
-          top : '{0}px'.format(top += 60),
-          pos : sender.MeasureDayItem( { start : start, 
-                                         end   : start + ~~(activity.elapsed_time / 60) })
+      sender.LoadDayView((() => {
+
+        function minutesFromDate(time) {
+          let [horas, minutos] = time.fixTime('T').split(':');
+          return ~~horas * 60 + ~~minutos;
         }
-        let element = pol.build('div', d_template.format(context), false);
-        pol.toArray(element.childNodes)
-                .where( n => n.nodeType != 3)
-                .map( node => {
-                  nodes.push(node);
-                });
 
-        return nodes;
-      }, []);
+        // =======================================================================
+        // Configurar hora de inicio y de fin la vista 
+        // =======================================================================
+        if (activities.length == 0) {
+          sender.ConfigureView({ min : 0, max : 24 * 60, step : 3 * 60 });
+        } else{
+          let view_options = activities.map( a => {
+                                  let start = minutesFromDate(a.start_date_local);
+                                  // =========================================
+                                  // Rango en minutos
+                                  // =========================================
+                                  a.chart = { 
+                                    start : start,
+                                    end   : start + ~~(a.elapsed_time / 60)
+                                  }
+                                  // =========================================
+                                  // Rango en horas
+                                  // =========================================                                
+                                  return { 
+                                    start : ~~(start/60), 
+                                    end   : Math.ceil(a.chart.end/60)
+                                  };
+                                })
+                                .reduce((a, value) => {
+                                  if(value.start < a.min) a.min = value.start;
+                                  if(value.end > a.max) a.max = value.end;
+                                  let diff = value.end - value.start;
+                                  if(diff <= 24) a.step = 120;
+                                  if(diff <= 12) a.step = 60;
+                                  if(diff <= 7) a.step = 30;
+                                  if(diff <= 3) a.step = 10;
+                                  if(diff <= 2) a.step = 5;
+                                  return a;
+                                }, { min : 24, max : 0, step : 30 });
+          sender.ConfigureView({ 
+            min  : view_options.min * 60,
+            max  : view_options.max * 60,
+            step : view_options.step
+          });
+        }
+        // ================================================================================
+        // Generación del array de HTMLElement
+        // ================================================================================
+        let d_template = require("./page.t.dia.txt");
+        let top        = -10;
+        return activities.reduce((nodes, activity, i) => {
+          // ===============================================================================
+          // Posición y tamaño de la actividad
+          // ===============================================================================
+          let start = minutesFromDate(activity.start_date_local);
+          let context = {
+            activity : activity,
+            top : '{0}px'.format(top += 60),
+            pos : sender.MeasureDayItem( { start : start, 
+                                           end   : start + ~~(activity.elapsed_time / 60) })
+          }
+          let element = pol.build('div', d_template.format(context), false);
+          pol.toArray(element.childNodes)
+                  .where( n => n.nodeType != 3)
+                  .map( node => {
+                    nodes.push(node);
+                  });
 
-    })());
+          return nodes;
+        }, []);
 
-    // ==========================================================================================================
-    // Crear las actividades del día
-    // ==========================================================================================================
-    sender.LoadAgendaView((() => {
+      })());
 
-      let html        = require("./page.t.agenda.txt");
-      let htmlElement = pol.build('div', html, true);
+      // ==========================================================================================================
+      // Crear las actividades del día
+      // ==========================================================================================================
+      sender.LoadAgendaView((() => {
 
-      let context = {
-        athlete    : stravaApi.athlete,
-        activities : activities,
-        fn: {
-          toKilometers : meters => { return (meters / 1000).toLocaleString('es', { maximumFractionDigits: 2}); },
-          formatSpeed  : value => { return (value * 3.6).toLocaleString('es', { maximumFractionDigits: 2}); },
-          formatTime   : time => { return time.fixTime('T').replace('Z', ''); },
-          formatDuration : seconds => {
-            let h = Math.floor(seconds / 60 / 60);
-            let m = Math.floor(seconds / 60) % 60;
-            let s = Math.floor(seconds - m * 60) % 3600;
-            let tokens = ['{0}h '.format(h), '{0}min'.format(m), '{0}s'.format(s)];
-            if (h && m) return [tokens[0], tokens[1]].join(' ');
-            if (h && s) return [tokens[0], tokens[2]].join(' ');
-            if (m && s) return [tokens[1], tokens[2]].join(' ');
-            if (m) return tokens[1];
-            return tokens[0];
-          },
-          formatDate : time => {
-            let hoy = new Date().format(); // dd/mm/yyyy
-            let t   = time.fixDate('T')    // yyyy-mm-dd
-                          .split('-')
-                          .reverse()
-                          .join('/');
-            return hoy == t ? 'Hoy' : t;
-          },
-          showIf : (value, target, p)  => {
-            let v = value === window ? '' : value;
-            if(!v) target.style.display = 'none';
-          },
-          showIfGreather : (v1, v2, target) => {
-            let v = v1 === window ? 0 : v1;
-            if(~~v <= ~~v2) target.style.display = 'none';
-          },
-          formatId: (id, prefix, target) => {
-            return '{0}-{1}'.format(prefix, id);
-          },
-          googleStaticMapUrl: (activity) => {
-            return activity.map.polyline ? stravaApi.GOOGLE_STATIC_MAP.format(activity) 
-                                         : '';       
+        let html        = require("./page.t.agenda.txt");
+        let htmlElement = pol.build('div', html, true);
+
+        let context = {
+          athlete    : stravaApi.athlete,
+          activities : activities,
+          fn: {
+            toKilometers : meters => { return (meters / 1000).toLocaleString('es', { maximumFractionDigits: 2}); },
+            formatSpeed  : value => { return (value * 3.6).toLocaleString('es', { maximumFractionDigits: 2}); },
+            formatTime   : time => { return time.fixTime('T').replace('Z', ''); },
+            formatDuration : seconds => {
+              let h = Math.floor(seconds / 60 / 60);
+              let m = Math.floor(seconds / 60) % 60;
+              let s = Math.floor(seconds - m * 60) % 3600;
+              let tokens = ['{0}h '.format(h), '{0}min'.format(m), '{0}s'.format(s)];
+              if (h && m) return [tokens[0], tokens[1]].join(' ');
+              if (h && s) return [tokens[0], tokens[2]].join(' ');
+              if (m && s) return [tokens[1], tokens[2]].join(' ');
+              if (m) return tokens[1];
+              return tokens[0];
+            },
+            formatDate : time => {
+              let hoy = new Date().format(); // dd/mm/yyyy
+              let t   = time.fixDate('T')    // yyyy-mm-dd
+                            .split('-')
+                            .reverse()
+                            .join('/');
+              return hoy == t ? 'Hoy' : t;
+            },
+            showIf : (value, target, p)  => {
+              let v = value === window ? '' : value;
+              if(!v) target.style.display = 'none';
+            },
+            showIfGreather : (v1, v2, target) => {
+              let v = v1 === window ? 0 : v1;
+              if(~~v <= ~~v2) target.style.display = 'none';
+            },
+            formatId: (id, prefix, target) => {
+              return '{0}-{1}'.format(prefix, id);
+            },
+            googleStaticMapUrl: (activity) => {
+              return activity.map.polyline ? stravaApi.GOOGLE_STATIC_MAP.format(activity) 
+                                           : '';       
+            }
           }
         }
-      }
 
-      return pol.toArray(pol.templates.fill(htmlElement, context).childNodes)
-                .where( n => n.nodeType != 3)
-                .map( (node, index) => {
-                  // =======================================================
-                  // Perfiles
-                  // =======================================================
-                  let container = pol.$('[div-profile]', node)[0];
-                  container.appendChild( 
-                    lineChart({ Width   : 0, 
-                                Height  : 0,
-                                Padding : [8, 42, 15, 42]
-                              }).canvas
-                  );
-                  // =======================================================
-                  // Zonas
-                  // =======================================================
-                  try {
-                    fillZoneBars(pol.$('div[zone]', node), activities[index]);
-                  } finally {
-                    return node;
-                  }
-                });
-    })(),
-    // ========================================================
-    // Configurar los perfiles(canvas) una vez añadidos al DOM
-    // ========================================================
-    (container) => {
-      // ==================================================
-      // Cancelar las subcripciones existentes (RESIZE)
-      // ==================================================
-      resizeSubcriptions.forEach(ctx.unsubscribe);
-      resizeSubcriptions = [];
-      // ==================================================
-      // inicializar los canvas para los perfiles
-      // ==================================================
-      pol.$('div[div-profile] canvas', container)
-         .map( canvas => {
-            let __id = canvas.parentNode.id.split('-')[1];
-            return {
-              canvas, 
-              id       : __id,
-              parent   : canvas.parentNode,
-              dataset  : { 
-                activity : activities.item('id', __id),
-                streams  : stravaCache.streams[__id]
+        return pol.toArray(pol.templates.fill(htmlElement, context).childNodes)
+                  .where( n => n.nodeType != 3)
+                  .map( (node, index) => {
+                    // =======================================================
+                    // Perfiles
+                    // =======================================================
+                    let container = pol.$('[div-profile]', node)[0];
+                    container.appendChild( 
+                      lineChart({ Width   : 0, 
+                                  Height  : 0,
+                                  Padding : [8, 42, 15, 42]
+                                }).canvas
+                    );
+                    // =======================================================
+                    // Zonas
+                    // =======================================================
+                    try {
+                      fillZoneBars(pol.$('div[zone]', node), activities[index]);
+                    } finally {
+                      return node;
+                    }
+                  });
+      })(),
+      // ========================================================
+      // Configurar los perfiles(canvas) una vez añadidos al DOM
+      // ========================================================
+      (container) => {
+        // ==================================================
+        // Cancelar las subcripciones existentes (RESIZE)
+        // ==================================================
+        resizeSubcriptions.forEach(ctx.unsubscribe);
+        resizeSubcriptions = [];
+        // ==================================================
+        // inicializar los canvas para los perfiles
+        // ==================================================
+        pol.$('div[div-profile] canvas', container)
+           .map( canvas => {
+              let __id = canvas.parentNode.id.split('-')[1];
+              return {
+                canvas, 
+                id       : __id,
+                parent   : canvas.parentNode,
+                dataset  : { 
+                  activity : activities.item('id', __id),
+                  streams  : stravaApi.cache.streams[__id]
+                }
+              };
+           })
+           .forEach(item => {
+              let chart = item.canvas.lineChart;
+              chart.data = createProfileDocument(item.dataset);
+              function __resize() {
+                chart.Resize(item.parent.clientWidth - 9, 
+                             item.parent.clientHeight - 9);
               }
-            };
-         })
-         .forEach(item => {
-            let chart = item.canvas.lineChart;
-            chart.data = createProfileDocument(item.dataset);
-            function __resize() {
-              chart.Resize(item.parent.clientWidth - 9, 
-                           item.parent.clientHeight - 9);
-            }
-            resizeSubcriptions.append(ctx.subscribe(ctx.topics.WINDOW_RESIZE, __resize))
-                              .append(ctx.subscribe('msg\\this_page\\view\\changed', __resize))
-                              .append(ctx.subscribe('msg\\line_chart\\range', (message, e) => {
-                                if(e.sender.data === chart.data){
-                                  var __from = Math.min(e.start, e.end);
-                                  var __to   = Math.max(e.start, e.end);
-                                  if(__to - __from > 10){
-                                    e.sender.data.configureView(__from, __to);
-                                    __resize();              
+              resizeSubcriptions.append(ctx.subscribe(ctx.topics.WINDOW_RESIZE, __resize))
+                                .append(ctx.subscribe('msg\\this_page\\view\\changed', __resize))
+                                .append(ctx.subscribe('msg\\line_chart\\range', (message, e) => {
+                                  if(e.sender.data === chart.data){
+                                    var __from = Math.min(e.start, e.end);
+                                    var __to   = Math.max(e.start, e.end);
+                                    if(__to - __from > 10){
+                                      e.sender.data.configureView(__from, __to);
+                                      __resize();              
+                                    }
                                   }
-                                }
-                              }))
-                              .append(ctx.subscribe('msg\\line_chart\\tap', (message, e) => { 
-                                if(e.sender.data === chart.data){
-                                  e.sender.data.resetView();
-                                  __resize();
-                                }
-                              }));
-            __resize();        
-            ;
-         });
-    });  
+                                }))
+                                .append(ctx.subscribe('msg\\line_chart\\tap', (message, e) => { 
+                                  if(e.sender.data === chart.data){
+                                    e.sender.data.resetView();
+                                    __resize();
+                                  }
+                                }));
+              __resize();        
+              ;
+           });
+      });  
+
+
+    });
+
   }
                
   function createProfileDocument(dataset){
@@ -427,7 +434,7 @@ export default function (ctx) {
 
   function fillZoneBars(bars, activity) {
     if(!activity.has_heartrate) return;
-    let strems = stravaCache.streams[activity.id];
+    let strems = stravaApi.cache.streams[activity.id];
     let zones  = pol.clone(stravaApi.config.athlete.zones.heart_rate.zones)
                     .map( z => {
                       z.count = 0;

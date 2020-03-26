@@ -26,7 +26,9 @@ export default function(ctx) {
     dispose : function(){
       pageOffset = 1;
       ctx.unsubscribe(subcription);
-      localStorage.setItem('strava_cache', JSON.stringify(stravaApi.cache));
+      //localStorage.setItem('strava_cache', JSON.stringify(stravaApi.cache));
+      stravaApi.activitiesSummary()
+               .then(summary => summary.save());
     }
   };
   
@@ -88,15 +90,22 @@ export default function(ctx) {
                      '  <h2>Cargando actividades...</h2>' + 
                      '<div>';
     // ==========================================================================
-    // Cargar los dato del atleta
+    // Cargar los datos del atleta
     // ==========================================================================
     stravaApi.loadAthleteInfo()
+             // ==============================================================
+             // Cargar las n últimas actividades
+             // ==============================================================
              .then(result => {
-                // ==============================================================
-                // Cargar las n últimas actividades
-                // ==============================================================
                 return stravaApi.loadActivities({ page : pageOffset,
                                                   rows : 5});
+             })
+             // ==============================================================
+             // Cargar el resumen de las actividades
+             // ==============================================================
+             .then( result => {
+               return stravaApi.activitiesSummary()
+                               .then(summary => summary.add(result));
              })
              .then(result => {
                page.innerHTML = '<div activity-container>' + 
@@ -230,6 +239,13 @@ export default function(ctx) {
   // =========================================================================
   function loadNextChunk() {
     stravaApi.loadActivities({ page : pageOffset, rows : 5})
+             // ==============================================================
+             // Cargar el resumen de las actividades
+             // ==============================================================
+             .then( result => {
+               return stravaApi.activitiesSummary()
+                               .then(summary => summary.add(result));
+             })
              .then(result => {
                loadActivities(result);  
              })

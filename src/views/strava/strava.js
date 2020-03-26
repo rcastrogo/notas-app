@@ -28,12 +28,12 @@ let stravaApi = (function () {
     },
     cache : {
       activities : {}, 
-      streams    : {}, 
-      zones      : {}
+      streams    : {}
     },
     loadActivity       : __loadActivity,
     loadActivityStream : __loadActivityStream,
     loadActivities     : __loadActivities,
+    activitiesSummary  : __activitiesSummary,
     loadAthleteInfo    : __loadAthleteInfo,
     loadAthleteZones   : __loadAthleteZones,
     GOOGLE_STATIC_MAP  : 'https://maps.googleapis.com/maps/api/staticmap?' +  
@@ -277,6 +277,34 @@ let stravaApi = (function () {
     });
   }
 
+  var summary = '';
+  function __activitiesSummary() {
+    return new Promise((resolve, reject) => {
+      if(summary){
+        resolve(summary);
+        return;
+      }
+      summary = {
+        data : JSON.parse( localStorage.getItem('strava.summary') || '{}' ),
+        save : () => {
+          console.log('activitiesSummary.save');
+          localStorage.setItem('strava.summary', JSON.stringify(summary.data));
+        },
+        add  : (activities) => {
+          activities.map(a => {
+            let key = a.start_date.fixDate('T');
+            let data = summary.data[key] || (summary.data[key] = { ids : [] });
+            if (!data.ids.includes(a.id)) {
+              data.ids.push(a.id);
+              console.log('activitiesSummary.add: {id}'.format(a));
+            }
+          });
+          return activities;
+        }
+      };
+      resolve(summary);
+    });
+  }
 
 }());
 

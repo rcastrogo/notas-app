@@ -63,14 +63,13 @@
 			</div>
 		</div>
 
-	  <div xbind=":fn.showIf=>@activity.map.polyline" 
+	  <div xbind xif="@activity.map.polyline"
 		     class="w3-margin-bottom w3-light-gray" 
 				 style="min-height:100px">
 				 <img xbind="src:fn.googleStaticMapUrl=>@activity" class="w3-border" style="width:100%">
 		</div>
 
-	  <div xbind=":fn.showIf=>@activity.has_heartrate" 
-		     class="w3-margin-bottom w3-border-bottom">
+	  <div xbind xif="@activity.has_heartrate" class="w3-margin-bottom w3-border-bottom">
 
 		<div class="w3-small w3-light-grey w3-center">Zonas</div>
 		<div class="w3-cell-row w3-padding-small w3-center">

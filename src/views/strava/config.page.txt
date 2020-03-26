@@ -2,10 +2,10 @@
 
   <h2>Zonas de entrenamiento</h2>
   <form class="w3-margin-bottom">
-    <div zone xfor="zone in zones" class="w3-center">
-      <label class="w3-input w3-center" style="width:30%; display:inline-block;font-style:italic;" xbind="htmlFor:fn.formatId => @index zone-min">Zona {fn.formatZone => @index}</label>
-      <input class="w3-input w3-center" style="width:30%; display:inline-block" xbind="value:zone.min;id:fn.formatId => @index zone-min" type="text" >
-      <input class="w3-input w3-center" style="width:30%; display:inline-block" xbind="value:zone.max;id:fn.formatId => @index zone-max" type="text" >
+    <div zone xfor="zone in zones" class="w3-center" id="zone-container-{index}" xbind>
+      <label for="zone-min-{index}" class="w3-input w3-center" style="width:30%; display:inline-block;font-style:italic;" xbind>Zona {fn.formatZone => @index}</label>
+      <input id="zone-min-{index}" value="{zone.min}" class="w3-input w3-center" style="width:30%; display:inline-block" type="text" xbind>
+      <input id="zone-max-{index}" value="{zone.max}" class="w3-input w3-center" style="width:30%; display:inline-block" type="text" xbind>
     </div>
   </form>
 
@@ -16,7 +16,7 @@
 
   <h2>Configuración</h2>
   <p style="text-indent:1em;">
-    Reestablecer la configuración de <span class="w3-bold w3-italic">Strava</span> a sus valores iniciales..  
+    Reestablecer la configuración de <span class="w3-bold w3-italic">Strava</span> a sus valores iniciales.  
   </p>
   <div class="w3-container w3-margin-bottom w3-center">
    <button type="button" on-click="reset" class="w3-button w3-black">Reestablecer</button>

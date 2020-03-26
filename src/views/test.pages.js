@@ -443,6 +443,7 @@ let getValueInfoPage = function (ctx) {
         <li>xbind</li>
         <li>templates.merge</li>
         <li>xfor</li>
+        <li>xif</li>
       </ul>
     </p>
     <h5>Plantilla:</h5>
@@ -545,6 +546,32 @@ let getValueInfoPage = function (ctx) {
       &nbsp&nbsp  }<br/>
       }
     </div>
+
+    <h3>xif</h3>
+    <p style="text-indent:1em;">
+      Permite mostrar u ocultar un elemento dependiendo de una expresión determinada. 
+      Es necesario indicar el atributo xbind y añadir el prefijo '@' para acceder a las variables del ámbito.
+    </p>
+    <div class="w3-code htmlHigh" style="overflow: auto;white-space: nowrap;">
+      &lt;h2 xif="@zones.length < 12" xbind&gt;Test&lt;/h2&gt;
+    </div>
+
+    <h3>atributos</h3>
+    <p style="text-indent:1em;">
+      Es posible establecer el valor de un atributo para que se realize el reemplazo de los valores correspondientes. 
+      Esto es útil para establecer identificadores de controles por ejemplo.
+    </p>
+    <div class="w3-code htmlHigh" style="overflow: auto;white-space: nowrap;">
+      &lt;h2&gt;Zonas de entrenamiento&lt;/h2&gt;<br/>
+      &lt;form class=&quot;w3-margin-bottom&quot;&gt;<br/>
+      &nbsp&lt;div zone xfor=&quot;zone in zones&quot; id=&quot;zone-container-{index}&quot; xbind&gt;<br/>
+      &nbsp&nbsp&lt;label for=&quot;z-min-{index}&quot; xbind&gt;Zona {fn.formatZone =&gt; @index}&lt;/label&gt;<br/>
+      &nbsp&nbsp&lt;input id=&quot;z-min-{index}&quot; value=&quot;{zone.min}&quot; type=&quot;text&quot; xbind&gt;<br/>
+      &nbsp&nbsp&lt;input id=&quot;z-max-{index}&quot; value=&quot;{zone.max}&quot; type=&quot;text&quot; xbind&gt;<br/>
+      &nbsp&lt;/div&gt;<br/>
+      &lt;/form&gt;<br/>
+    </div>
+
   </div>`; 
 
 

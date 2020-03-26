@@ -339,6 +339,11 @@ let __module = {};
                   return a === self ? '' : self;
                 }, scope || self );    
     }
+
+    function __getValue(key, scope, def) {
+      let v = getValue(key,scope);
+      return v == window ? def : v;
+    }
    
     function merge(template, o, HTMLElemnt) {
 
@@ -389,14 +394,26 @@ let __module = {};
       // ==============================================================================
       _elements.forEach(function (child) {
         // ============================================================================
-        // Nodos texto hijos de este elemento
+        // Visibilidad del elemento. Ej: xif="index"
+        // ============================================================================
+        if (child.attributes.xif) {
+          let fn = new Function('ctx','return {0};'.format(child.attributes.xif.value)
+                                                   .replaceAll('@', 'this.'));
+          child.style.display = fn.apply(scope) ? '' : 'none';
+        }
+        // ============================================================================
+        // Atributos que es necesario procesar. Ej: id="txt-{index}"
+        // ============================================================================
+        module.toArray(child.attributes)
+              .where({ value : /{[^{]+?}/g })
+              .map(a => a.value = merge(a.value, scope));
+        // ============================================================================
+        // Nodos texto de este elemento
         // ============================================================================
         module.toArray(child.childNodes)
               .where({ nodeType    : 3 })
               .where({ textContent : /{[^{]+?}/g})
-              .forEach( text => {
-                text.textContent = merge(text.textContent, scope, text);  
-              });
+              .forEach(text => text.textContent = merge(text.textContent, scope, text));
         // ============================================================================
         // Propiedades que establecer
         // ============================================================================
