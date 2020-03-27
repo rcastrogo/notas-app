@@ -5,11 +5,19 @@ import pageContainer from "../components/page.component";
 
 import HTML from "./strava.page.txt";
 
+// =====================
+// Control última carga
+// =====================
+let recents       = [];
+let pageScrollTop = 0;
+let pageOffset    = 1;
+
 export default function(ctx) {
 
   let pageWrapper = pageContainer(ctx);
   let page        = {};
-  let pageOffset  = 1;
+
+
 
   let component   = {
     root   : {},
@@ -24,9 +32,7 @@ export default function(ctx) {
       initAll();
     },
     dispose : function(){
-      pageOffset = 1;
       ctx.unsubscribe(subcription);
-      //localStorage.setItem('strava_cache', JSON.stringify(stravaApi.cache));
       stravaApi.activitiesSummary()
                .then(summary => summary.save());
     }
@@ -86,9 +92,13 @@ export default function(ctx) {
     // ==========================================================================
     // Cargar las actividades
     // ==========================================================================
-    page.innerHTML = '<div class= "w3-container w3-padding w3.center">' +
-                     '  <h2>Cargando actividades...</h2>' + 
-                     '<div>';
+    page.innerHTML = `
+      <div class="w3-margin w3-white w3-border w3-round w3-animate-left">
+        <p class="w3-center" style="overflow:hidden;">
+          <i class="fa fa-2x fa-cog fa-spin"></i><br>Cargando actividades...
+        </p>
+      </div>`;
+
     // ==========================================================================
     // Cargar los datos del atleta
     // ==========================================================================
@@ -97,8 +107,23 @@ export default function(ctx) {
              // Cargar las n últimas actividades
              // ==============================================================
              .then(result => {
-                return stravaApi.loadActivities({ page : pageOffset,
-                                                  rows : 5});
+               // =========================================================
+               // Control última carga
+               // =========================================================
+               let previous = ctx.router.previous.name;
+               if (['strava-config', 
+                    'schedule'].includes(previous)) {
+                 pageOffset--;
+                 return recents.map( id => stravaApi.cache.activities[id] )
+                               .where( a => a);
+               }
+               // =========================================================
+               // Cargar normalmente
+               // =========================================================
+               pageScrollTop = 0;
+               pageOffset = 1;
+               return stravaApi.loadActivities({ page : pageOffset,
+                                                 rows : 5});
              })
              // ==============================================================
              // Cargar el resumen de las actividades
@@ -108,13 +133,14 @@ export default function(ctx) {
                                .then(summary => summary.add(result));
              })
              .then(result => {
-               page.innerHTML = '<div activity-container>' + 
-                                '	<div id="load-more-mark" ' + 
-                                      'class="w3-container w3-round w3-margin ' + 
-                                             'w3-teal w3-center" ' + 
-                                      'style="min-height:2px"></div>' +
-                                '</div';
-               page.onscroll = () => ctx.publish('msg\\activities\\scroll', page)
+               page.innerHTML = `<div activity-container>
+                                	<div id="load-more-mark" 
+                                       class="w3-margin w3-white w3-border w3-round"  
+                                       style="min-height:2px">
+                                  </div>
+                                '</div>`;
+               page.onscroll = () => ctx.publish('msg\\activities\\scroll', page);
+               recents = [];
                loadActivities(result);
              })
              .catch( e => {
@@ -132,6 +158,15 @@ export default function(ctx) {
     let context = {
       athlete    : stravaApi.athlete,
       activities : result.map( a => {
+
+        // ====================================
+        // Control última carga
+        // ====================================
+        recents.push(a.id);
+        if(!stravaApi.cache.activities[a.id]){
+          stravaApi.cache.activities[a.id] = a;
+        }
+
         if (a.total_photo_count) {
           a.fotos = ' '.repeat(a.total_photo_count)
                        .split('')
@@ -208,6 +243,12 @@ export default function(ctx) {
          loadMark.insertAdjacentElement('beforebegin', n);
        });
     pageOffset++;
+
+    // ============================
+    // Control última carga
+    // ============================
+    page.scrollTop = pageScrollTop;
+
   }
 
   function configureLazyLoad(container) {
@@ -224,6 +265,7 @@ export default function(ctx) {
     // =======================================================================
     ctx.unsubscribe(subcription);
     subcription = ctx.subscribe('msg\\activities\\scroll', (message, w) => {
+      pageScrollTop = w.scrollTop;
       loadMoreData(w.scrollTop, { bookmarks, 
                                   descriptions, 
                                   photos,
@@ -260,7 +302,10 @@ export default function(ctx) {
     // Determinar si es necesario cargar más actividades
     // ===========================================================================================
     if(controls.loadMark.innerHTML == '' && controls.loadMark.offsetTop < value + 1.5 * HEIGHT){
-      controls.loadMark.innerHTML = 'Cargando...';
+      controls.loadMark.innerHTML = `
+        <p class="w3-center" style="overflow:hidden;">
+          <i class="fa fa-2x fa-cog fa-spin"></i><br>Cargando actividades...
+        </p>`;
       return loadNextChunk();
     }
     // ===========================================================================================
@@ -291,7 +336,7 @@ export default function(ctx) {
                          // ==================================================================
                          // Mapas del recorrido
                          // ==================================================================
-                         if (result.map.polyline) {                    
+                         if (result.map.summary_polyline) { 
                            let _src = stravaApi.GOOGLE_STATIC_MAP.format(result);
                            let __id = 'map-{0}'.format(result.id);
                            controls.maps[__id]

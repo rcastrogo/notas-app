@@ -40,7 +40,7 @@ let stravaApi = (function () {
                          'visible={start_latlng[0]},{start_latlng[1]}&' +
                          'size=340x100&' + 
                          'key=AIzaSyD-FEw7obgz5yH2a1OO84Xm1XzGoWFuWas&' +  
-                         'path=color:0x0000ff80|weight:2|enc:{map.polyline}'
+                         'path=color:0x0000ff80|weight:2|enc:{map.summary_polyline}'
   }
   
   function __refreshToken(fn, payload) {
@@ -134,7 +134,8 @@ let stravaApi = (function () {
     // ===========================================================================================
     // Return cached data
     // ===========================================================================================
-    if (stravaApi.cache.activities[activityId]) {
+    if (stravaApi.cache.activities[activityId] &&
+        stravaApi.cache.activities[activityId].description != undefined) {
       return new Promise((resolve, reject) => {
         console.log('Cached activity info...', activityId)
         resolve(stravaApi.cache.activities[activityId]);

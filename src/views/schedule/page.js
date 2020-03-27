@@ -11,9 +11,7 @@ export default function (ctx) {
   let page        = {};
   let schedule;
   let summary     = {};
-  //let stravaCache = JSON.parse(localStorage.getItem('strava_cache')); 
   let viewDataSet;
-  let viewDataSet2;
   let resizeSubcriptions = [];
 
   let component   = {
@@ -106,9 +104,13 @@ export default function (ctx) {
     onDayChanged(sender, sender.Date);
   }
 
+  var loadingPanel = pol.build( 'div', 
+    `<div class="w3-margin w3-white w3-border w3-round w3-animate-left">
+      <p class="w3-center" style="overflow:hidden;">
+        <i class="fa fa-2x fa-cog fa-spin"></i><br>Cargando...</p>
+     </div>`);
+
   function onDayChanged(sender, date) {
-    sender.ClearDayView();
-    sender.ClearAgendaView();
     let dateUS = date.format('yyyymmdd');
     // =========================================================================
     // Cargar los datos de las actividades del día
@@ -122,11 +124,23 @@ export default function (ctx) {
                                 return promises;
                               }, []);
 
+    sender.ClearDayView();
+    sender.ClearAgendaView();
+    sender.LoadDayView([loadingPanel.cloneNode(true)]);
+    sender.LoadAgendaView([loadingPanel.cloneNode(true)]);
+
     Promise.all(promises).then( values => {
-      let activities = values.where(v => v.start_date);
+      let activities = values.where( a => a.start_date)
+                             .map  ( a => {
+                               if (a.trainer && a.athlete.id == 8955526) {
+                                 a.average_watts = speedToWatts(a.average_speed * 3.6);
+                               }
+                               return a;
+                             });
       // =======================================================================
       // Contenido dia
       // =======================================================================
+      sender.ClearDayView();
       sender.LoadDayView((() => {
 
         function minutesFromDate(time) {
@@ -206,6 +220,8 @@ export default function (ctx) {
       // Crear las actividades del día
       // ==========================================================================================================
       sender.LoadAgendaView((() => {
+
+        sender.ClearAgendaView();
 
         let html        = require("./page.t.agenda.txt");
         let htmlElement = pol.build('div', html, true);

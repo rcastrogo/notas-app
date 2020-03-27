@@ -147,6 +147,8 @@ const ctx = {
       headerStyle.zIndex    = ''; 
     }
 
+    ctx.router.previous = ctx.router.current;
+
   });
   // ==============================================================================
   // Init Notifications system
