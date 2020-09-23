@@ -43,6 +43,17 @@ export default function(){
             stravaApi.resetConfig();
             history.back();
           };
+
+      let url = 'http://localhost:5001/belloto-c925d/us-central1/helloWorld';
+      let request;
+      pol.ajax
+         .get(url, req => {
+           request = req;
+           //req.setRequestHeader('Accept', 'application/javascript');
+         })
+        .then(result => { 
+          console.log(result);
+        })
     }
   };
 

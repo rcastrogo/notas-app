@@ -16,9 +16,7 @@ export default function(ctx) {
 
   let pageWrapper = pageContainer(ctx);
   let page        = {};
-
-
-
+   
   let component   = {
     root   : {},
     init   : function(){ },

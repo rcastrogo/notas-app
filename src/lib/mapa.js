@@ -493,12 +493,9 @@ let __module = {};
     module.apply(module.ajax, {
       get  : function (url, interceptor) {
         return new Promise( (resolve, reject) => {
-          //url += (url.contains('?') ? '&ms=' : '?ms=') + new Date().getTime();
           var xml = this.createXMLHttpRequest();
           xml.open('GET', url, true);
-          if(interceptor) interceptor(xml);
-          xml.setRequestHeader('If-Modified-Since', 'Thu, 01 Jan 1970 00:00:00 GMT');
-          xml.setRequestHeader('Cache-Control', 'no-cache');
+          if(interceptor) interceptor(xml);		  
           xml.onreadystatechange = function () { 
             if (xml.readyState == 4){
               resolve(xml.responseText)
