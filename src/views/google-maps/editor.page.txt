@@ -1,0 +1,17 @@
+﻿<div class="w3-animate-left" page-container style="position:absolute;top:38px;bottom:0;left:0;right:0;">
+	<div class="map" id="googleMap" style="position:absolute;top:4px;bottom:0;left:0;right:0;"></div>
+	<div class="w3-container w3-padding w3-white w3-margin w3-card w3-round" style="position:relative">
+    <button type="button" class="pol-btn w3-button w3-right" on-click="toggleMapType" title="Cambiar tipo de mapa"><i class="fa fa-align-justify"></i></button>  
+		<button type="button" class="pol-btn w3-button w3-right" on-click="fitToBounds" title="Ajustar mapa"><i class="fa fa-arrows"></i></button>
+
+    <button type="button" class="pol-btn w3-button w3-left" on-click="saveTrack" title="Guardar la ruta"><i class="fa fa-save"></i></button>  
+		<button type="button" class="pol-btn w3-button w3-left" on-click="clear" title="Borrar todo"><i class="fa fa-trash"></i></button>
+	  <button type="button" class="pol-btn w3-button w3-left" on-click="undo" title="Deshacer"><i class="fa fa-undo"></i></button>
+	  <button type="button" class="pol-btn w3-button w3-left" on-click="redo" title="Rehacer"><i class="fa fa-rotate-right"></i></button>  	
+		<div class="w3-padding w3-left">Distancia: <span on-publish="map\distance:innerHTML">0,00</span> kms</div>
+		<div class="w3-padding w3-left">Ascenso: <span on-publish="map\totalAscent:innerHTML">0</span> metros</div>
+	</div>
+	<div class="w3-container w3-padding w3-white w3-margin w3-card w3-round" style="position:absolute;bottom:0;left:0;right:0;height:190px;padding:12px !important" div-profile>
+
+	</div>
+</div>

@@ -96,6 +96,42 @@ function addEventListeners(container, handlers, context) {
   });
 }
 
+// =============================================
+// CommandManager
+// =============================================
+function CommandManager(doc){
+  var _this = { 
+    _undos : [],
+    _redos : [],
+    clear : function(){
+      _this._undos.length = 0;
+      _this._redos.length = 0;
+    },
+    executeCommad : function(command){
+      try{
+        _this._undos.push(command.execute(doc));
+        _this._redos.length = 0;
+      }catch(e){ console.error(e) }
+    },
+    undo : function(){
+      if(_this._undos.length > 0) {
+        _this._redos.push(_this._undos
+                               .pop()
+                               .undo(doc));
+      }                
+    },
+    redo : function(){
+      if(_this._redos.length > 0) {    
+        _this._undos.push(_this._redos
+                               .pop()
+                               .execute(doc));
+      }
+    }
+  };  
+  return _this;
+};
+
 export default { 
-  addEventListeners
+  addEventListeners,
+  CommandManager
 }

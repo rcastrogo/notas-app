@@ -125,18 +125,20 @@ function __drawScaleY(chart){
     chart.ctx.fillText('{0} {1}'.format(x.toFixed(0), (__serie.unit || 'm')), chart.bounds.left - 6, __y);
   }
 
-  __serie = chart.data.series[1];
-  __scale = __niceScale(~~__serie.view.min, ~~__serie.view.max, 8);
-  for(var x = __scale.max; x > __scale.min; x -= __scale.tickSpacing){      
-    var __y = __serie.transform ? __serie.transform(chart, x)
-                                : chart.worldToScreenY(x);
-    if(__y < chart.bounds.top) continue;
-    if(__y > chart.bounds.top + chart.bounds.height) continue; 
-    chart.ctx.beginPath();
-    chart.ctx.moveTo(chart.bounds.left + chart.bounds.width - 3, __y);
-    chart.ctx.lineTo(chart.bounds.left + chart.bounds.width + 4, __y);        
-    chart.ctx.stroke();
-    chart.ctx.fillText('{0} {1}'.format(x.toFixed(0), (__serie.unit || 'm')), chart.bounds.left + chart.bounds.width + 40, __y);
+  if (chart.data.series[1]) {
+    __serie = chart.data.series[1];
+    __scale = __niceScale(~~__serie.view.min, ~~__serie.view.max, 8);
+    for(var x = __scale.max; x > __scale.min; x -= __scale.tickSpacing){      
+      var __y = __serie.transform ? __serie.transform(chart, x)
+                                  : chart.worldToScreenY(x);
+      if(__y < chart.bounds.top) continue;
+      if(__y > chart.bounds.top + chart.bounds.height) continue; 
+      chart.ctx.beginPath();
+      chart.ctx.moveTo(chart.bounds.left + chart.bounds.width - 3, __y);
+      chart.ctx.lineTo(chart.bounds.left + chart.bounds.width + 4, __y);        
+      chart.ctx.stroke();
+      chart.ctx.fillText('{0} {1}'.format(x.toFixed(0), (__serie.unit || 'm')), chart.bounds.left + chart.bounds.width + 40, __y);
+    }
   }
 
   chart.ctx.restore();

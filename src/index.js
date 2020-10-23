@@ -24,7 +24,7 @@ import schedulePage from "./views/schedule/page";
 import {stravaAuthPage,
         stravaConfigPage,
         stravaMainPage} from "./views/strava/strava";
-
+import routeEditorPage from "./views/google-maps/editor";
 import utils from "./lib/utils.js";
 
 const TOPICS = pubsub.TOPICS;
@@ -106,6 +106,7 @@ const ctx = {
      .addRoute('strava-config', /strava\/config/, stravaConfigPage, true)
      .addRoute('strava-exchange-token', /strava\/exchange_token/, stravaAuthPage, true) 
      .addRoute('strava-main', /strava[?]?(.*)$/, stravaMainPage, true)
+     .addRoute('routes', /routes$/, routeEditorPage, true)
      .addRoute('',      /$/,               homePage);
   // ===================================================================
   // Init components
