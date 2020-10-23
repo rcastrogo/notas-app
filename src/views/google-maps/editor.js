@@ -45,8 +45,13 @@ export default function (ctx) {
       undo           : _commandManager.undo,
       redo           : _commandManager.redo,
       clear          : __clearAll,
-      fitToBounds    : __fitToBounds
+      fitToBounds    : __fitToBounds,
+      toggleProvile  : __toggleProfile
     });
+
+    pol.$('[button]', target)
+       .forEach( b => pageWrapper.addButton(b));
+
     // ================================================================================
     // Profile
     // ================================================================================
@@ -138,10 +143,10 @@ export default function (ctx) {
   }
 
   function initAll() { 
-    pubsub.publish('msg\\page_component\\update\\title', 'Editor de rutas (cargando...)');
+    pubsub.publish('msg\\page_component\\update\\title', 'Cargando...');
     pol.Include(GOOGLE_MAPS_API)
        .then( () => {
-          pubsub.publish('msg\\page_component\\update\\title', 'Editor de rutas');
+          pubsub.publish('msg\\page_component\\update\\title', 'Rutas');
           // ===========================================================================
           // Init GoogleMaps
           // ===========================================================================
@@ -188,6 +193,16 @@ export default function (ctx) {
                               return b;
                             }, new google.maps.LatLngBounds());   
     _document.map.fitBounds(__bounds);
+  }
+
+  function __toggleProfile() {
+    var __target = pol.$('[div-profile]', page)[0];
+    if (__target.classList.contains('w3-hide')) {
+      __target.classList.remove('w3-hide');
+      ctx.publish(TOPICS.WINDOW_RESIZE);
+    } else {
+      __target.classList.add('w3-hide');
+    }
   }
   
   function __clearAll() {
