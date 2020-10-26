@@ -5,16 +5,21 @@
 	<div class="w3-bar-block" style="position:absolute;top:0;left:0;padding: 5px">
 		<button type="button" class="w3-bar-item w3-button w3-border w3-white" on-click="toggleMapType" style="margin-bottom: 5px" title="Cambiar tipo de mapa"><i class="fa fa-align-justify"></i></button>  
 		<button type="button" class="w3-bar-item w3-button w3-border w3-white" on-click="fitToBounds" style="margin-bottom: 5px" title="Ajustar mapa"><i class="fa fa-arrows"></i></button>
-	  <button type="button" class="w3-bar-item w3-button w3-border w3-white" on-click="toggleProvile" title="Mostrar/ocultar perfil"><i class="fa fa-area-chart"></i></button>
+	  <button type="button" class="w3-bar-item w3-button w3-border w3-white" on-click="toggleProvile" title="Mostrar/ocultar perfil"><i class="fa fa-area-chart"></i></button>		
 	</div>
 
-
-	
 	<div class="w3-hide">
+   <div button class="w3-dropdown-click w3-right">
+			<button class="pol-btn w3-button" on-click="toggleMenu"><i class="fa fa-bars"></i></button>
+			<div id="Demo" class="w3-dropdown-content w3-bar-block w3-transparent w3-hide" style="right:4px;margin-top:4px;min-width:0;">
+				<button type="button" class="w3-bar-item w3-button w3-border w3-white" style="width:auto;margin-bottom: 2px" on-click="saveTrack"><i class="fa fa-save"></i></button>
+				<button type="button" class="w3-bar-item w3-button w3-border w3-white" style="width:auto;margin-bottom: 2px" on-click="downloadTrack"><i class="fa fa-download"></i></button>
+				<button type="button" class="w3-bar-item w3-button w3-border w3-white" style="width:auto;margin-bottom: 2px" on-click="clear"><i class="fa fa-trash"></i></button>
+				<button type="button" class="w3-bar-item w3-button w3-border w3-white" style="width:auto;margin-bottom: 2px" on-click="showOptions"><i class="fa fa-ellipsis-h"></i></button>
+			</div>
+		</div>
 	  <button button type="button" class="pol-btn w3-button w3-right" on-click="redo" title="Rehacer"><i class="fa fa-rotate-right"></i></button>  	
 		<button button type="button" class="pol-btn w3-button w3-right" on-click="undo" title="Deshacer"><i class="fa fa-undo"></i></button>
-		<button button type="button" class="pol-btn w3-button w3-right" on-click="clear" title="Borrar todo"><i class="fa fa-trash"></i></button>
-		<button button type="button" class="pol-btn w3-button w3-right" on-click="saveTrack" title="Guardar la ruta"><i class="fa fa-save"></i></button> 
 	</div>
 
 	<div class="w3-border-top" style="position:absolute;bottom:0;left:0;right:0;height:40px;padding:8px">
@@ -24,8 +29,16 @@
 		</div>
 	</div>
 
-	<div class="w3-container w3-border-top w3-padding w3-white w3-hide" style="position:absolute;bottom:41px;left:0;right:0;height:140px;padding:12px !important" div-profile>
-
+	<div class="w3-container w3-border-top w3-padding w3-white w3-hide w3-animate-left" 
+	     style="position:absolute;bottom:41px;left:0;right:0;height:140px;padding:12px !important" div-profile>
 	</div>
+
+	<form id="track-options-dialog" class="" style="display:none">
+		<label for="txt-nombre">Nombre</label>
+		<input id="txt-nombre" xbind="value:name" type="text" class="w3-input w3-border w3-round"/><br />
+		<label for="txt-descripcion">Descripción</label>
+		<textarea id="txt-descripcion" xbind="value:description" rows="2" class="w3-input w3-border w3-round"></textarea><br />
+		<input type="file" id="txt-file" />
+	</form>
 
 </div>

@@ -1,4 +1,4 @@
-import pol from "../../lib/mapa.js";
+﻿import pol from "../../lib/mapa.js";
 import utils from "../../lib/utils.js";
 import pubsub from "../../lib/pubSub.Service.js";
 import pageContainer from "../components/page.component";
@@ -34,7 +34,7 @@ export default function (ctx) {
     dispose : function(){
       resizeSubcriptions.forEach(ctx.unsubscribe);
       clearInterval(_autoSaveTimerId);
-      __saveMap();
+      __autoSave();
     }
   };
 
@@ -42,11 +42,16 @@ export default function (ctx) {
     utils.addEventListeners(target, { 
       mostrarMensaje : () => { pubsub.publish(TOPICS.NOTIFICATION, { message : 'Imagen mostrada' }); },
       toggleMapType  : () => { _commandManager.executeCommad(new editor.Commands.ChangeView()); },
+      toggleMenu  : __toggleMenu,
+      hideMenu    : __hideMenu,
       undo           : _commandManager.undo,
       redo           : _commandManager.redo,
       clear          : __clearAll,
       fitToBounds    : __fitToBounds,
-      toggleProvile  : __toggleProfile
+      toggleProvile  : __toggleProfile,
+      saveTrack      : __saveTrack,
+      downloadTrack  : __downloadTrack,
+      showOptions    : __showOptions
     });
 
     pol.$('[button]', target)
@@ -58,7 +63,7 @@ export default function (ctx) {
     let container = pol.$('[div-profile]', target)[0];
     _lineChart = lineChart({ Width   : 0, 
                              Height  : 0,
-                             Padding : [8, 42, 15, 42]
+                             Padding : [8, 12, 15, 42]
                            });
     _lineChart.canvas.style.width  = '100%';
     _lineChart.canvas.style.height = '100%';
@@ -68,14 +73,31 @@ export default function (ctx) {
       _lineChart.Resize(container.clientWidth - 32, 
                         container.clientHeight - 32); 
     }
+
     resizeSubcriptions.append(ctx.subscribe(ctx.topics.WINDOW_RESIZE, __resize))
                       .append(ctx.subscribe('msg\\this_page\\view\\changed', __resize))
                       .append(ctx.subscribe('msg\\line_chart\\range', (message, e) => {
+
+                        let __normalize = (function(min, max, factor){
+                          return (value) => factor * ((value - min) / (max - min));
+                        })(0, 256, _document.points.length - 1);
+
                         if(e.sender.data === _lineChart.data){
                           var __from = Math.min(e.start, e.end);
                           var __to   = Math.max(e.start, e.end);
                           if(__to - __from > 10){
+                            var a = __normalize(__from);
+                            var b = __normalize(__to);
                             e.sender.data.configureView(__from, __to);
+                            var __bounds = _document.points
+                                                    .where( (p, i) => {
+                                                      return i >= a && i <= b;
+                                                    })
+                                                    .reduce((b, p) => {
+                                                      b.extend(p);
+                                                      return b;
+                                                    }, new google.maps.LatLngBounds());   
+                            _document.map.fitBounds(__bounds);
                             __resize();              
                           }
                         }
@@ -83,6 +105,7 @@ export default function (ctx) {
                       .append(ctx.subscribe('msg\\line_chart\\tap', (message, e) => { 
                         if(e.sender.data === _lineChart.data){
                           e.sender.data.resetView();
+                          __fitToBounds();
                           __resize();
                         }
                       }));
@@ -181,17 +204,20 @@ export default function (ctx) {
             });
             __updatePolyline();
             __fitToBounds();
+            var __props = JSON.parse(localStorage.getItem('LastTrack.document') || '{}');
+            _document.name        = __props.name        || '';
+            _document.description = __props.description || '';
           }
-          _autoSaveTimerId = setInterval(__saveMap, 20000);
+          _autoSaveTimerId = setInterval(__autoSave, 20000);
        });
   }
 
   function __fitToBounds() {
     var __bounds = _document.points
                             .reduce((b, p) => {
-                              b.extend(p);
-                              return b;
-                            }, new google.maps.LatLngBounds());   
+                     b.extend(p);
+                     return b;
+                   }, new google.maps.LatLngBounds());   
     _document.map.fitBounds(__bounds);
   }
 
@@ -200,23 +226,36 @@ export default function (ctx) {
     if (__target.classList.contains('w3-hide')) {
       __target.classList.remove('w3-hide');
       ctx.publish(TOPICS.WINDOW_RESIZE);
+      pol.$('.map', page)[0].style.bottom = '181px';
     } else {
       __target.classList.add('w3-hide');
+      pol.$('.map', page)[0].style.bottom = '40px';
     }
   }
   
   function __clearAll() {
-    while (_document.waypoints[0]) {
-      _document.waypoints.pop().setMap(null);
-    }
-    _commandManager.clear();
-    __updatePolyline();
-    // ========================================================
-    // Actualizar el perfil
-    // ======================================================== 
-    _lineChart.data = createProfileDocument({ distance : [], 
-                                              altitude : [] });
-    ctx.publish(TOPICS.WINDOW_RESIZE);
+    __hideMenu();
+    new utils.DialogHelper() 
+             .getDialogWrapper('dialog-container')        
+             .setTitle('Borrar ruta')
+             .setBody ('<p class="w3-center">¿Está seguro de eliminar la ruta?</p>')
+             .show((dlg) => {
+                dlg.close();
+                while (_document.waypoints[0]) {
+                  _document.waypoints.pop().setMap(null);
+                }
+                _document.name        = '',
+                _document.description = '';
+
+                _commandManager.clear();
+                __updatePolyline();
+                // ========================================================
+                // Actualizar el perfil
+                // ======================================================== 
+                _lineChart.data = createProfileDocument({ distance : [], 
+                                                          altitude : [] });
+                ctx.publish(TOPICS.WINDOW_RESIZE); 
+             });
   }
 
   function __createMarker(latLng) {
@@ -285,7 +324,7 @@ export default function (ctx) {
             var __max = Number.NEGATIVE_INFINITY;
             var __totalAscent = 0;
             var __previosElevation = items[0].elevation;
-            var data = items.map( (d, i, arr) => {
+            var data = _document.profileData = items.map( (d, i, arr) => {
               __min = Math.min(__min, d.elevation);
               __max = Math.max(__max, d.elevation)
               var __offset = d.elevation - __previosElevation;
@@ -319,11 +358,155 @@ export default function (ctx) {
           });
   }
 
-  function __saveMap() {
+  function __autoSave() {
     var __data = _document.waypoints.map( w => { return { w : w.getPosition(), 
                                                           p : w.points } });
+    var __document = { name : _document.name, description : _document.description };
     localStorage.setItem('LastTrack', JSON.stringify(__data))
+    localStorage.setItem('LastTrack.document', JSON.stringify(__document))
     console.log("AutoSaveMap");
+  }
+
+  function __createXml() {
+
+    let __xml = '<gpx xmlns="http://www.topografix.com/GPX/1/1" ' + 
+                      'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' + 
+                      'xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" ' + 
+                      'version="1.1" ' + 
+                      'creator="Rafael Castro Gómez">' + 
+                      '<metadata />' + 
+                      '<trk>' + 
+                        '<name>{0}</name>' + 
+                        '<desc>{1}</desc>' + 
+                        '<trkseg>{2}</trkseg>' + 
+                      '</trk>' +
+                '</gpx>';
+
+    let __normalize = (function(min, max, factor){
+      return (value) => factor * ((value - min) / (max - min));
+    })(0, _document.points.length, 256);
+
+    return __xml.format(_document.name,
+                        _document.description,
+                        _document.points
+                                  .map( (p, i) => {
+                                    var __elev = _document.profileData[~~__normalize(i)]
+                                                          .elevation;
+                                    return ('<trkpt lat="{lat}" lon="{lng}">' +
+                                              '<ele>{0}</ele>' +
+                                            '</trkpt>').format(__elev, p)
+                                  })
+                                  .join(''), '');
+
+  }
+
+  function __saveTrack() {
+    __hideMenu()
+    console.log(__createXml());
+  }
+  
+  function __downloadTrack() {
+    __hideMenu();
+    const link = document.createElement('a');
+    link.download = 'Track.gpx';
+    link.href     = 'data:text/json;charset=utf-8,' + __createXml();
+    document.body
+            .appendChild(link)
+            .click();
+    setTimeout(() => link.remove(), 300);
+  }
+
+  let dropdownContent;
+  function __toggleMenu(e) {
+    dropdownContent = e.nextElementSibling;
+    dropdownContent.classList.toggle('w3-show');
+  }
+
+  function __hideMenu(e) {
+    if (dropdownContent){
+      dropdownContent.classList.remove('w3-show');
+    }
+  }
+
+  var _optionsDlg;
+  function __showOptions() {
+    __hideMenu(); 
+    _optionsDlg = _optionsDlg || pol.$('track-options-dialog');
+    pol.templates.fill(_optionsDlg, _document); 
+    new utils.DialogHelper()
+             .getDialogWrapper('dialog-container')
+             .setTitle('Ruta')
+             .setBody(_optionsDlg)
+             .disableClickOutside()
+             .show((dlg) => {
+               _document.name        = pol.$('txt-nombre').value;
+               _document.description = pol.$('txt-descripcion').value;
+               dlg.close();
+               __autoSave();
+               __readGpxFile(pol.$('txt-file'))
+                 .then(__loadGpx)
+                 .catch( error => {
+                   pubsub.publish(TOPICS.NOTIFICATION, { message : error });
+                 });
+             });
+  }
+
+  function __loadGpx(xml) {
+
+    _commandManager.clear();
+    while (_document.waypoints[0]) {
+      _document.waypoints.pop().setMap(null);
+    }
+    _document.name        = xml.querySelector('trk name') ? xml.querySelector('trk name').textContent : '';
+    _document.description = xml.querySelector('trk desc') ? xml.querySelector('trk name').textContent : '';
+    _document.points = pol.$('trkpt', xml)
+                          .map( p => { 
+                            return new google.maps.LatLng(parseFloat(p.getAttribute('lat')), 
+                                                          parseFloat(p.getAttribute('lon')));
+                          });
+
+    var __chunk  = Math.floor(_document.points.length / 10);
+    var __points = [];
+    _document.points
+             .forEach((p, i) => {
+               var __marker;
+               if (i == 0) {
+                 __marker = __createMarker(p);
+                 __marker.points = [];
+                 _document.waypoints.push(__addListeners(__marker));
+                 __points = [p];
+                 return;
+               }
+               if (i == _document.points.length - 1){
+                 __marker = __createMarker(p);
+                 __marker.points = __points;
+                 _document.waypoints.push(__addListeners(__marker));
+                 return;
+               }
+               if (__points.length == __chunk) {
+                  __marker = __createMarker(p);
+                  __marker.points = __points.map(p => p);
+                  _document.waypoints.push(__addListeners(__marker));
+                  __points = [p];
+                  return;
+               }
+               __points.push(p);
+             });
+
+    __fitToBounds();
+    __updatePolyline();
+
+  }
+
+  function __readGpxFile(sender) {
+    return new Promise((resolve, reject) => {
+      (function(reader){
+        reader.onload  = event => resolve(event.target.result.toXmlDocument());
+        reader.onerror = reject;
+        reader.readAsText(sender.files[0])      
+      })(new FileReader());
+    });
+
   }
 
   return component;

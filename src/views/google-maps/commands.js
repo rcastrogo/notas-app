@@ -37,7 +37,8 @@ function __getElevations(points) {
 // =============================================
 function CreateDocument(){
   return { 
-    name      : '',
+    name : '',
+    description : '',
     points    : [],
     waypoints : [],
     map       : {},

@@ -131,7 +131,64 @@ function CommandManager(doc){
   return _this;
 };
 
+// =============================================
+// DialogHelper
+// =============================================
+class DialogHelper {
+
+  constructor() { }
+
+  getDialogWrapper(id){
+    let __container = document.getElementById(id);
+    let __dlg = { container   : __container,
+                  title       : __container.querySelector('.js-title'),
+                  body        : __container.querySelector('.js-content'),
+                  closeButton : __container.querySelector('.js-close-button'),
+                  acceptButton: __container.querySelector('.js-accept-button'),
+                  close       : function(){ 
+                    __container.style.display = 'none'; 
+                    if(this.content) this.content.style.display = 'none';
+                  },
+                  show        : function(onConfirm){
+                    if (onConfirm) {
+                      __dlg.acceptButton.onclick = () => {
+                        onConfirm(__dlg);
+                      };
+                    }
+                    __container.style.display = 'block';
+                  },
+                  setTitle: (title) => {
+                    __dlg.title.innerHTML = title;
+                    return __dlg;
+                  },
+                  setBody: (content) => {
+                    if (content.tagName) {
+                      __dlg.body.innerHTML = '';
+                      __dlg.body.appendChild(content);
+                      this.content = content;
+                      this.content.style.display = 'block';
+                    }else{
+                      __dlg.body.innerHTML = content;
+                      this.content = undefined;
+                    }
+                    return __dlg;
+                  },
+                  disableClickOutside: () => {
+                    __dlg.container.onclick = () => {};
+                    return __dlg;
+                  }
+                };
+    __dlg.acceptButton.onclick = __dlg.close;
+    __dlg.closeButton.onclick = __dlg.close;
+    __dlg.container.onclick   = (sender) => { if (sender.target === __dlg.container) __dlg.close(); }
+    return __dlg;
+  }
+
+}
+
+
 export default { 
   addEventListeners,
-  CommandManager
+  CommandManager,
+  DialogHelper
 }

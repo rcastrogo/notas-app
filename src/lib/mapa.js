@@ -147,6 +147,9 @@ let __module = {};
         return new DOMParser().parseFromString(this, "text/html")
                               .documentElement
                               .textContent;
+      },
+      toXmlDocument : function() {
+        return new DOMParser().parseFromString(this, "text/xml");  
       }
     });      
   }(_module));      
