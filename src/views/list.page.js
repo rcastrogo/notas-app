@@ -68,7 +68,6 @@ export default function(ctx){
   function loadData() {
     db.readAll(NOTAS_TABLE_NAME)
       .then( values => {
-        ctx.publish(ctx.topics.NOTIFICATION, { message : values.length });
         rows = values.reverse();
         favorites = (window.localStorage.getItem('favorites') || '').split('-');
         render();
