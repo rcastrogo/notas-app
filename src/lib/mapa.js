@@ -65,6 +65,17 @@ let __module = {};
                          o[a.split('=')[0]] = a.split('=')[1] || '';
                          return o;
                        }, {})
+      },
+      config : function(name){
+        return { 
+          write : function(key, value){
+                    localStorage.setItem('{0}.{1}'.format(name, key), value);
+                    return module.config;
+                  },
+          read  : function(key){
+                    return localStorage.getItem('{0}.{1}'.format(name, key));
+                  }
+        };
       }
     });
   }(_module));

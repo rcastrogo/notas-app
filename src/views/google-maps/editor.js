@@ -195,7 +195,7 @@ export default function (ctx) {
           // ===========================================================================
           // Load last track
           // ===========================================================================
-          var __waypoints = JSON.parse(localStorage.getItem('LastTrack') || '[]');
+          var __waypoints = JSON.parse(pol.config.read('LastTrack') || '[]');
           if (__waypoints.length > 1) {
             __waypoints.forEach( w => {
               var __marker = __createMarker(w.w);
@@ -204,7 +204,7 @@ export default function (ctx) {
             });
             __updatePolyline();
             __fitToBounds();
-            var __props = JSON.parse(localStorage.getItem('LastTrack.document') || '{}');
+            var __props = JSON.parse(pol.config.read('LastTrack.document') || '{}');
             _document.name        = __props.name        || '';
             _document.description = __props.description || '';
           }
@@ -225,8 +225,8 @@ export default function (ctx) {
     var __target = pol.$('[div-profile]', page)[0];
     if (__target.classList.contains('w3-hide')) {
       __target.classList.remove('w3-hide');
-      ctx.publish(TOPICS.WINDOW_RESIZE);
       pol.$('.map', page)[0].style.bottom = '181px';
+      setTimeout(() => ctx.publish(TOPICS.WINDOW_RESIZE), 550);
     } else {
       __target.classList.add('w3-hide');
       pol.$('.map', page)[0].style.bottom = '40px';
@@ -362,8 +362,8 @@ export default function (ctx) {
     var __data = _document.waypoints.map( w => { return { w : w.getPosition(), 
                                                           p : w.points } });
     var __document = { name : _document.name, description : _document.description };
-    localStorage.setItem('LastTrack', JSON.stringify(__data))
-    localStorage.setItem('LastTrack.document', JSON.stringify(__document))
+    pol.config.write('LastTrack', JSON.stringify(__data))
+    pol.config.write('LastTrack.document', JSON.stringify(__document))
     console.log("AutoSaveMap");
   }
 
@@ -408,12 +408,12 @@ export default function (ctx) {
   function __downloadTrack() {
     __hideMenu();
     const link = document.createElement('a');
-    link.download = 'Track.gpx';
+    link.download = 'track.gpx';
     link.href     = 'data:text/json;charset=utf-8,' + __createXml();
     document.body
             .appendChild(link)
             .click();
-    setTimeout(() => link.remove(), 300);
+    //setTimeout(() => link.remove(), 1300);
   }
 
   let dropdownContent;
@@ -443,11 +443,14 @@ export default function (ctx) {
                _document.description = pol.$('txt-descripcion').value;
                dlg.close();
                __autoSave();
-               __readGpxFile(pol.$('txt-file'))
-                 .then(__loadGpx)
-                 .catch( error => {
-                   pubsub.publish(TOPICS.NOTIFICATION, { message : error });
-                 });
+               var __txtFile = pol.$('txt-file');
+               if (__txtFile.files.length == 1) {
+                 __readGpxFile(pol.$('txt-file'))
+                   .then(__loadGpx)
+                   .catch( error => {
+                     pubsub.publish(TOPICS.NOTIFICATION, { message : error });
+                   });
+               }
              });
   }
 
