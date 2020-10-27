@@ -201,8 +201,8 @@ var Commands = {
   }
 };
 
-export default { 
+export{ 
   CreateDocument,
   Commands,
-  getElevations : __getElevations
+  __getElevations as getElevations
 }

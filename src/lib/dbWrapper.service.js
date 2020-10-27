@@ -18,7 +18,7 @@ export default class DbWrapperService{
 	    };
 
       request.onerror = e => {  
-        reject('Error');
+        reject(e);
       };
 	
 	    request.onupgradeneeded = (e) => {
@@ -29,7 +29,7 @@ export default class DbWrapperService{
           }
         }
         catch (err) {
-          console.log(err);
+          alert(err);
         }
         var store = this.db.createObjectStore("notas", { keyPath : "key" });       
       };
@@ -39,19 +39,22 @@ export default class DbWrapperService{
   readAll(name){
     return new Promise( (resolve, reject) => {
       var __items = [];
-      this.db
-          .transaction(name, "readonly")
-          .objectStore(name)
-          .openCursor(IDBKeyRange.lowerBound(0))
-          .onsuccess = (event) => {
-            var __cursor = event.target.result;
-            if(__cursor) {
-              __items.push(__cursor.value);
-              __cursor.continue();
-            } else {
-              resolve(__items);
-            }
-          };
+      var __request = this.db
+                          .transaction(name, "readonly")
+                          .objectStore(name)
+                          .openCursor(IDBKeyRange.lowerBound(0));
+      __request.onsuccess = function (event){
+        var __cursor = event.target.result;
+        if(__cursor) {
+          __items.push(__cursor.value);
+          __cursor.continue();
+        } else {
+          resolve(__items);
+        }
+      }
+      __request.onerror = function(err) {
+        reject(err);
+      };
     });
   }
 

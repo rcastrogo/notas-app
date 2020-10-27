@@ -3,7 +3,9 @@ import utils from "../../lib/utils.js";
 import pubsub from "../../lib/pubSub.Service.js";
 import pageContainer from "../components/page.component";
 import HTML from "./editor.page.txt";
-import editor from './commands';
+import {getElevations, 
+        Commands, 
+        CreateDocument} from './commands';
 import {lineChart} from "../components/lineChart.component"
 
 const TOPICS = pubsub.TOPICS;
@@ -13,7 +15,7 @@ export default function (ctx) {
   
   let pageWrapper     = pageContainer(ctx);
   let page            = {};
-  let _document       = editor.CreateDocument();
+  let _document       = CreateDocument();
   let _commandManager = utils.CommandManager(_document);
   let _lineChart      = {};
   let _autoSaveTimerId = 0;
@@ -41,7 +43,7 @@ export default function (ctx) {
   function initEventListeners(target) {
     utils.addEventListeners(target, { 
       mostrarMensaje : () => { pubsub.publish(TOPICS.NOTIFICATION, { message : 'Imagen mostrada' }); },
-      toggleMapType  : () => { _commandManager.executeCommad(new editor.Commands.ChangeView()); },
+      toggleMapType  : () => { _commandManager.executeCommad(new Commands.ChangeView()); },
       toggleMenu  : __toggleMenu,
       hideMenu    : __hideMenu,
       undo           : _commandManager.undo,
@@ -275,7 +277,7 @@ export default function (ctx) {
 
   function __addMark(event){ 
     var __marker  = __createMarker(event.latLng);
-    var __command = new editor.Commands.AddWaypoint(__marker, __updatePolyline);
+    var __command = new Commands.AddWaypoint(__marker, __updatePolyline);
     _commandManager.executeCommad(__command);
     __addListeners(__marker); 
   }
@@ -285,7 +287,7 @@ export default function (ctx) {
       this._position = e.latLng;
     });
     google.maps.event.addListener(marker, 'dragend', function(event){
-      _commandManager.executeCommad(new editor.Commands.MoveWaypoint(this, __updatePolyline));
+      _commandManager.executeCommad(new Commands.MoveWaypoint(this, __updatePolyline));
     });
     return marker;
   }
@@ -317,45 +319,44 @@ export default function (ctx) {
       pubsub.publish('map\\totalAscent', "0");
       return;
     }
-    editor.getElevations(_document.points)
-          .then(items => {
-            var __dist = 0;
-            var __min = Number.POSITIVE_INFINITY;
-            var __max = Number.NEGATIVE_INFINITY;
-            var __totalAscent = 0;
-            var __previosElevation = items[0].elevation;
-            var data = _document.profileData = items.map( (d, i, arr) => {
-              __min = Math.min(__min, d.elevation);
-              __max = Math.max(__max, d.elevation)
-              var __offset = d.elevation - __previosElevation;
-              __totalAscent += __offset > 0.5 ? __offset : 0; 
-              __previosElevation = d.elevation;
-              __dist += i==0 ? 0.0 
-                             : google.maps
-                                     .geometry
-                                     .spherical
-                                     .computeDistanceBetween(arr[i - 1].location, 
-                                                             d.location)
-              return { 
-                elevation : d.elevation, 
-                distance : __dist 
-              };
-            });
+    getElevations(_document.points).then(items => {
+      var __dist = 0;
+      var __min = Number.POSITIVE_INFINITY;
+      var __max = Number.NEGATIVE_INFINITY;
+      var __totalAscent = 0;
+      var __previosElevation = items[0].elevation;
+      var data = _document.profileData = items.map( (d, i, arr) => {
+        __min = Math.min(__min, d.elevation);
+        __max = Math.max(__max, d.elevation)
+        var __offset = d.elevation - __previosElevation;
+        __totalAscent += __offset > 0.5 ? __offset : 0; 
+        __previosElevation = d.elevation;
+        __dist += i==0 ? 0.0 
+                        : google.maps
+                                .geometry
+                                .spherical
+                                .computeDistanceBetween(arr[i - 1].location, 
+                                                        d.location)
+        return { 
+          elevation : d.elevation, 
+          distance : __dist 
+        };
+      });
 
-            data.totaDistance = __dist;
-            data.lowestPoint  = __min;
-            data.highestPoint = __max;
-            data.totalAscent  = __totalAscent;
+      data.totaDistance = __dist;
+      data.lowestPoint  = __min;
+      data.highestPoint = __max;
+      data.totalAscent  = __totalAscent;
             
-            pubsub.publish('map\\totalAscent', __totalAscent.toFixed());
-            // =================================================================================
-            // Actualizar el perfil
-            // ================================================================================= 
-            _lineChart.data = createProfileDocument({ distance : data.map( i => i.distance), 
-                                                      altitude : data.map( i => i.elevation) });
-            ctx.publish(TOPICS.WINDOW_RESIZE);
+      pubsub.publish('map\\totalAscent', __totalAscent.toFixed());
+      // =================================================================================
+      // Actualizar el perfil
+      // ================================================================================= 
+      _lineChart.data = createProfileDocument({ distance : data.map( i => i.distance), 
+                                                altitude : data.map( i => i.elevation) });
+      ctx.publish(TOPICS.WINDOW_RESIZE);
 
-          });
+    });
   }
 
   function __autoSave() {
