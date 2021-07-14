@@ -314,12 +314,26 @@ export default function (ctx) {
     __updateElevation();
   }
 
-  function __updateElevation() {
+  async function __updateElevation() {
     if (_document.points < 2) {
       pubsub.publish('map\\totalAscent', "0");
       return;
     }
-    getElevations(_document.points).then(items => {
+    // ========================================================================================================
+    // Obtener la elevación 
+    // ========================================================================================================
+    const __CHUNK_SIZE = 512;
+    const __promises = _document.points
+                                .reduce((acc, current, i, self) => {
+                                    if(!(i % __CHUNK_SIZE)) return [...acc, self.slice(i, i + __CHUNK_SIZE)];
+                                    return acc;
+                                }, [])
+                                .map( chunk => getElevations(chunk));
+    const items = (await Promise.all(__promises)).flat();
+    // ========================================================================================================
+    // Actualizar los datos del perfil 
+    // ========================================================================================================
+    ((items) => {
       var __dist = 0;
       var __min = Number.POSITIVE_INFINITY;
       var __max = Number.NEGATIVE_INFINITY;
@@ -354,9 +368,9 @@ export default function (ctx) {
       // ================================================================================= 
       _lineChart.data = createProfileDocument({ distance : data.map( i => i.distance), 
                                                 altitude : data.map( i => i.elevation) });
-      ctx.publish(TOPICS.WINDOW_RESIZE);
+      ctx.publish(TOPICS.WINDOW_RESIZE);    
+    })(items);
 
-    });
   }
 
   function __autoSave() {

@@ -15,12 +15,15 @@ function __getRoute(a, b) {
   });
 }
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 function __getElevations(points) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    await delay(500)
     new google.maps
               .ElevationService()
               .getElevationAlongPath({ 'path'   : points,
-                                       'samples': 256 }, 
+                                       'samples': 100 }, 
                                      function (response, result){
                 if(result == 'OK') 
                   resolve(response);
