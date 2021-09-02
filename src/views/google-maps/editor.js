@@ -10,6 +10,7 @@ import {lineChart} from "../components/lineChart.component"
 
 const TOPICS = pubsub.TOPICS;
 const GOOGLE_MAPS_API = 'https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyD-FEw7obgz5yH2a1OO84Xm1XzGoWFuWas';
+const PROFILE_POINTS = 200;
 
 export default function (ctx) {
   
@@ -82,7 +83,7 @@ export default function (ctx) {
 
                         let __normalize = (function(min, max, factor){
                           return (value) => factor * ((value - min) / (max - min));
-                        })(0, 256, _document.points.length - 1);
+                        })(0, PROFILE_POINTS, _document.points.length - 1);
 
                         if(e.sender.data === _lineChart.data){
                           var __from = Math.min(e.start, e.end);
@@ -399,19 +400,35 @@ export default function (ctx) {
 
     let __normalize = (function(min, max, factor){
       return (value) => factor * ((value - min) / (max - min));
-    })(0, _document.points.length, 256);
+    })(0, _document.points.length, PROFILE_POINTS);
 
+    var __date = new Date();
+    var __speed = 5.555566; // m/s (20 km/h)
     return __xml.format(_document.name,
                         _document.description,
                         _document.points
-                                  .map( (p, i) => {
-                                    var __elev = _document.profileData[~~__normalize(i)]
-                                                          .elevation;
-                                    return ('<trkpt lat="{lat}" lon="{lng}">' +
-                                              '<ele>{0}</ele>' +
-                                            '</trkpt>').format(__elev, p)
-                                  })
-                                  .join(''), '');
+                                 .map( (p, i, arr) => {
+                                   // =======================================================================
+                                   // Calcular el tiempo
+                                   // =======================================================================
+                                   var __dist = i == 0 ? 0.0 
+                                                       : google.maps
+                                                               .geometry
+                                                               .spherical
+                                                               .computeDistanceBetween(arr[i - 1], p);                                 
+                                   var __delta = __dist / __speed;                       // segundos
+                                   __date = new Date(__date.getTime() + __delta * 1000); // milisegundos
+                                   // =======================================================================
+                                   // Elevación del punto del track
+                                   // =======================================================================
+                                   var __elev = _document.profileData[~~__normalize(i)]
+                                                         .elevation;
+                                   return ('<trkpt lat="{lat}" lon="{lng}">' +
+                                             '<ele>{0}</ele>' +
+                                             '<time>{1}</time>'  +
+                                           '</trkpt>').format(__elev, __date.toISOString(), p)
+                                 })
+                                 .join(''), '');
 
   }
 
