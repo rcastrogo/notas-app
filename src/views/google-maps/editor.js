@@ -10,7 +10,6 @@ import {lineChart} from "../components/lineChart.component"
 
 const TOPICS = pubsub.TOPICS;
 const GOOGLE_MAPS_API = 'https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyD-FEw7obgz5yH2a1OO84Xm1XzGoWFuWas';
-const PROFILE_POINTS = 200;
 
 export default function (ctx) {
   
@@ -83,7 +82,7 @@ export default function (ctx) {
 
                         let __normalize = (function(min, max, factor){
                           return (value) => factor * ((value - min) / (max - min));
-                        })(0, PROFILE_POINTS, _document.points.length - 1);
+                        })(0, _document.profileData.length - 1, _document.points.length - 1);
 
                         if(e.sender.data === _lineChart.data){
                           var __from = Math.min(e.start, e.end);
@@ -398,9 +397,12 @@ export default function (ctx) {
                       '</trk>' +
                 '</gpx>';
 
+    // Esto no es del todo correcto... 
+    // Los datos de elevación se obtienen en grupos de __CHUNK_SIZE puntos
+    // los valores de elevación devueltos son 100 por __CHUNK_SIZE
     let __normalize = (function(min, max, factor){
       return (value) => factor * ((value - min) / (max - min));
-    })(0, _document.points.length, PROFILE_POINTS);
+    })(0, _document.points.length, _document.profileData.length);
 
     var __date = new Date();
     var __speed = 5.555566; // m/s (20 km/h)
