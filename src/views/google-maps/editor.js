@@ -405,7 +405,7 @@ export default function (ctx) {
     })(0, _document.points.length, _document.profileData.length);
 
     var __date = new Date();
-    var __speed = 5.555566; // m/s (20 km/h)
+    var __speed = 2.77778; // m/s (10 km/h)
     return __xml.format(_document.name,
                         _document.description,
                         _document.points
