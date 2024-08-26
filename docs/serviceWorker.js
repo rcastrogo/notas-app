@@ -64,7 +64,7 @@ async function networkFirst(req) {
 
   try {
       const res = await fetch(req);
-      if(req.method != 'POST') cache.put(req, res.clone());
+      if(req.method != 'POST' && res.url.startsWith('http')) cache.put(req, res.clone());
       return res;
   } catch (error) {
       return await cache.match(req);
