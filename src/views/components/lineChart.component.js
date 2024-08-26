@@ -189,7 +189,7 @@ function __refreshLayout(chart){
                           chart.Padding[0], 
                           chart.Width  - chart.Padding[1] - chart.Padding[3],
                           chart.Height - chart.Padding[0] - chart.Padding[2]);
-  if(chart.data){
+  if(chart.data && chart.data.view){
     chart.ratio[0] = 100.0 / chart.data.view.x.range; 
     chart.ratio[1] = 100.0 / chart.data.view.y.range;
   }
