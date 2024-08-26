@@ -6,7 +6,7 @@ const __template = `
 
 export default function(){
   return {
-    text   : '© Rafael Castro Gómez, 2021',
+    text   : '© Rafael Castro Gómez, 2024',
     init   : function(){},
     render : function(){
       let options = { 
