@@ -64,11 +64,8 @@ const ctx = {
       return url.replace(document.baseURI, '');
     },
     sync : function(){
-      alert(2);
       this.current = this.getRoute(this.normalizePath(window.location.href));
-      alert(3);
       this.current.queryValues = pol.parseQueryString();
-      alert(4);
       showContent();
     },
     current : {}
@@ -213,7 +210,6 @@ let currentBuilder;
 let current;
 function showContent(){
   let viewBuilder = ctx.router.current.controler;
-  alert('showContent');
   if(!current || currentBuilder != viewBuilder) {
     // =======================================================
     // Dispose
@@ -239,9 +235,9 @@ function showContent(){
     if(current.mounted) current.mounted();
     pubsub.publish(TOPICS.VIEW_CHANGE, ctx.router.current);
   }
-  alert('showContent.end');
+
 }
-alert(1);
+
 ctx.router.sync();
 
 window.onpopstate = function(event){
